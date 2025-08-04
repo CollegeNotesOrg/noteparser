@@ -1,0 +1,285 @@
+name: Parse and Sync Notes
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'input/**'
+      - 'raw-notes/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'input/**'
+      - 'raw-notes/**'
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: 'Target repository for syncing'
+        required: false
+        default: 'study-notes'
+      course:
+        description: 'Course identifier'
+        required: false
+        default: ''
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  parse-notes:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+      
+    steps:
+    - name: Checkout noteparser repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          tesseract-ocr \
+          tesseract-ocr-eng \
+          ffmpeg \
+          poppler-utils \
+          libreoffice
+          
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -e .[all,dev]
+        
+    - name: Detect changed files
+      id: changes
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "files=$(find input raw-notes -type f 2>/dev/null | head -20 | tr '\n' ' ')" >> $GITHUB_OUTPUT
+        else
+          echo "files=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E '^(input|raw-notes)/' | head -20 | tr '\n' ' ')" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Parse documents
+      id: parse
+      run: |
+        python -c "
+        import os
+        import sys
+        from pathlib import Path
+        from noteparser import NoteParser
+        from noteparser.integration import OrganizationSync
+        
+        # Initialize parser and sync
+        parser = NoteParser()
+        org_sync = OrganizationSync()
+        
+        # Get changed files
+        files_str = '${{ steps.changes.outputs.files }}'.strip()
+        if not files_str:
+            print('No files to process')
+            sys.exit(0)
+            
+        files = [Path(f) for f in files_str.split() if f and Path(f).exists()]
+        print(f'Processing {len(files)} files: {files}')
+        
+        parsed_files = []
+        errors = []
+        
+        # Process each file
+        for file_path in files:
+            try:
+                print(f'Parsing {file_path}...')
+                result = parser.parse_to_markdown(file_path)
+                
+                # Save parsed content
+                output_dir = Path('output')
+                output_dir.mkdir(exist_ok=True)
+                
+                output_file = output_dir / f'{file_path.stem}.md'
+                with open(output_file, 'w') as f:
+                    f.write(result['content'])
+                    
+                parsed_files.append(output_file)
+                print(f'Saved to {output_file}')
+                
+            except Exception as e:
+                error_msg = f'Failed to parse {file_path}: {e}'
+                errors.append(error_msg)
+                print(f'ERROR: {error_msg}')
+                
+        # Set outputs
+        print(f'::set-output name=parsed_files::{\" \".join(str(f) for f in parsed_files)}')
+        print(f'::set-output name=file_count::{len(parsed_files)}')
+        print(f'::set-output name=error_count::{len(errors)}')
+        
+        if errors:
+            print('ERRORS:')
+            for error in errors:
+                print(f'  - {error}')
+        "
+        
+    - name: Generate LaTeX versions
+      if: steps.parse.outputs.file_count > 0
+      run: |
+        python -c "
+        from pathlib import Path
+        from noteparser import NoteParser
+        
+        parser = NoteParser()
+        parsed_files = '${{ steps.parse.outputs.parsed_files }}'.split()
+        
+        for md_file in parsed_files:
+            if Path(md_file).exists():
+                try:
+                    # Convert markdown to LaTeX
+                    latex_result = parser.parse_to_latex(md_file)
+                    
+                    latex_file = Path(md_file).with_suffix('.tex')
+                    with open(latex_file, 'w') as f:
+                        f.write(latex_result['content'])
+                        
+                    print(f'Generated {latex_file}')
+                except Exception as e:
+                    print(f'Failed to generate LaTeX for {md_file}: {e}')
+        "
+        
+    - name: Create summary
+      if: always()
+      run: |
+        cat > parsing_summary.md << EOF
+        # Parsing Summary
+        
+        **Workflow**: ${{ github.workflow }}  
+        **Trigger**: ${{ github.event_name }}  
+        **Commit**: ${{ github.sha }}  
+        **Timestamp**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        ## Results
+        - **Files Processed**: ${{ steps.parse.outputs.file_count || 0 }}
+        - **Errors**: ${{ steps.parse.outputs.error_count || 0 }}
+        
+        ## Files Changed
+        \`\`\`
+        ${{ steps.changes.outputs.files }}
+        \`\`\`
+        
+        ## Parsed Files
+        EOF
+        
+        if [ -d "output" ]; then
+          echo "### Generated Files" >> parsing_summary.md
+          find output -name "*.md" -o -name "*.tex" | while read file; do
+            echo "- \`$file\` ($(stat -f%z "$file" 2>/dev/null || stat -c%s "$file") bytes)" >> parsing_summary.md
+          done
+        fi
+        
+    - name: Upload parsing artifacts
+      if: steps.parse.outputs.file_count > 0
+      uses: actions/upload-artifact@v3
+      with:
+        name: parsed-notes-${{ github.sha }}
+        path: |
+          output/
+          parsing_summary.md
+        retention-days: 30
+        
+    - name: Sync to study-notes repository
+      if: steps.parse.outputs.file_count > 0 && github.event_name != 'pull_request'
+      run: |
+        # This would typically sync to another repository
+        # For now, just create a branch with the parsed content
+        
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Create a branch for the parsed content
+        branch_name="parsed-notes-$(date +%Y%m%d-%H%M%S)"
+        git checkout -b "$branch_name"
+        
+        # Add the parsed files
+        git add output/ parsing_summary.md
+        
+        if ! git diff --cached --quiet; then
+          git commit -m "Auto-parsed notes from commit ${{ github.sha }}
+          
+          - Processed ${{ steps.parse.outputs.file_count }} files
+          - Generated markdown and LaTeX outputs
+          - Course: ${{ github.event.inputs.course || 'auto-detected' }}
+          
+          🤖 Generated by noteparser workflow"
+          
+          # Push the branch
+          git push origin "$branch_name"
+          
+          echo "Created branch: $branch_name"
+          echo "::notice::Parsed notes available in branch $branch_name"
+        else
+          echo "No changes to commit"
+        fi
+        
+    - name: Comment on PR
+      if: github.event_name == 'pull_request' && steps.parse.outputs.file_count > 0
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let summary = '# 📚 Note Parsing Results\n\n';
+          
+          if (fs.existsSync('parsing_summary.md')) {
+            summary += fs.readFileSync('parsing_summary.md', 'utf8');
+          }
+          
+          summary += '\n\n---\n*This comment was automatically generated by the noteparser workflow.*';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });
+          
+  quality-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -e .[dev]
+        
+    - name: Run linting
+      run: |
+        ruff check src/
+        black --check src/
+        
+    - name: Run type checking
+      run: |
+        mypy src/noteparser/
+        
+    - name: Run tests
+      run: |
+        pytest tests/ -v --cov=noteparser --cov-report=xml
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false

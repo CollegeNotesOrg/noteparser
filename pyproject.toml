@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noteparser"
+version = "0.1.0"
+description = "A document parser for converting various formats to Markdown and LaTeX"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "MIT"}
+keywords = ["markdown", "latex", "document", "parser", "converter", "pdf", "docx", "pptx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "click>=8.0",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+    "markitdown>=0.1.0",
+    "flask>=2.3.0",
+    "speechrecognition>=3.10.0",
+    "moviepy>=1.0.3",
+]
+
+[project.optional-dependencies]
+pdf = [
+    "pymupdf>=1.23.0",
+    "pdfplumber>=0.10.0",
+]
+office = [
+    "python-docx>=1.0.0",
+    "python-pptx>=0.6.0",
+    "openpyxl>=3.1.0",
+]
+ocr = [
+    "pytesseract>=0.3.10",
+    "pillow>=10.0.0",
+]
+all = [
+    "noteparser[pdf,office,ocr]",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+]
+
+[project.scripts]
+noteparser = "noteparser.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/noteparser"
+Issues = "https://github.com/yourusername/noteparser/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "A", "COM", "C4", "DTZ", "ISC", "ICN", "PIE", "PT", "RET", "SIM", "TID", "ARG", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
+ignore = ["E501", "PLR0913"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
