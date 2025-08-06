@@ -4,19 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "noteparser"
-version = "0.1.0"
-description = "A document parser for converting various formats to Markdown and LaTeX"
+version = "1.0.0"
+description = "A comprehensive document parser for converting academic materials to Markdown and LaTeX"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Suryansh Sijwali", email = "suryanshss1011@gmail.com"}
 ]
-license = {text = "MIT"}
+license = "MIT"
 keywords = ["markdown", "latex", "document", "parser", "converter", "pdf", "docx", "pptx"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -65,8 +64,8 @@ dev = [
 noteparser = "noteparser.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/noteparser"
-Issues = "https://github.com/yourusername/noteparser/issues"
+Homepage = "https://github.com/PennStateNotes/noteparser"
+Issues = "https://github.com/PennStateNotes/noteparser/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block title %}Parse Document - NoteParser{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-file-upload"></i> Parse Document</h1>
+    <a href="/" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-upload"></i> Upload Document
+            </div>
+            <div class="card-body">
+                <form id="parseForm" enctype="multipart/form-data">
+                    <!-- File Upload Area -->
+                    <div class="mb-4">
+                        <label for="fileInput" class="form-label fw-bold">Select Document</label>
+                        <div class="upload-area border-2 border-dashed rounded-3 p-4 text-center" 
+                             id="uploadArea"
+                             ondragover="handleDragOver(event)"
+                             ondrop="handleDrop(event)"
+                             ondragleave="handleDragLeave(event)">
+                            <div id="uploadPrompt">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5>Drag and drop your file here</h5>
+                                <p class="text-muted">or click to browse</p>
+                                <input type="file" id="fileInput" name="file" class="d-none" 
+                                       accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.md,.txt,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.mp3,.wav,.m4a,.mp4,.mov,.avi"
+                                       onchange="handleFileSelect(event)">
+                                <button type="button" class="btn btn-outline-primary" 
+                                        onclick="document.getElementById('fileInput').click()">
+                                    Choose File
+                                </button>
+                            </div>
+                            <div id="filePreview" class="d-none">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="file-icon me-3">
+                                        <i id="fileIcon" class="fas fa-file fa-2x"></i>
+                                    </div>
+                                    <div class="flex-grow-1 text-start">
+                                        <div class="fw-bold" id="fileName"></div>
+                                        <small class="text-muted" id="fileSize"></small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="clearFile()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Format Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Output Formats</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="formats" 
+                                           value="markdown" id="formatMarkdown" checked>
+                                    <label class="form-check-label" for="formatMarkdown">
+                                        <i class="fab fa-markdown text-primary"></i> Markdown
+                                        <small class="text-muted d-block">Standard markdown format</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="formats" 
+                                           value="latex" id="formatLatex">
+                                    <label class="form-check-label" for="formatLatex">
+                                        <i class="fas fa-file-code text-success"></i> LaTeX
+                                        <small class="text-muted d-block">Academic document format</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing Options -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Processing Options</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="extract_metadata" 
+                                           id="extractMetadata" checked>
+                                    <label class="form-check-label" for="extractMetadata">
+                                        Extract Metadata
+                                        <small class="text-muted d-block">Course, topic, author info</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="preserve_formatting" 
+                                           id="preserveFormatting" checked>
+                                    <label class="form-check-label" for="preserveFormatting">
+                                        Preserve Academic Formatting
+                                        <small class="text-muted d-block">Equations, theorems, citations</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Information (Optional) -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="courseCode" class="form-label">Course Code (Optional)</label>
+                            <input type="text" class="form-control" id="courseCode" name="course_code"
+                                   placeholder="e.g., CS101, MATH201" pattern="[A-Z]{2,4}[0-9]{3,4}">
+                            <small class="text-muted">Will be auto-detected if not specified</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="topic" class="form-label">Topic (Optional)</label>
+                            <input type="text" class="form-control" id="topic" name="topic"
+                                   placeholder="e.g., Linear Algebra, Data Structures">
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="parseButton">
+                            <i class="fas fa-cogs"></i> Parse Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="card mt-4" style="display: none;">
+            <div class="card-header d-flex justify-content-between">
+                <span><i class="fas fa-check-circle text-success"></i> Parsing Results</span>
+                <button type="button" class="btn-close" onclick="clearResults()"></button>
+            </div>
+            <div class="card-body">
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Supported Formats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-file-alt"></i> Supported Formats
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    {% for format in supported_formats %}
+                    <div class="col-6">
+                        <span class="badge bg-light text-dark">{{ format }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Plugins -->
+        {% if plugins %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-plug"></i> Active Plugins
+            </div>
+            <div class="card-body">
+                {% for plugin in plugins %}
+                    {% if plugin.enabled %}
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <div>
+                            <div class="fw-bold">{{ plugin.name }}</div>
+                            <small class="text-muted">{{ plugin.description }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Tips -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i> Tips
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <small>Name files with course codes (e.g., CS101_Lecture1.pdf)</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <small>Use high-quality scans for better OCR results</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <small>LaTeX format is best for math-heavy documents</small>
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-success me-2"></i>
+                        <small>Audio/video files will be transcribed automatically</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Processing Document...</h5>
+                <p class="text-muted mb-0">This may take a few moments depending on the file size and format.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFile = null;
+let loadingModal = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    
+    // Form submission
+    document.getElementById('parseForm').addEventListener('submit', handleFormSubmit);
+    
+    // Click on upload area
+    document.getElementById('uploadArea').addEventListener('click', function() {
+        document.getElementById('fileInput').click();
+    });
+});
+
+function handleDragOver(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.getElementById('uploadArea').classList.add('border-primary', 'bg-light');
+}
+
+function handleDragLeave(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.getElementById('uploadArea').classList.remove('border-primary', 'bg-light');
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    document.getElementById('uploadArea').classList.remove('border-primary', 'bg-light');
+    
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        handleFile(file);
+    }
+}
+
+function handleFile(file) {
+    selectedFile = file;
+    
+    // Show file preview
+    document.getElementById('uploadPrompt').classList.add('d-none');
+    document.getElementById('filePreview').classList.remove('d-none');
+    
+    // Set file info
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatFileSize(file.size);
+    
+    // Set appropriate icon
+    const icon = getFileIcon(getFileExtension(file.name));
+    document.getElementById('fileIcon').className = icon;
+}
+
+function clearFile() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('uploadPrompt').classList.remove('d-none');
+    document.getElementById('filePreview').classList.add('d-none');
+}
+
+function getFileExtension(filename) {
+    return '.' + filename.split('.').pop().toLowerCase();
+}
+
+function getFileIcon(extension) {
+    const icons = {
+        '.pdf': 'fas fa-file-pdf text-danger fa-2x',
+        '.docx': 'fas fa-file-word text-primary fa-2x',
+        '.doc': 'fas fa-file-word text-primary fa-2x',
+        '.pptx': 'fas fa-file-powerpoint text-warning fa-2x',
+        '.ppt': 'fas fa-file-powerpoint text-warning fa-2x',
+        '.xlsx': 'fas fa-file-excel text-success fa-2x',
+        '.xls': 'fas fa-file-excel text-success fa-2x',
+        '.md': 'fab fa-markdown text-primary fa-2x',
+        '.txt': 'fas fa-file-alt text-secondary fa-2x',
+        '.jpg': 'fas fa-file-image text-info fa-2x',
+        '.jpeg': 'fas fa-file-image text-info fa-2x',
+        '.png': 'fas fa-file-image text-info fa-2x',
+        '.mp3': 'fas fa-file-audio text-purple fa-2x',
+        '.wav': 'fas fa-file-audio text-purple fa-2x',
+        '.mp4': 'fas fa-file-video text-danger fa-2x',
+        '.mov': 'fas fa-file-video text-danger fa-2x'
+    };
+    
+    return icons[extension] || 'fas fa-file text-muted fa-2x';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    if (!selectedFile) {
+        showAlert('Please select a file to parse.', 'warning');
+        return;
+    }
+    
+    // Validate formats
+    const formats = Array.from(document.querySelectorAll('input[name="formats"]:checked'))
+                          .map(cb => cb.value);
+    
+    if (formats.length === 0) {
+        showAlert('Please select at least one output format.', 'warning');
+        return;
+    }
+    
+    // Show loading modal
+    loadingModal.show();
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    
+    formats.forEach(format => {
+        formData.append('formats', format);
+    });
+    
+    if (document.getElementById('extractMetadata').checked) {
+        formData.append('extract_metadata', 'true');
+    }
+    
+    if (document.getElementById('preserveFormatting').checked) {
+        formData.append('preserve_formatting', 'true');
+    }
+    
+    const courseCode = document.getElementById('courseCode').value.trim();
+    if (courseCode) {
+        formData.append('course_code', courseCode);
+    }
+    
+    const topic = document.getElementById('topic').value.trim();
+    if (topic) {
+        formData.append('topic', topic);
+    }
+    
+    // Submit to server
+    fetch('/parse', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingModal.hide();
+        
+        if (data.success) {
+            displayResults(data);
+            showAlert('Document parsed successfully!', 'success');
+        } else {
+            showAlert(`Error: ${data.error}`, 'danger');
+        }
+    })
+    .catch(error => {
+        loadingModal.hide();
+        showAlert(`Network error: ${error.message}`, 'danger');
+    });
+}
+
+function displayResults(data) {
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsContent = document.getElementById('resultsContent');
+    
+    let html = `
+        <div class="mb-3">
+            <h5><i class="fas fa-file"></i> ${selectedFile.name}</h5>
+            <p class="text-muted">Parsed to ${Object.keys(data.results).join(', ')} format(s)</p>
+        </div>
+    `;
+    
+    // Display results for each format
+    for (const [format, result] of Object.entries(data.results)) {
+        html += `
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                        <i class="fas fa-${format === 'markdown' ? 'fab fa-markdown' : 'file-code'}"></i> 
+                        ${format.charAt(0).toUpperCase() + format.slice(1)} Output
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="downloadResult('${format}', \`${btoa(result.content)}\`)">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Content Preview:</strong>
+                        <pre class="bg-light p-3 mt-2" style="max-height: 200px; overflow-y: auto;"><code>${escapeHtml(result.content.substring(0, 500))}${result.content.length > 500 ? '...' : ''}</code></pre>
+                    </div>
+                    
+                    ${result.metadata ? `
+                    <div>
+                        <strong>Metadata:</strong>
+                        <ul class="list-unstyled mt-2">
+                            ${Object.entries(result.metadata).map(([key, value]) => 
+                                `<li><strong>${key}:</strong> ${value}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Add sync option
+    html += `
+        <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-success" onclick="syncResults('${data.file_path}')">
+                <i class="fas fa-sync"></i> Sync to Repository
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearResults()">
+                <i class="fas fa-times"></i> Clear Results
+            </button>
+        </div>
+    `;
+    
+    resultsContent.innerHTML = html;
+    resultsSection.style.display = 'block';
+    
+    // Scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadResult(format, encodedContent) {
+    const content = atob(encodedContent);
+    const extension = format === 'markdown' ? 'md' : 'tex';
+    const filename = `${selectedFile.name.split('.')[0]}.${extension}`;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function syncResults(filePath) {
+    // This would integrate with the sync functionality
+    showAlert('Sync functionality coming soon!', 'info');
+}
+
+function clearResults() {
+    document.getElementById('resultsSection').style.display = 'none';
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

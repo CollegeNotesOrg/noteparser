@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteParser Dashboard{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --background-color: #ecf0f1;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            min-height: calc(100vh - 56px);
+            padding: 1rem 0;
+        }
+        
+        .sidebar .nav-link {
+            color: #bdc3c7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            margin: 0.25rem 0;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .main-content {
+            padding: 2rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 500;
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .file-icon {
+            font-size: 1.2em;
+            margin-right: 0.5rem;
+        }
+        
+        .course-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8em;
+        }
+        
+        .search-box {
+            border-radius: 2rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #ddd;
+        }
+        
+        .search-box:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, var(--secondary-color), #3498db);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .alert-custom {
+            border-left: 4px solid;
+            border-radius: 0.25rem;
+        }
+        
+        .alert-info.alert-custom {
+            border-left-color: var(--secondary-color);
+        }
+        
+        .alert-success.alert-custom {
+            border-left-color: var(--success-color);
+        }
+        
+        .alert-danger.alert-custom {
+            border-left-color: var(--accent-color);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-book-open"></i> NoteParser
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                       data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> Dashboard
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a class="dropdown-item" href="/parse"><i class="fas fa-upload"></i> Parse Files</a></li>
+                        <li><a class="dropdown-item" href="/api/plugins"><i class="fas fa-plug"></i> Plugins</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="refreshIndex()">
+                            <i class="fas fa-sync"></i> Refresh Index</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 px-0">
+                <div class="sidebar">
+                    <nav class="nav nav-pills flex-column">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="/">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link {% if request.endpoint == 'parse_file' %}active{% endif %}" href="/parse">
+                            <i class="fas fa-file-upload"></i> Parse Files
+                        </a>
+                        
+                        {% if repositories %}
+                        <hr style="border-color: #34495e;">
+                        <small class="text-muted px-3">REPOSITORIES</small>
+                        {% for repo in repositories %}
+                        <a class="nav-link" href="/browse/{{ repo }}">
+                            <i class="fas fa-folder"></i> {{ repo }}
+                        </a>
+                        {% endfor %}
+                        {% endif %}
+                        
+                        <hr style="border-color: #34495e;">
+                        <a class="nav-link" href="#" onclick="showPluginModal()">
+                            <i class="fas fa-plug"></i> Manage Plugins
+                        </a>
+                        <a class="nav-link" href="#" onclick="showSyncModal()">
+                            <i class="fas fa-sync-alt"></i> Sync Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <div class="main-content">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-custom alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plugin Management Modal -->
+    <div class="modal fade" id="pluginModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Plugin Management</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pluginList">Loading plugins...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Utility functions
+        function showLoading() {
+            document.querySelector('.loading-spinner').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+        
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-custom alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.main-content');
+            container.insertBefore(alertDiv, container.firstChild);
+        }
+        
+        // Plugin management
+        function showPluginModal() {
+            fetch('/api/plugins')
+                .then(response => response.json())
+                .then(data => {
+                    const pluginList = document.getElementById('pluginList');
+                    if (data.plugins && data.plugins.length > 0) {
+                        pluginList.innerHTML = data.plugins.map(plugin => `
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">${plugin.name} v${plugin.version}</h6>
+                                            <small class="text-muted">${plugin.description}</small>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   ${plugin.enabled ? 'checked' : ''} 
+                                                   onchange="togglePlugin('${plugin.name}', this.checked)">
+                                        </div>
+                                    </div>
+                                    ${plugin.course_types.length > 0 ? `
+                                        <small class="text-muted">
+                                            <i class="fas fa-tags"></i> ${plugin.course_types.join(', ')}
+                                        </small>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        pluginList.innerHTML = '<p class="text-muted">No plugins available.</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('pluginList').innerHTML = 
+                        '<p class="text-danger">Error loading plugins: ' + error.message + '</p>';
+                });
+            
+            new bootstrap.Modal(document.getElementById('pluginModal')).show();
+        }
+        
+        function togglePlugin(pluginName, enabled) {
+            fetch(`/api/plugins/${pluginName}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: enabled ? 'enable' : 'disable'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(`Plugin ${pluginName} ${data.action}d successfully`, 'success');
+                } else {
+                    showAlert(`Error: ${data.error}`, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert(`Network error: ${error.message}`, 'danger');
+            });
+        }
+        
+        function refreshIndex() {
+            showLoading();
+            fetch('/api/index/refresh', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                showAlert('Organization index refreshed successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            })
+            .catch(error => {
+                hideLoading();
+                showAlert(`Error refreshing index: ${error.message}`, 'danger');
+            });
+        }
+        
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (!query.trim()) return;
+            
+            showLoading();
+            fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    displaySearchResults(data.results);
+                })
+                .catch(error => {
+                    hideLoading();
+                    showAlert(`Search error: ${error.message}`, 'danger');
+                });
+        }
+        
+        function displaySearchResults(results) {
+            const resultsContainer = document.getElementById('searchResults');
+            if (!resultsContainer) return;
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-muted">No results found.</p>';
+                return;
+            }
+            
+            resultsContainer.innerHTML = results.map(result => `
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <a href="/view/${encodeURIComponent(result.path)}" class="text-decoration-none">
+                                <i class="fas fa-file file-icon"></i>
+                                ${result.path.split('/').pop()}
+                            </a>
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <span class="course-badge">${result.course || 'Unknown'}</span>
+                            <small class="text-muted">${result.repository}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize search on Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

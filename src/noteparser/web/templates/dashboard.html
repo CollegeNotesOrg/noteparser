@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}NoteParser Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    <div class="d-flex gap-2">
+        <a href="/parse" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Parse New Document
+        </a>
+        <button onclick="refreshIndex()" class="btn btn-outline-secondary">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="input-group">
+            <input type="text" id="searchInput" class="form-control search-box" 
+                   placeholder="Search across all notes..." onkeypress="handleSearchKeyPress(event)">
+            <button class="btn btn-primary" onclick="performSearch()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results (initially hidden) -->
+<div id="searchResultsSection" class="row mb-4" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span><i class="fas fa-search"></i> Search Results</span>
+                <button type="button" class="btn-close btn-close-white" onclick="clearSearch()"></button>
+            </div>
+            <div class="card-body">
+                <div id="searchResults"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Processing request...</p>
+</div>
+
+<!-- Statistics Cards -->
+{% if index %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ index.metadata.total_files }}</div>
+                    <div>Total Files</div>
+                </div>
+                <div class="fs-1 opacity-50">
+                    <i class="fas fa-file"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ index.courses | length }}</div>
+                    <div>Courses</div>
+                </div>
+                <div class="fs-1 opacity-50">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ index.metadata.repositories | length }}</div>
+                    <div>Repositories</div>
+                </div>
+                <div class="fs-1 opacity-50">
+                    <i class="fas fa-folder"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ index.topics | length }}</div>
+                    <div>Topics</div>
+                </div>
+                <div class="fs-1 opacity-50">
+                    <i class="fas fa-tags"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Recent Files -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clock"></i> Recent Files
+            </div>
+            <div class="card-body">
+                {% if index and index.files %}
+                    {% for file in index.files[:10] %}
+                    <div class="d-flex align-items-center mb-2 p-2 border-bottom">
+                        <div class="file-icon">
+                            {% if file.format == '.md' %}
+                                <i class="fab fa-markdown text-primary"></i>
+                            {% elif file.format == '.pdf' %}
+                                <i class="fas fa-file-pdf text-danger"></i>
+                            {% elif file.format == '.tex' %}
+                                <i class="fas fa-file-code text-success"></i>
+                            {% else %}
+                                <i class="fas fa-file text-muted"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">
+                                <a href="/view/{{ file.path | urlencode }}" class="text-decoration-none">
+                                    {{ file.path.split('/')[-1] }}
+                                </a>
+                            </div>
+                            <small class="text-muted">
+                                {% if file.course %}
+                                    <span class="course-badge">{{ file.course }}</span>
+                                {% endif %}
+                                {{ file.repository }}
+                            </small>
+                        </div>
+                        <div class="text-muted small">
+                            {{ moment(file.modified).fromNow() if moment else 'Recent' }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if index.files | length > 10 %}
+                    <div class="text-center mt-3">
+                        <a href="/browse" class="btn btn-sm btn-outline-primary">View All Files</a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">No files found. <a href="/parse">Parse your first document</a> to get started!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Courses -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-graduation-cap"></i> Courses
+            </div>
+            <div class="card-body">
+                {% if index and index.courses %}
+                    {% for course, files in index.courses.items() %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                        <div>
+                            <div class="fw-bold">{{ course }}</div>
+                            <small class="text-muted">{{ files | length }} files</small>
+                        </div>
+                        <div>
+                            <a href="/browse?course={{ course | urlencode }}" class="btn btn-sm btn-outline-primary">
+                                View <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No courses found yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if repositories %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-folder-open"></i> Repositories
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for repo in repositories %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-folder fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="card-title">{{ repo }}</h5>
+                                <p class="card-text text-muted">
+                                    {% set repo_files = index.files | selectattr('repository', 'equalto', repo) | list if index else [] %}
+                                    {{ repo_files | length }} files
+                                </p>
+                                <a href="/browse/{{ repo }}" class="btn btn-primary">
+                                    <i class="fas fa-folder-open"></i> Browse
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="/parse" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-file-upload d-block mb-2"></i>
+                            Parse Document
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button onclick="showPluginModal()" class="btn btn-outline-secondary btn-lg w-100">
+                            <i class="fas fa-plug d-block mb-2"></i>
+                            Manage Plugins
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button onclick="refreshIndex()" class="btn btn-outline-info btn-lg w-100">
+                            <i class="fas fa-sync d-block mb-2"></i>
+                            Refresh Index
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="https://github.com/PennStateNotes/noteparser" target="_blank" 
+                           class="btn btn-outline-dark btn-lg w-100">
+                            <i class="fab fa-github d-block mb-2"></i>
+                            Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        performSearch();
+    }
+}
+
+function performSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) {
+        clearSearch();
+        return;
+    }
+    
+    showLoading();
+    fetch(`/api/search?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            displaySearchResults(data.results, query);
+        })
+        .catch(error => {
+            hideLoading();
+            showAlert(`Search error: ${error.message}`, 'danger');
+        });
+}
+
+function displaySearchResults(results, query) {
+    const resultsSection = document.getElementById('searchResultsSection');
+    const resultsContainer = document.getElementById('searchResults');
+    
+    resultsSection.style.display = 'block';
+    
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>No results found</h5>
+                <p class="text-muted">No files match your search for "${query}"</p>
+            </div>
+        `;
+        return;
+    }
+    
+    resultsContainer.innerHTML = `
+        <div class="mb-3">
+            <small class="text-muted">Found ${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"</small>
+        </div>
+        ${results.map(result => `
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="file-icon">
+                            ${getFileIcon(result.format)}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">
+                                <a href="/view/${encodeURIComponent(result.path)}" class="text-decoration-none">
+                                    ${result.path.split('/').pop()}
+                                </a>
+                            </h6>
+                            <div class="d-flex gap-2 align-items-center">
+                                ${result.course ? `<span class="course-badge">${result.course}</span>` : ''}
+                                <small class="text-muted">
+                                    <i class="fas fa-folder"></i> ${result.repository}
+                                </small>
+                                ${result.topic ? `<small class="text-muted">• ${result.topic}</small>` : ''}
+                            </div>
+                        </div>
+                        <div class="text-muted">
+                            <small>${result.format}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('')}
+    `;
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResultsSection').style.display = 'none';
+}
+
+function getFileIcon(format) {
+    const icons = {
+        '.md': '<i class="fab fa-markdown text-primary"></i>',
+        '.pdf': '<i class="fas fa-file-pdf text-danger"></i>',
+        '.tex': '<i class="fas fa-file-code text-success"></i>',
+        '.docx': '<i class="fas fa-file-word text-primary"></i>',
+        '.doc': '<i class="fas fa-file-word text-primary"></i>',
+        '.pptx': '<i class="fas fa-file-powerpoint text-warning"></i>',
+        '.ppt': '<i class="fas fa-file-powerpoint text-warning"></i>',
+        '.xlsx': '<i class="fas fa-file-excel text-success"></i>',
+        '.xls': '<i class="fas fa-file-excel text-success"></i>',
+        '.txt': '<i class="fas fa-file-alt text-secondary"></i>',
+        '.jpg': '<i class="fas fa-file-image text-info"></i>',
+        '.jpeg': '<i class="fas fa-file-image text-info"></i>',
+        '.png': '<i class="fas fa-file-image text-info"></i>'
+    };
+    
+    return icons[format] || '<i class="fas fa-file text-muted"></i>';
+}
+
+// Auto-refresh every 5 minutes
+setInterval(() => {
+    console.log('Auto-refreshing dashboard data...');
+    // Silently refresh index without showing loading spinner
+    fetch('/api/index/refresh', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Dashboard data refreshed');
+        })
+        .catch(error => {
+            console.warn('Auto-refresh failed:', error);
+        });
+}, 5 * 60 * 1000); // 5 minutes
+</script>
+{% endblock %}

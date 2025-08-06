@@ -1,0 +1,188 @@
+# Sample NoteParser Organization Configuration
+# Save this as .noteparser-org.yml in your project root
+
+organization:
+  name: "my-university-notes"
+  base_path: "."
+  auto_discovery: true
+  description: "Personal academic note organization system"
+
+repositories:
+  # Main notes repository
+  study-notes:
+    type: "notes"
+    auto_sync: true
+    formats: ["markdown", "latex"]
+    description: "Primary repository for all course notes"
+    
+  # Parser engine repository  
+  noteparser:
+    type: "parser"
+    auto_sync: false
+    formats: ["markdown"]
+    description: "Document parsing and conversion engine"
+    
+  # Template repository
+  note-templates:
+    type: "templates"
+    auto_sync: false
+    formats: ["latex", "markdown"]
+    description: "Shared templates for consistent formatting"
+    
+  # Extensions repository
+  note-extensions:
+    type: "extensions"
+    auto_sync: false
+    formats: ["python"]
+    description: "Custom plugins and extensions"
+
+# Synchronization settings
+sync_settings:
+  auto_commit: true
+  commit_message_template: "📚 Auto-sync: {timestamp} - {file_count} files updated"
+  branch: "main"
+  push_on_sync: false  # Set to true for automatic pushing
+  ignore_patterns:
+    - "*.tmp"
+    - "*.log"
+    - ".DS_Store"
+    - "__pycache__"
+
+# Cross-reference detection
+cross_references:
+  enabled: true
+  similarity_threshold: 0.7  # Minimum similarity for cross-references
+  max_suggestions: 5
+  methods:
+    - "content_similarity"
+    - "keyword_matching" 
+    - "topic_correlation"
+
+# Plugin configuration
+plugins:
+  # Mathematics plugin
+  math_processor:
+    enabled: true
+    priority: 1
+    config:
+      equation_numbering: true
+      symbol_standardization: true
+      theorem_formatting: true
+      proof_highlighting: true
+      
+  # Computer Science plugin  
+  cs_processor:
+    enabled: true
+    priority: 2
+    config:
+      code_line_numbers: true
+      auto_language_detection: true
+      syntax_highlighting: true
+      complexity_analysis: true
+      
+  # Chemistry plugin (example of custom plugin)
+  chemistry_processor:
+    enabled: false  # Disabled by default
+    priority: 3
+    path: "plugins/chemistry_plugin.py"
+    config:
+      formula_formatting: true
+      reaction_equations: true
+      periodic_table_lookup: true
+
+# Course-specific settings
+courses:
+  # Computer Science courses
+  "CS*":
+    default_format: "markdown"
+    plugins: ["cs_processor"]
+    templates:
+      - "code_template.md"
+      - "algorithm_template.tex"
+      
+  # Mathematics courses  
+  "MATH*":
+    default_format: "latex"
+    plugins: ["math_processor"]
+    templates:
+      - "theorem_template.tex"
+      - "proof_template.tex"
+      
+  # Physics courses
+  "PHYS*":
+    default_format: "latex"
+    plugins: ["math_processor"]
+    templates:
+      - "lab_report_template.tex"
+      - "derivation_template.tex"
+
+# Output formatting
+formatting:
+  markdown:
+    # Markdown-specific options
+    table_of_contents: true
+    math_delimiters: "$$"
+    code_highlighting: true
+    
+  latex:
+    # LaTeX-specific options  
+    document_class: "article"
+    packages:
+      - "amsmath"
+      - "amsfonts"
+      - "graphicx"
+      - "hyperref"
+      - "listings"
+    font_size: "11pt"
+    paper_size: "a4paper"
+    margins: "1in"
+
+# Web dashboard settings
+web:
+  host: "127.0.0.1"
+  port: 5000
+  debug: false
+  theme: "academic"
+  features:
+    - "file_browser"
+    - "search"
+    - "plugin_manager"
+    - "sync_monitor"
+
+# Notification settings
+notifications:
+  enabled: true
+  methods:
+    - "console"  # Console output
+    # - "email"   # Email notifications (requires SMTP setup)
+    # - "slack"   # Slack webhook (requires webhook URL)
+  events:
+    - "parse_complete"
+    - "sync_complete"
+    - "error_occurred"
+
+# Backup settings
+backup:
+  enabled: true
+  frequency: "daily"  # daily, weekly, monthly
+  retention: 30  # days
+  location: "backups/"
+  compress: true
+
+# Advanced settings
+advanced:
+  # Processing limits
+  max_file_size: "50MB"
+  max_batch_files: 100
+  timeout_seconds: 300
+  
+  # Performance settings
+  parallel_processing: true
+  max_workers: 4
+  cache_enabled: true
+  cache_size: "100MB"
+  
+  # Logging
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "noteparser.log"
+  log_rotation: "daily"

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Error - NoteParser{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-triangle fa-4x text-warning"></i>
+                </div>
+                
+                <h2 class="text-danger mb-3">Oops! Something went wrong</h2>
+                
+                <div class="alert alert-danger alert-custom">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+                
+                <p class="text-muted mb-4">
+                    Don't worry, this happens sometimes. Here are a few things you can try:
+                </p>
+                
+                <div class="list-group list-group-flush mb-4">
+                    <div class="list-group-item border-0">
+                        <i class="fas fa-arrow-left text-primary me-2"></i>
+                        <a href="javascript:history.back()" class="text-decoration-none">Go back to the previous page</a>
+                    </div>
+                    <div class="list-group-item border-0">
+                        <i class="fas fa-home text-primary me-2"></i>
+                        <a href="/" class="text-decoration-none">Return to the dashboard</a>
+                    </div>
+                    <div class="list-group-item border-0">
+                        <i class="fas fa-sync text-primary me-2"></i>
+                        <a href="javascript:location.reload()" class="text-decoration-none">Refresh this page</a>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted">
+                If this problem persists, please check the 
+                <a href="https://github.com/PennStateNotes/noteparser/issues" target="_blank" class="text-decoration-none">
+                    issue tracker <i class="fas fa-external-link-alt"></i>
+                </a>
+                or create a new issue.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
