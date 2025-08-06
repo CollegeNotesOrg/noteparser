@@ -58,6 +58,9 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          # Enable Pages if not already configured
+          enablement: true
 
       - name: Build with MkDocs
         run: |
