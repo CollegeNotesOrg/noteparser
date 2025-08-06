@@ -1,4 +1,4 @@
-# NoteParser API Documentation
+# API Reference
 
 This document provides comprehensive API documentation for the NoteParser system, including Python API, REST API, and CLI interfaces.
 
@@ -687,9 +687,9 @@ See the `examples/` directory for complete usage examples:
 
 For additional help:
 
-- [GitHub Issues](https://github.com/PennStateNotes/noteparser/issues)
-- [Discussions](https://github.com/PennStateNotes/noteparser/discussions)
-- [Documentation](https://noteparser.readthedocs.io/)
+- [GitHub Issues](https://github.com/CollegeNotesOrg/noteparser/issues)
+- [Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)
+- [Documentation](https://collegenotesorg.github.io/noteparser/)
 
 ---
 

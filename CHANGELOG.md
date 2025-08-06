@@ -40,9 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Flask for web interface
 - Various academic processing libraries
 
-[1.0.0]: https://github.com/PennStateNotes/noteparser/releases/tag/v1.0.0
+[1.0.0]: https://github.com/CollegeNotesOrg/noteparser/releases/tag/v1.0.0
 
 ---
 
 **Maintained by**: Suryansh Sijwali ([@SuryanshSS1011](https://github.com/SuryanshSS1011))  
-**Organization**: [PennStateNotes](https://github.com/PennStateNotes)
+**Organization**: [CollegeNotesOrg](https://github.com/CollegeNotesOrg)

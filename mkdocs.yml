@@ -1,0 +1,128 @@
+site_name: NoteParser Documentation
+site_description: A comprehensive document parser for converting academic materials to Markdown and LaTeX
+site_author: Suryansh Sijwali
+site_url: https://collegenotesorg.github.io/noteparser/
+
+repo_name: CollegeNotesOrg/noteparser
+repo_url: https://github.com/CollegeNotesOrg/noteparser
+edit_uri: edit/master/docs/
+
+copyright: Copyright &copy; 2025 Suryansh Sijwali
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - tables
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CollegeNotesOrg/noteparser
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/noteparser/
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: quickstart.md
+    - Configuration: configuration.md
+  - User Guide:
+    - Command Line Interface: cli.md
+    - Python API: api.md
+    - Web Dashboard: web.md
+    - Plugin System: plugins.md
+  - Advanced:
+    - Organization Integration: organization.md
+    - GitHub Actions: github-actions.md
+    - Plugin Development: plugin-development.md
+  - Examples:
+    - Basic Usage: examples/basic.md
+    - Batch Processing: examples/batch.md
+    - Custom Plugins: examples/plugins.md
+  - Reference:
+    - API Reference: api-reference.md
+    - CLI Reference: cli-reference.md
+    - Configuration Reference: config-reference.md
+  - Contributing:
+    - Development Setup: contributing/setup.md
+    - Guidelines: contributing/guidelines.md
+    - Changelog: CHANGELOG.md

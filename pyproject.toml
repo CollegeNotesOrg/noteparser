@@ -64,8 +64,8 @@ dev = [
 noteparser = "noteparser.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/PennStateNotes/noteparser"
-Issues = "https://github.com/PennStateNotes/noteparser/issues"
+Homepage = "https://github.com/CollegeNotesOrg/noteparser"
+Issues = "https://github.com/CollegeNotesOrg/noteparser/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

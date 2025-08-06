@@ -49,7 +49,7 @@ NoteParser is a powerful academic document processing system built on top of Mic
 pip install noteparser
 
 # Or install from source with pip
-git clone https://github.com/PennStateNotes/noteparser.git
+git clone https://github.com/CollegeNotesOrg/noteparser.git
 cd noteparser
 pip install -e .
 
@@ -64,7 +64,7 @@ pip install -e .[all]
 
 ```bash
 # Clone the repository
-git clone https://github.com/PennStateNotes/noteparser.git
+git clone https://github.com/CollegeNotesOrg/noteparser.git
 cd noteparser
 
 # Create a virtual environment (recommended)
@@ -333,7 +333,7 @@ noteparser web  # Browse and cross-reference with existing notes
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/PennStateNotes/noteparser.git
+git clone https://github.com/CollegeNotesOrg/noteparser.git
 cd noteparser
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -409,9 +409,9 @@ See `requirements.txt` for the complete list with version specifications.
 
 ## 📞 Support
 
-- **Documentation**: [Full Documentation](docs/)
-- **Issues**: [GitHub Issues](https://github.com/PennStateNotes/noteparser/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/PennStateNotes/noteparser/discussions)
+- **Documentation**: [https://collegenotesorg.github.io/noteparser/](https://collegenotesorg.github.io/noteparser/)
+- **Issues**: [GitHub Issues](https://github.com/CollegeNotesOrg/noteparser/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)
 
 ---
 
@@ -423,4 +423,4 @@ See `requirements.txt` for the complete list with version specifications.
 
 **Author**: Suryansh Sijwali  
 **GitHub**: [@SuryanshSS1011](https://github.com/SuryanshSS1011)  
-**Organization**: [PennStateNotes](https://github.com/PennStateNotes)
+**Organization**: [CollegeNotesOrg](https://github.com/CollegeNotesOrg)
