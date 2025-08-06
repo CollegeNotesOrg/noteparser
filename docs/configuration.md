@@ -452,10 +452,10 @@ noteparser config validate
 
 ### Schema Changes
 
-Check the [changelog](CHANGELOG.md) for configuration schema changes between versions.
+Check the changelog for configuration schema changes between versions.
 
 ## What's Next?
 
-- [Plugin System](plugins.md) - Learn about available plugins
-- [CLI Reference](cli-reference.md) - Complete command reference
-- [Organization Integration](organization.md) - Multi-repository setup
+- [CLI Interface](cli.md) - Learn about command-line usage
+- [API Reference](api-reference.md) - Complete API documentation
+- [Quick Start](quickstart.md) - Get started quickly

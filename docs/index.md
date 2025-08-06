@@ -166,8 +166,8 @@ Join our growing community of students and educators:
 
 - **💬 [GitHub Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)** - Ask questions and share ideas
 - **🐛 [Report Issues](https://github.com/CollegeNotesOrg/noteparser/issues)** - Help us improve
-- **📚 [Examples](examples/basic.md)** - Learn from real-world usage
-- **🔌 [Plugin Development](plugin-development.md)** - Extend NoteParser
+- **📚 [API Reference](api-reference.md)** - Complete API documentation
+- **⚙️ [Configuration](configuration.md)** - Customize your setup
 
 ---
 

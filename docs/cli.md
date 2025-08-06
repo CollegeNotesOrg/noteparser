@@ -418,7 +418,6 @@ noteparser batch documents/
 
 ## What's Next?
 
-- [Python API](api.md) - Use NoteParser in Python scripts
-- [Web Dashboard](web.md) - Explore the web interface
+- [API Reference](api-reference.md) - Complete API documentation
 - [Configuration](configuration.md) - Customize your setup
-- [Examples](examples/basic.md) - See real-world usage patterns
+- [Quick Start](quickstart.md) - Get up and running quickly

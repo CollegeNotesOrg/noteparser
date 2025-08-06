@@ -274,12 +274,10 @@ jobs:
 Now that you're up and running:
 
 - [📖 Learn the CLI](cli.md) - Master the command-line interface
-- [🐍 Explore the API](api.md) - Use NoteParser in Python scripts  
-- [🔌 Try Plugins](plugins.md) - Enhance processing for specific subjects
+- [📚 API Reference](api-reference.md) - Complete API documentation
 - [⚙️ Advanced Configuration](configuration.md) - Customize your workflow
 
 ## Need Help?
 
-- **📚 [Examples](examples/basic.md)** - See real-world usage examples
 - **💬 [Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)** - Ask questions
 - **🐛 [Issues](https://github.com/CollegeNotesOrg/noteparser/issues)** - Report problems
