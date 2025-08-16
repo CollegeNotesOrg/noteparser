@@ -42,6 +42,14 @@ Perfect for course and study group organization:
 - **Automated GitHub Actions** for continuous processing
 - **Searchable indexing** across all notes
 
+### 🤖 **AI-Powered Intelligence**
+Advanced AI services for enhanced learning:
+
+- **RagFlow**: Semantic search and document insights using RAG
+- **DeepWiki**: AI-powered knowledge graphs and wiki organization
+- **Natural language queries** across your entire document collection
+- **Automatic concept linking** and knowledge organization
+
 ### 🖥️ **Multiple Interfaces**
 Use NoteParser your way:
 

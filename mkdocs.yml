@@ -107,5 +107,6 @@ nav:
     - Configuration: configuration.md
   - User Guide:
     - Command Line Interface: cli.md
+    - AI Integration: ai-integration.md
   - Reference:
     - API Reference: api-reference.md
