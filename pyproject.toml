@@ -48,8 +48,13 @@ ocr = [
     "pytesseract>=0.3.10",
     "pillow>=10.0.0",
 ]
+ai = [
+    "httpx>=0.25.0",
+    "tenacity>=8.2.0",
+    "aiohttp>=3.9.0",
+]
 all = [
-    "noteparser[pdf,office,ocr]",
+    "noteparser[pdf,office,ocr,ai]",
 ]
 dev = [
     "pytest>=7.0",

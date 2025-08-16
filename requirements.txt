@@ -43,3 +43,31 @@ requests>=2.31.0  # Web fetching capabilities
 # For production deployment
 gunicorn>=21.2.0  # WSGI server
 python-dotenv>=1.0.0  # Environment variable management
+
+# AI/ML Integration dependencies
+aiohttp>=3.9.0  # Async HTTP client
+asyncio>=3.4.3  # Async support
+sentence-transformers>=2.2.0  # Embeddings for RAG
+faiss-cpu>=1.7.4  # Vector similarity search
+tiktoken>=0.5.0  # Token counting
+langchain>=0.1.0  # LLM orchestration (optional)
+openai>=1.0.0  # OpenAI API (optional)
+
+# Database and caching
+sqlalchemy>=2.0.0  # ORM
+alembic>=1.12.0  # Database migrations
+redis>=5.0.0  # Redis client
+psycopg2-binary>=2.9.0  # PostgreSQL adapter
+elasticsearch>=8.11.0  # Elasticsearch client
+
+# Monitoring and logging
+prometheus-client>=0.19.0  # Metrics export
+opentelemetry-api>=1.20.0  # Tracing
+opentelemetry-sdk>=1.20.0  # Tracing SDK
+opentelemetry-instrumentation-flask>=0.42b0  # Flask instrumentation
+structlog>=23.2.0  # Structured logging
+
+# API and serialization
+pydantic>=2.5.0  # Data validation
+marshmallow>=3.20.0  # Object serialization
+fastapi>=0.104.0  # Alternative API framework (optional)
