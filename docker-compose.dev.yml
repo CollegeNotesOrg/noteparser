@@ -1,0 +1,67 @@
+version: '3.8'
+
+# Development-specific overrides
+services:
+  noteparser:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - NOTEPARSER_ENV=development
+      - FLASK_DEBUG=1
+      - FLASK_ENV=development
+    volumes:
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./examples:/app/examples:rw
+      - ./docs:/app/docs:rw
+    command: ["python", "-m", "flask", "run", "--host", "0.0.0.0", "--port", "5000", "--reload"]
+
+  # Development database with initial seed data
+  postgres:
+    environment:
+      - POSTGRES_USER=noteparser
+      - POSTGRES_PASSWORD=noteparser
+      - POSTGRES_DB=noteparser_dev
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+
+  # Redis with persistence disabled for dev
+  redis:
+    command: redis-server --save ""
+
+  # Simplified Elasticsearch for dev
+  elasticsearch:
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  # Additional dev tools
+  adminer:
+    image: adminer:latest
+    container_name: noteparser-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - noteparser-network
+    restart: unless-stopped
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: noteparser-redisinsight
+    ports:
+      - "8002:8001"
+    volumes:
+      - redisinsight-data:/db
+    networks:
+      - noteparser-network
+    restart: unless-stopped
+
+volumes:
+  redisinsight-data:

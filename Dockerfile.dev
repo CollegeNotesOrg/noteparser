@@ -1,0 +1,53 @@
+# Development Dockerfile with hot reload and debugging
+FROM python:3.11-slim
+
+# Install system dependencies including development tools
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    git \
+    vim \
+    curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    ffmpeg \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt requirements-dev.txt ./
+
+# Install all dependencies including dev tools
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
+
+# Install additional debugging tools
+RUN pip install --no-cache-dir \
+    ipdb \
+    flask-debugtoolbar \
+    python-dotenv \
+    watchdog
+
+# Copy application code
+COPY . .
+
+# Install package in editable mode
+RUN pip install -e .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=noteparser.web.app:create_app
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+
+# Create directories for uploads and data
+RUN mkdir -p /app/uploads /app/data
+
+# Expose ports
+EXPOSE 5000 5678
+
+# Default command with hot reload
+CMD ["python", "-m", "flask", "run", "--host", "0.0.0.0", "--port", "5000", "--reload", "--debugger"]
