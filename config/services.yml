@@ -1,0 +1,223 @@
+# NoteParser AI Services Configuration
+
+# Service configurations
+services:
+  # RagFlow - RAG-based insights and Q&A
+  ragflow:
+    enabled: true
+    host: localhost
+    port: 8010
+    config:
+      embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+      vector_db_type: "faiss"  # Options: faiss, pinecone, weaviate, qdrant
+      chunk_size: 512
+      chunk_overlap: 50
+      top_k: 5
+      temperature: 0.7
+      max_tokens: 2048
+    
+  # DeepWiki - AI-powered wiki system
+  deepwiki:
+    enabled: true
+    host: localhost
+    port: 8011
+    config:
+      wiki_db_path: "/data/wiki.db"
+      ai_model: "gpt-3.5-turbo"
+      max_article_length: 10000
+      auto_link: true
+      versioning: true
+      similarity_threshold: 0.7
+  
+  # Dolphin - Advanced PDF processing (Phase 2)
+  dolphin:
+    enabled: false
+    host: dolphin
+    port: 8012
+    config:
+      model: "bytedance/dolphin"
+      use_gpu: false
+      batch_size: 1
+      max_pages: 100
+  
+  # LangExtract - NLP and entity extraction (Phase 2)
+  langextract:
+    enabled: false
+    host: langextract
+    port: 8013
+    config:
+      languages: ["en", "es", "fr", "de"]
+      extract_entities: true
+      extract_relations: true
+      extract_keywords: true
+  
+  # WrenAI - Natural language queries (Phase 3)
+  wrenai:
+    enabled: false
+    host: wrenai
+    port: 8014
+    config:
+      model: "wren-base"
+      enable_sql_generation: true
+      enable_analytics: true
+  
+  # SmolDocling - VLLM OCR (Phase 3)
+  smoldocling:
+    enabled: false
+    host: smoldocling
+    port: 8015
+    config:
+      model: "smol-docling-vllm"
+      use_gpu: false
+      languages: ["en"]
+  
+  # AgenticDoc - Alternative parser (Phase 4)
+  agenticdoc:
+    enabled: false
+    host: agenticdoc
+    port: 8016
+    config:
+      parser_type: "agentic"
+      fallback: true
+
+# Database configurations
+database:
+  postgres:
+    host: postgres
+    port: 5432
+    database: noteparser
+    user: noteparser
+    password: noteparser
+    pool_size: 10
+    max_overflow: 20
+    
+  redis:
+    host: redis
+    port: 6379
+    db: 0
+    password: null
+    decode_responses: true
+    max_connections: 50
+    
+  elasticsearch:
+    host: elasticsearch
+    port: 9200
+    index_prefix: "noteparser"
+    number_of_shards: 1
+    number_of_replicas: 0
+
+# API Gateway configuration
+gateway:
+  kong:
+    admin_url: "http://kong:8001"
+    proxy_url: "http://kong:8000"
+    rate_limit:
+      minute: 60
+      hour: 1000
+    cors:
+      enabled: true
+      origins: ["*"]
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+
+# Monitoring configuration
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+    scrape_interval: 15s
+    
+  grafana:
+    enabled: true
+    port: 3000
+    admin_user: admin
+    admin_password: admin
+    
+  jaeger:
+    enabled: true
+    port: 16686
+    sampling_rate: 1.0
+    
+  logging:
+    level: INFO
+    format: json
+    output: stdout
+    file_path: /var/log/noteparser/app.log
+
+# Feature flags
+features:
+  enable_rag: true
+  enable_wiki: true
+  enable_ocr: true
+  enable_audio_transcription: true
+  enable_video_processing: false
+  enable_real_time_collaboration: false
+  enable_version_control: true
+  enable_cross_references: true
+  enable_ai_suggestions: true
+  enable_automatic_tagging: true
+
+# Performance settings
+performance:
+  max_workers: 4
+  max_file_size_mb: 100
+  request_timeout_seconds: 300
+  cache_ttl_seconds: 3600
+  batch_processing:
+    enabled: true
+    batch_size: 10
+    max_concurrent_batches: 2
+
+# Security settings
+security:
+  enable_authentication: false
+  enable_authorization: false
+  jwt_secret: "change-this-in-production"
+  api_key_header: "X-API-Key"
+  allowed_file_types:
+    - pdf
+    - docx
+    - pptx
+    - xlsx
+    - txt
+    - md
+    - html
+    - epub
+  max_upload_size_mb: 50
+
+# Integration settings
+integrations:
+  github:
+    enabled: false
+    token: "${GITHUB_TOKEN}"
+    organization: "CollegeNotesOrg"
+    
+  openai:
+    enabled: false
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-3.5-turbo"
+    max_tokens: 2048
+    
+  huggingface:
+    enabled: false
+    token: "${HUGGINGFACE_TOKEN}"
+    
+  google_cloud:
+    enabled: false
+    project_id: "${GCP_PROJECT_ID}"
+    credentials_path: "${GCP_CREDENTIALS_PATH}"
+
+# Development settings
+development:
+  debug: true
+  hot_reload: true
+  mock_services: false
+  sample_data: true
+  verbose_logging: true
+
+# Production settings
+production:
+  debug: false
+  hot_reload: false
+  mock_services: false
+  sample_data: false
+  verbose_logging: false

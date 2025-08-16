@@ -1,0 +1,218 @@
+_format_version: "3.0"
+
+services:
+  # Core noteparser service
+  - name: noteparser-core
+    url: http://noteparser:5000
+    protocol: http
+    host: noteparser
+    port: 5000
+    path: /
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: noteparser-route
+        paths:
+          - /api/v1/parse
+        strip_path: false
+        preserve_host: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+
+  # RagFlow service
+  - name: ragflow-service
+    url: http://ragflow:8010
+    protocol: http
+    host: ragflow
+    port: 8010
+    path: /
+    retries: 3
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    routes:
+      - name: ragflow-route
+        paths:
+          - /api/v1/rag
+        strip_path: true
+        preserve_host: true
+        methods:
+          - GET
+          - POST
+
+  # DeepWiki service
+  - name: deepwiki-service
+    url: http://deepwiki:8011
+    protocol: http
+    host: deepwiki
+    port: 8011
+    path: /
+    retries: 3
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    routes:
+      - name: deepwiki-route
+        paths:
+          - /api/v1/wiki
+        strip_path: true
+        preserve_host: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+
+  # Health check endpoint
+  - name: health-check
+    url: http://noteparser:5000/health
+    protocol: http
+    host: noteparser
+    port: 5000
+    path: /health
+    routes:
+      - name: health-route
+        paths:
+          - /health
+        strip_path: false
+        methods:
+          - GET
+
+plugins:
+  # Rate limiting
+  - name: rate-limiting
+    config:
+      minute: 60
+      hour: 1000
+      policy: local
+
+  # CORS
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - X-Auth-Token
+        - Authorization
+      exposed_headers:
+        - X-Auth-Token
+      credentials: true
+      max_age: 3600
+
+  # Request/Response logging
+  - name: file-log
+    config:
+      path: /var/log/kong/requests.log
+      reopen: true
+
+  # JWT Authentication (optional)
+  - name: jwt
+    enabled: false
+    config:
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+
+  # Request size limiting
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 100  # MB
+      size_unit: megabytes
+
+  # Response transformer
+  - name: response-transformer
+    config:
+      add:
+        headers:
+          - X-Service-Name:noteparser
+          - X-API-Version:v1
+      remove:
+        headers:
+          - Server
+          - X-Powered-By
+
+  # Prometheus metrics
+  - name: prometheus
+    config:
+      per_consumer: false
+      status_code_metrics: true
+      latency_metrics: true
+      bandwidth_metrics: true
+      upstream_health_metrics: true
+
+upstreams:
+  # Load balancing for noteparser service
+  - name: noteparser-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        timeout: 1
+        concurrency: 10
+        healthy:
+          interval: 10
+          successes: 3
+        unhealthy:
+          interval: 5
+          http_failures: 3
+          tcp_failures: 3
+          timeouts: 3
+    targets:
+      - target: noteparser:5000
+        weight: 100
+
+  # Load balancing for RagFlow service
+  - name: ragflow-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        timeout: 1
+        concurrency: 10
+        healthy:
+          interval: 10
+          successes: 3
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: ragflow:8010
+        weight: 100
+
+  # Load balancing for DeepWiki service
+  - name: deepwiki-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        timeout: 1
+        concurrency: 10
+        healthy:
+          interval: 10
+          successes: 3
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: deepwiki:8011
+        weight: 100
