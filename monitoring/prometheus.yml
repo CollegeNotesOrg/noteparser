@@ -1,0 +1,90 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'noteparser-monitor'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # NoteParser core service
+  - job_name: 'noteparser'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['noteparser:5000']
+        labels:
+          service: 'noteparser-core'
+
+  # Kong API Gateway
+  - job_name: 'kong'
+    static_configs:
+      - targets: ['kong:8001']
+        labels:
+          service: 'kong-gateway'
+
+  # PostgreSQL exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres-db'
+
+  # Redis exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis-cache'
+
+  # Elasticsearch exporter
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch-exporter:9114']
+        labels:
+          service: 'elasticsearch'
+
+  # RagFlow service
+  - job_name: 'ragflow'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ragflow:8010']
+        labels:
+          service: 'ragflow-ai'
+
+  # DeepWiki service
+  - job_name: 'deepwiki'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['deepwiki:8011']
+        labels:
+          service: 'deepwiki-ai'
+
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'system'
+
+  # Cadvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'containers'
