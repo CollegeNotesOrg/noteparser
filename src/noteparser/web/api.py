@@ -1,14 +1,12 @@
 """API blueprint for web interface."""
 
-from typing import Any
-
-from flask import Blueprint, jsonify
+from flask import Blueprint, Response, jsonify
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/health", methods=["GET"])
-def health() -> dict[str, Any]:
+def health() -> Response:
     """Health check endpoint."""
     return jsonify(
         {
@@ -20,7 +18,7 @@ def health() -> dict[str, Any]:
 
 
 @api_bp.route("/parse/status/<task_id>", methods=["GET"])
-def parse_status(task_id: str) -> dict[str, Any]:
+def parse_status(task_id: str) -> Response:
     """Get parsing task status."""
     return jsonify(
         {
@@ -33,13 +31,13 @@ def parse_status(task_id: str) -> dict[str, Any]:
 
 
 @api_bp.route("/files", methods=["GET"])
-def list_files() -> dict[str, Any]:
+def list_files() -> Response:
     """List available files."""
     return jsonify({"files": [], "total": 0, "page": 1, "per_page": 10})
 
 
 @api_bp.route("/plugins", methods=["GET"])
-def list_plugins() -> dict[str, Any]:
+def list_plugins() -> Response:
     """List available plugins."""
     return jsonify(
         {
@@ -61,12 +59,12 @@ def list_plugins() -> dict[str, Any]:
 
 
 @api_bp.errorhandler(404)
-def not_found(error) -> dict[str, Any]:
+def not_found(error) -> tuple[Response, int]:
     """Handle 404 errors."""
     return jsonify({"error": "Not found"}), 404
 
 
 @api_bp.errorhandler(500)
-def internal_error(error) -> dict[str, Any]:
+def internal_error(error) -> tuple[Response, int]:
     """Handle 500 errors."""
     return jsonify({"error": "Internal server error"}), 500

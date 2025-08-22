@@ -125,6 +125,8 @@ dev = [
     # Security
     "bandit>=1.7.0",
     "safety>=2.3.0",
+    # Type stubs
+    "types-PyYAML>=6.0.0",
 ]
 # All optional dependencies combined (excluding dev)
 all = [
