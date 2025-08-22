@@ -1,0 +1,681 @@
+{% extends "base.html" %}
+
+{% block title %}AI Features - NoteParser{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ai-card {
+        transition: transform 0.2s;
+        border-left: 4px solid var(--secondary-color);
+    }
+    
+    .ai-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    .ai-status {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .ai-status.healthy { background-color: #27ae60; }
+    .ai-status.unhealthy { background-color: #e74c3c; }
+    .ai-status.disabled { background-color: #95a5a6; }
+    
+    .query-input {
+        border-radius: 1rem;
+        border: 2px solid #ddd;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .query-input:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .ai-response {
+        background-color: #f8f9fa;
+        border-left: 4px solid var(--secondary-color);
+        padding: 1rem;
+        border-radius: 0.25rem;
+        margin-top: 1rem;
+    }
+    
+    .document-result {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background-color: white;
+    }
+    
+    .confidence-bar {
+        width: 100%;
+        height: 6px;
+        background-color: #dee2e6;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+        transition: width 0.3s ease;
+    }
+    
+    .service-status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .service-card {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        background-color: white;
+    }
+    
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .analysis-result {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .keyword-tag {
+        display: inline-block;
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        margin: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="text-center text-white">
+        <div class="spinner-border mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div>Processing with AI...</div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-robot text-primary"></i> AI Features</h1>
+    <button class="btn btn-outline-primary" onclick="checkAIHealth()">
+        <i class="fas fa-heartbeat"></i> Check Health
+    </button>
+</div>
+
+<!-- AI Services Status -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-server"></i> AI Services Status</h5>
+    </div>
+    <div class="card-body">
+        <div id="servicesStatus" class="service-status-grid">
+            <div class="text-center text-muted">
+                <div class="spinner-border spinner-border-sm me-2"></div>
+                Checking AI services...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Knowledge Query Section -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card ai-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-search"></i> Knowledge Query</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Ask questions about your documents using natural language.</p>
+                
+                <div class="mb-3">
+                    <input type="text" id="queryInput" class="form-control query-input" 
+                           placeholder="Ask a question about your documents..." 
+                           onkeypress="handleQueryKeyPress(event)">
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Course Filter (optional)</label>
+                        <input type="text" id="courseFilter" class="form-control" 
+                               placeholder="e.g., math, physics">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Topic Filter (optional)</label>
+                        <input type="text" id="topicFilter" class="form-control" 
+                               placeholder="e.g., calculus, quantum">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="performAIQuery()">
+                    <i class="fas fa-search"></i> Query Knowledge Base
+                </button>
+                
+                <div id="queryResults" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card ai-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-upload"></i> AI Parse</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Upload and parse documents with AI enhancement.</p>
+                
+                <form id="aiParseForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="file" id="aiFileInput" class="form-control" 
+                               accept=".pdf,.docx,.pptx,.txt,.md">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-magic"></i> Parse with AI
+                    </button>
+                </form>
+                
+                <div id="aiParseResults" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Text Analysis Section -->
+<div class="card ai-card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-analytics"></i> Text Analysis</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Analyze text content with AI to extract insights, keywords, and topics.</p>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <textarea id="analysisText" class="form-control" rows="6" 
+                          placeholder="Paste your text here for AI analysis..."></textarea>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label">Title (optional)</label>
+                    <input type="text" id="analysisTitle" class="form-control" 
+                           placeholder="Document title">
+                </div>
+                <button class="btn btn-info w-100" onclick="analyzeText()">
+                    <i class="fas fa-brain"></i> Analyze Text
+                </button>
+            </div>
+        </div>
+        
+        <div id="analysisResults" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Enhanced Search Section -->
+<div class="card ai-card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-search-plus"></i> Enhanced Search</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Semantic search across your document library with AI-powered relevance ranking.</p>
+        
+        <div class="row">
+            <div class="col-md-10">
+                <input type="text" id="enhancedSearchInput" class="form-control query-input" 
+                       placeholder="Search your documents with AI..." 
+                       onkeypress="handleSearchKeyPress(event)">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-warning w-100" onclick="performEnhancedSearch()">
+                    <i class="fas fa-rocket"></i> Search
+                </button>
+            </div>
+        </div>
+        
+        <div id="enhancedSearchResults" class="mt-3"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// AI Dashboard functionality
+let aiHealthStatus = {};
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    checkAIHealth();
+    
+    // Set up forms
+    document.getElementById('aiParseForm').addEventListener('submit', handleAIParseSubmit);
+});
+
+function showLoadingOverlay() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function hideLoadingOverlay() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// AI Health Check
+function checkAIHealth() {
+    fetch('/api/ai/health')
+        .then(response => response.json())
+        .then(data => {
+            aiHealthStatus = data;
+            displayHealthStatus(data);
+        })
+        .catch(error => {
+            console.error('Health check failed:', error);
+            displayHealthStatus({
+                status: 'error',
+                error: error.message,
+                services: {}
+            });
+        });
+}
+
+function displayHealthStatus(data) {
+    const container = document.getElementById('servicesStatus');
+    
+    if (data.status === 'disabled') {
+        container.innerHTML = `
+            <div class="service-card text-center">
+                <div class="ai-status disabled"></div>
+                <strong>AI Services Disabled</strong>
+                <p class="text-muted mb-0">AI services are not configured</p>
+            </div>
+        `;
+        return;
+    }
+    
+    if (data.status === 'error') {
+        container.innerHTML = `
+            <div class="service-card text-center">
+                <div class="ai-status unhealthy"></div>
+                <strong>Error</strong>
+                <p class="text-muted mb-0">${data.error}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const services = data.services || {};
+    container.innerHTML = Object.entries(services).map(([name, status]) => {
+        const isHealthy = status.status === 'healthy';
+        const isDisabled = status.status === 'disabled';
+        
+        return `
+            <div class="service-card">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="ai-status ${status.status}"></div>
+                    <strong>${name.charAt(0).toUpperCase() + name.slice(1)}</strong>
+                </div>
+                <div class="text-muted small">
+                    Status: ${status.status}
+                    ${status.error ? `<br>Error: ${status.error}` : ''}
+                </div>
+            </div>
+        `;
+    }).join('') || '<div class="text-muted">No services configured</div>';
+}
+
+// Knowledge Query
+function handleQueryKeyPress(event) {
+    if (event.key === 'Enter') {
+        performAIQuery();
+    }
+}
+
+function performAIQuery() {
+    const query = document.getElementById('queryInput').value.trim();
+    if (!query) {
+        showAlert('Please enter a query', 'warning');
+        return;
+    }
+    
+    const filters = {};
+    const course = document.getElementById('courseFilter').value.trim();
+    const topic = document.getElementById('topicFilter').value.trim();
+    
+    if (course) filters.course = course;
+    if (topic) filters.topic = topic;
+    
+    showLoadingOverlay();
+    
+    fetch('/api/ai/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query, filters })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingOverlay();
+        displayQueryResults(data);
+    })
+    .catch(error => {
+        hideLoadingOverlay();
+        showAlert(`Query failed: ${error.message}`, 'danger');
+    });
+}
+
+function displayQueryResults(data) {
+    const container = document.getElementById('queryResults');
+    
+    if (data.error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                ${data.error}
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    // AI Answer
+    if (data.answer) {
+        html += `
+            <div class="ai-response">
+                <h6><i class="fas fa-robot"></i> AI Answer</h6>
+                <p>${data.answer}</p>
+            </div>
+        `;
+    }
+    
+    // Documents
+    if (data.documents && data.documents.length > 0) {
+        html += `
+            <h6 class="mt-3"><i class="fas fa-file-alt"></i> Relevant Documents (${data.documents.length})</h6>
+        `;
+        
+        data.documents.slice(0, 5).forEach(doc => {
+            const confidence = doc.score ? Math.round(doc.score * 100) : 0;
+            html += `
+                <div class="document-result">
+                    <h6 class="mb-1">
+                        <a href="/view/${encodeURIComponent(doc.path || '')}" class="text-decoration-none">
+                            ${doc.title || 'Untitled Document'}
+                        </a>
+                    </h6>
+                    <div class="confidence-bar mb-2">
+                        <div class="confidence-fill" style="width: ${confidence}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Relevance: ${confidence}%</small>
+                        ${doc.course ? `<span class="course-badge">${doc.course}</span>` : ''}
+                    </div>
+                    ${doc.content ? `<p class="mt-2 mb-0 text-muted small">${doc.content.substring(0, 200)}...</p>` : ''}
+                </div>
+            `;
+        });
+    }
+    
+    if (!html) {
+        html = '<div class="text-muted">No results found.</div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+// AI Parse
+function handleAIParseSubmit(event) {
+    event.preventDefault();
+    
+    const fileInput = document.getElementById('aiFileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showAlert('Please select a file', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    showLoadingOverlay();
+    
+    fetch('/api/ai/parse', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingOverlay();
+        displayAIParseResults(data);
+    })
+    .catch(error => {
+        hideLoadingOverlay();
+        showAlert(`Parse failed: ${error.message}`, 'danger');
+    });
+}
+
+function displayAIParseResults(data) {
+    const container = document.getElementById('aiParseResults');
+    
+    if (data.error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                ${data.error}
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="alert alert-success">
+            <i class="fas fa-check"></i>
+            File parsed successfully!
+        </div>
+    `;
+    
+    // AI Processing Results
+    if (data.ai_processing && !data.ai_processing.error) {
+        const ai = data.ai_processing;
+        html += `
+            <div class="analysis-result">
+                <h6><i class="fas fa-brain"></i> AI Analysis</h6>
+                ${ai.summary ? `<p><strong>Summary:</strong> ${ai.summary}</p>` : ''}
+                ${ai.keywords ? `
+                    <p><strong>Keywords:</strong><br>
+                    ${ai.keywords.map(k => `<span class="keyword-tag">${k}</span>`).join('')}
+                    </p>
+                ` : ''}
+                ${ai.topics ? `<p><strong>Topics:</strong> ${ai.topics.join(', ')}</p>` : ''}
+                ${ai.confidence ? `<p><strong>Confidence:</strong> ${Math.round(ai.confidence * 100)}%</p>` : ''}
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// Text Analysis
+function analyzeText() {
+    const content = document.getElementById('analysisText').value.trim();
+    const title = document.getElementById('analysisTitle').value.trim();
+    
+    if (!content) {
+        showAlert('Please enter text to analyze', 'warning');
+        return;
+    }
+    
+    showLoadingOverlay();
+    
+    fetch('/api/ai/analyze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content, title })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingOverlay();
+        displayAnalysisResults(data);
+    })
+    .catch(error => {
+        hideLoadingOverlay();
+        showAlert(`Analysis failed: ${error.message}`, 'danger');
+    });
+}
+
+function displayAnalysisResults(data) {
+    const container = document.getElementById('analysisResults');
+    
+    if (data.error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                ${data.error}
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="analysis-result">
+            <h6><i class="fas fa-chart-line"></i> Analysis Results</h6>
+            ${data.summary ? `<p><strong>Summary:</strong> ${data.summary}</p>` : ''}
+            ${data.keywords ? `
+                <p><strong>Keywords:</strong><br>
+                ${data.keywords.map(k => `<span class="keyword-tag">${k}</span>`).join('')}
+                </p>
+            ` : ''}
+            ${data.topics ? `<p><strong>Topics:</strong> ${data.topics.join(', ')}</p>` : ''}
+            ${data.confidence ? `<p><strong>Confidence:</strong> ${Math.round(data.confidence * 100)}%</p>` : ''}
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Enhanced Search
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        performEnhancedSearch();
+    }
+}
+
+function performEnhancedSearch() {
+    const query = document.getElementById('enhancedSearchInput').value.trim();
+    if (!query) {
+        showAlert('Please enter a search term', 'warning');
+        return;
+    }
+    
+    showLoadingOverlay();
+    
+    fetch('/api/ai/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query, limit: 20 })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingOverlay();
+        displayEnhancedSearchResults(data);
+    })
+    .catch(error => {
+        hideLoadingOverlay();
+        showAlert(`Search failed: ${error.message}`, 'danger');
+    });
+}
+
+function displayEnhancedSearchResults(data) {
+    const container = document.getElementById('enhancedSearchResults');
+    
+    if (data.error) {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                ${data.error}
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6><i class="fas fa-search"></i> Search Results (${data.results.length})</h6>
+            <span class="badge bg-${data.search_type === 'ai_enhanced' ? 'success' : 'secondary'}">
+                ${data.search_type === 'ai_enhanced' ? 'AI Enhanced' : 'Regular Search'}
+            </span>
+        </div>
+    `;
+    
+    if (data.answer) {
+        html += `
+            <div class="ai-response mb-3">
+                <h6><i class="fas fa-robot"></i> AI Answer</h6>
+                <p>${data.answer}</p>
+            </div>
+        `;
+    }
+    
+    if (data.results.length === 0) {
+        html += '<div class="text-muted">No results found.</div>';
+    } else {
+        data.results.forEach(result => {
+            const confidence = result.score ? Math.round(result.score * 100) : 0;
+            html += `
+                <div class="document-result">
+                    <h6 class="mb-1">
+                        <a href="/view/${encodeURIComponent(result.path || '')}" class="text-decoration-none">
+                            <i class="fas fa-file file-icon"></i>
+                            ${result.title || result.path?.split('/').pop() || 'Untitled'}
+                        </a>
+                    </h6>
+                    ${confidence > 0 ? `
+                        <div class="confidence-bar mb-2">
+                            <div class="confidence-fill" style="width: ${confidence}%"></div>
+                        </div>
+                    ` : ''}
+                    <div class="d-flex gap-2">
+                        ${result.course ? `<span class="course-badge">${result.course}</span>` : ''}
+                        ${result.repository ? `<small class="text-muted">${result.repository}</small>` : ''}
+                        ${confidence > 0 ? `<small class="text-muted">Relevance: ${confidence}%</small>` : ''}
+                    </div>
+                    ${result.content ? `<p class="mt-2 mb-0 text-muted small">${result.content.substring(0, 200)}...</p>` : ''}
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,377 @@
+version: '3.8'
+
+services:
+  # Core noteparser service - production configuration
+  noteparser:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: noteparser-prod
+    ports:
+      - "5000:5000"
+    environment:
+      - NOTEPARSER_ENV=production
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+      
+      # AI Services URLs (production)
+      - RAGFLOW_URL=${RAGFLOW_URL:-http://ai-services:8010}
+      - DEEPWIKI_URL=${DEEPWIKI_URL:-http://ai-services:8011}
+      - AI_SERVICES_ENABLED=true
+      
+      # Database connections
+      - DATABASE_URL=postgresql://noteparser:${DB_PASSWORD}@postgres:5432/noteparser
+      - REDIS_URL=redis://redis:6379/0
+      
+      # Security
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      
+      # Performance
+      - WORKERS=4
+      - WORKER_CLASS=uvicorn.workers.UvicornWorker
+      - MAX_REQUESTS=1000
+      - MAX_REQUESTS_JITTER=100
+      - TIMEOUT=300
+      
+      # Monitoring
+      - SENTRY_DSN=${SENTRY_DSN}
+      - ENABLE_METRICS=true
+      
+    volumes:
+      - noteparser-data:/app/data
+      - noteparser-uploads:/app/uploads
+      - noteparser-logs:/app/logs
+      
+    networks:
+      - noteparser-network
+      - ai-services-network
+      
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+  # Production PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: noteparser-postgres-prod
+    environment:
+      - POSTGRES_DB=noteparser
+      - POSTGRES_USER=noteparser
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS="--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    
+    networks:
+      - noteparser-network
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U noteparser"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # Production Redis
+  redis:
+    image: redis:7-alpine
+    container_name: noteparser-redis-prod
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    
+    volumes:
+      - redis-data:/data
+      - ./config/redis.conf:/etc/redis/redis.conf
+    
+    networks:
+      - noteparser-network
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "3"
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: noteparser-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx-site.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl:/etc/nginx/ssl
+      - nginx-logs:/var/log/nginx
+    
+    networks:
+      - noteparser-network
+    
+    restart: unless-stopped
+    
+    depends_on:
+      - noteparser
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Production Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: noteparser-prometheus-prod
+    ports:
+      - "9090:9090"
+    
+    volumes:
+      - ./monitoring/prometheus-prod.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    
+    networks:
+      - noteparser-network
+      - monitoring-network
+    
+    restart: unless-stopped
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  # Production Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: noteparser-grafana-prod
+    ports:
+      - "3000:3000"
+    
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SECURITY_STRICT_TRANSPORT_SECURITY=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+    
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    
+    networks:
+      - monitoring-network
+    
+    restart: unless-stopped
+    
+    depends_on:
+      - prometheus
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+  # Log aggregation with Loki
+  loki:
+    image: grafana/loki:latest
+    container_name: noteparser-loki-prod
+    ports:
+      - "3100:3100"
+    
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/loki.yml
+      - loki-data:/loki
+    
+    command: -config.file=/etc/loki/loki.yml
+    
+    networks:
+      - monitoring-network
+    
+    restart: unless-stopped
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+  # Promtail for log shipping
+  promtail:
+    image: grafana/promtail:latest
+    container_name: noteparser-promtail-prod
+    
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - noteparser-logs:/app/logs:ro
+      - nginx-logs:/nginx/logs:ro
+    
+    command: -config.file=/etc/promtail/config.yml
+    
+    networks:
+      - monitoring-network
+    
+    restart: unless-stopped
+    
+    depends_on:
+      - loki
+
+  # Backup service
+  backup:
+    image: postgres:16-alpine
+    container_name: noteparser-backup
+    
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:ro
+      - backup-data:/backup
+      - ./scripts/backup.sh:/backup.sh
+    
+    environment:
+      - POSTGRES_DB=noteparser
+      - POSTGRES_USER=noteparser
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - BACKUP_RETENTION_DAYS=30
+      - S3_BUCKET=${BACKUP_S3_BUCKET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    
+    networks:
+      - noteparser-network
+    
+    restart: unless-stopped
+    
+    # Run backup daily at 2 AM
+    entrypoint: |
+      sh -c '
+        while true; do
+          echo "Running backup at $$(date)"
+          /backup.sh
+          sleep 86400  # 24 hours
+        done
+      '
+    
+    depends_on:
+      - postgres
+
+networks:
+  noteparser-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  ai-services-network:
+    external: true
+    name: noteparser-ai-services_default
+
+  monitoring-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+volumes:
+  noteparser-data:
+    driver: local
+  noteparser-uploads:
+    driver: local
+  noteparser-logs:
+    driver: local
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  loki-data:
+    driver: local
+  nginx-logs:
+    driver: local
+  backup-data:
+    driver: local

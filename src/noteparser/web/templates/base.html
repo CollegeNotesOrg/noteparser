@@ -188,6 +188,9 @@
                         <a class="nav-link {% if request.endpoint == 'parse_file' %}active{% endif %}" href="/parse">
                             <i class="fas fa-file-upload"></i> Parse Files
                         </a>
+                        <a class="nav-link {% if request.endpoint == 'ai_dashboard' %}active{% endif %}" href="/ai">
+                            <i class="fas fa-robot"></i> AI Features
+                        </a>
                         
                         {% if repositories %}
                         <hr style="border-color: #34495e;">
