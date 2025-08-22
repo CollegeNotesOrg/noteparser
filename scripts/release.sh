@@ -183,46 +183,22 @@ upload_to_pypi() {
 # Generate changelog
 generate_changelog() {
     local version="$1"
-    local changelog_file="$PROJECT_DIR/CHANGELOG.md"
     
-    log "Generating changelog..."
+    log "Generating automated changelog for version $version..."
     
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
-        log "DRY RUN: Would generate changelog"
+        log "DRY RUN: Would generate changelog using automated script"
         return
     fi
     
-    # Get the previous tag
-    local prev_tag=$(git describe --tags --abbrev=0 2>/dev/null | head -1 || echo "")
+    # Use the automated changelog generator
+    python3 "$SCRIPT_DIR/generate-changelog.py" --version "v$version"
     
-    # Create changelog entry
-    local temp_file=$(mktemp)
-    echo "# Changelog" > "$temp_file"
-    echo "" >> "$temp_file"
-    echo "## [$version] - $(date +%Y-%m-%d)" >> "$temp_file"
-    echo "" >> "$temp_file"
-    
-    if [[ -n "$prev_tag" ]]; then
-        echo "### Changes since $prev_tag:" >> "$temp_file"
-        echo "" >> "$temp_file"
-        git log --pretty=format:"- %s (%h)" "$prev_tag..HEAD" >> "$temp_file"
+    if [[ $? -eq 0 ]]; then
+        success "Changelog generated successfully"
     else
-        echo "### Changes in this release:" >> "$temp_file"
-        echo "" >> "$temp_file"
-        git log --pretty=format:"- %s (%h)" >> "$temp_file"
+        warn "Changelog generation failed, continuing with release"
     fi
-    
-    echo "" >> "$temp_file"
-    echo "" >> "$temp_file"
-    
-    # Prepend to existing changelog or create new one
-    if [[ -f "$changelog_file" ]]; then
-        cat "$changelog_file" >> "$temp_file"
-    fi
-    
-    mv "$temp_file" "$changelog_file"
-    
-    success "Changelog updated"
 }
 
 # Main release function

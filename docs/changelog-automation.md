@@ -83,7 +83,7 @@ The `scripts/release.sh` automatically:
 
 ### GitHub Actions
 
-The release workflow (`.github/workflows/release.yml`):
+The publish workflow (`.github/workflows/publish.yml`):
 1. Runs the changelog generator on new tags
 2. Creates GitHub releases with formatted notes
 3. Updates the repository CHANGELOG.md

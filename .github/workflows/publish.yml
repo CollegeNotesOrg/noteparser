@@ -72,6 +72,8 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     environment: release
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
     
     steps:
     - name: Download artifacts
@@ -83,7 +85,6 @@ jobs:
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
         verbose: true
 
   create-github-release:
@@ -102,21 +103,27 @@ jobs:
         # Get the tag name
         TAG=${GITHUB_REF#refs/tags/}
         
-        # Get the previous tag
-        PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || echo "")
+        # Install Python for changelog generator
+        pip install --upgrade pip
         
-        # Generate changelog
-        if [ -n "$PREV_TAG" ]; then
-          echo "## Changes since $PREV_TAG" > CHANGELOG.md
-          git log --pretty=format:"- %s (%h)" "$PREV_TAG..$TAG" >> CHANGELOG.md
+        # Generate automated changelog
+        python3 scripts/generate-changelog.py --version "$TAG"
+        
+        # Extract release notes for this version
+        python3 scripts/generate-changelog.py --version "$TAG" || echo "Fallback: using simple changelog"
+        
+        # Create release notes from latest changelog entry
+        if [ -f CHANGELOG.md ]; then
+          # Extract just the latest version's content
+          sed -n '/^## \[/,/^## \[/p' CHANGELOG.md | head -n -1 | tail -n +3 > release_notes.md
         else
-          echo "## Changes in $TAG" > CHANGELOG.md
-          git log --pretty=format:"- %s (%h)" >> CHANGELOG.md
+          echo "### Changes in this release" > release_notes.md
+          echo "- See commit history for details" >> release_notes.md
         fi
         
-        # Set output
+        # Set output for GitHub release
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        cat CHANGELOG.md >> $GITHUB_OUTPUT
+        cat release_notes.md >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     
     - name: Create GitHub Release

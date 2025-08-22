@@ -2,7 +2,7 @@
 
 **A comprehensive AI-powered document parser for converting and analyzing academic materials**
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/noteparser.svg)](https://badge.fury.io/py/noteparser)
 [![CI](https://github.com/CollegeNotesOrg/noteparser/workflows/CI/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
@@ -64,13 +64,13 @@ pip install noteparser[ai]
 # Install basic version
 pip install noteparser
 
-# Install from source with AI features
+# Install from source with all features (recommended)
 git clone https://github.com/CollegeNotesOrg/noteparser.git
 cd noteparser
-pip install -e .[ai,dev]
+pip install -e .[dev,all]
 ```
 
-#### Option 2: Using requirements.txt
+#### Option 2: Development Installation
 
 ```bash
 # Clone the repository
@@ -81,15 +81,15 @@ cd noteparser
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install with all dependencies (includes dev tools)
+pip install -e .[dev,all]
 
-# For development
-pip install -r requirements-dev.txt
-
-# Install the package
-pip install -e .
+# Or install with specific feature sets
+pip install -e .[dev]     # Development tools only
+pip install -e .[ai]      # AI features only
 ```
+
+> **Note**: As of v2.1.0, all dependencies are managed through `pyproject.toml`. The `requirements.txt` files are maintained for compatibility but using pip extras is the recommended approach.
 
 #### System Dependencies
 
@@ -110,6 +110,12 @@ brew install tesseract ffmpeg poppler
 # Windows (using Chocolatey)
 choco install tesseract ffmpeg poppler
 ```
+
+#### Python Version Compatibility
+
+- **Python 3.9+** is required (updated from 3.8+ in v2.1.0)
+- Tested on Python 3.9, 3.10, 3.11, and 3.12
+- **Python 3.8** support was removed due to compatibility issues with mypy and modern typing features
 
 ### Basic Usage
 
@@ -456,15 +462,26 @@ cd noteparser
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install all dependencies including dev tools
-pip install -r requirements-dev.txt
+# Install with all development dependencies (recommended)
+pip install -e .[dev,all]
 
-# Or using pip extras
+# Or install dev tools only
 pip install -e .[dev]
 
 # Install pre-commit hooks
 pre-commit install
 ```
+
+### Development Dependencies
+
+The `[dev]` extra includes comprehensive development tools:
+
+- **Testing**: `pytest`, `pytest-cov`, `pytest-mock`, `pytest-asyncio`, `pytest-xdist`
+- **Code Quality**: `black`, `ruff`, `mypy`, `isort`, `pylint`, `pre-commit`
+- **Documentation**: `sphinx`, `mkdocs-material`, `myst-parser`
+- **Development Tools**: `ipython`, `jupyter`, `notebook`
+- **Profiling**: `memory-profiler`, `line-profiler`
+- **Security**: `bandit`, `safety`
 
 ### Run Tests
 
@@ -475,13 +492,31 @@ pytest tests/ -v --cov=noteparser
 ### Code Quality
 
 ```bash
-# Formatting
-black src/
-ruff check src/
+# Auto-formatting (required)
+black src/ tests/
+
+# Linting with auto-fixes
+ruff check src/ tests/ --fix
 
 # Type checking
-mypy src/noteparser/
+mypy src/noteparser/ --ignore-missing-imports
+
+# All quality checks at once
+make lint  # Runs black, ruff, and mypy
 ```
+
+### CI/CD Information
+
+The project uses GitHub Actions for continuous integration with the following jobs:
+
+- **Cross-platform testing** (Ubuntu, Windows, macOS) on Python 3.9-3.12
+- **Code quality checks** (black, ruff, mypy)
+- **Security scans** (bandit, safety)
+- **Performance benchmarking** with pytest-benchmark
+- **Docker image testing** and validation
+- **Integration testing** with Redis and PostgreSQL services
+
+All dependencies are now managed through `pyproject.toml` for better reproducibility and CI reliability.
 
 ## 🤝 Contributing
 
@@ -500,7 +535,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📦 Dependencies
 
-### Core Dependencies
+All dependencies are managed through `pyproject.toml` with the following structure:
+
+### Core Dependencies (included in base installation)
 - **markitdown** - Microsoft's document parsing engine
 - **Flask** - Web framework for dashboard
 - **Click** - CLI interface
@@ -510,14 +547,39 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **pytesseract** - OCR capabilities
 - **SpeechRecognition** - Audio transcription
 - **moviepy** - Video processing
+- **pandas** - Data processing
+- **requests** - HTTP client
+- **gunicorn** - Production WSGI server
 
-### Optional Dependencies
-- **pdfplumber** - Enhanced PDF processing
-- **python-docx/pptx** - Office document handling
-- **BeautifulSoup4** - HTML parsing
-- **pandas** - Table processing
+### Optional Dependency Groups
 
-See `requirements.txt` for the complete list with version specifications.
+#### `[ai]` - Advanced AI/ML Features
+- **sentence-transformers** - Semantic embeddings
+- **faiss-cpu** - Vector similarity search
+- **langchain** - LLM framework integration
+- **openai** - OpenAI API client
+- **sqlalchemy** - Database ORM
+- **elasticsearch** - Full-text search
+- **prometheus-client** - Metrics collection
+- **pydantic** - Data validation
+
+#### `[dev]` - Development Tools
+- **pytest** ecosystem - Testing framework
+- **black**, **ruff**, **mypy** - Code quality
+- **sphinx**, **mkdocs-material** - Documentation
+- **jupyter**, **ipython** - Interactive development
+- **bandit**, **safety** - Security scanning
+
+#### `[all]` - All Optional Features
+Combines AI and development dependencies for complete functionality.
+
+### Installation Examples
+```bash
+pip install noteparser           # Core only
+pip install noteparser[ai]       # Core + AI features  
+pip install noteparser[dev]      # Core + dev tools
+pip install noteparser[all]      # Everything
+```
 
 ## 🙏 Acknowledgments
 

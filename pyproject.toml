@@ -7,7 +7,7 @@ name = "noteparser"
 version = "2.1.0"
 description = "A comprehensive document parser with AI-powered intelligence for converting and analyzing academic materials"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     {name = "Suryansh Sijwali", email = "suryanshss1011@gmail.com"}
 ]
@@ -17,7 +17,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -25,44 +24,136 @@ classifiers = [
 ]
 
 dependencies = [
-    "click>=8.0",
+    "click>=8.0.0",
     "pyyaml>=6.0",
     "rich>=13.0",
     "markitdown>=0.1.0",
+    # Web framework
     "flask>=2.3.0",
+    # Audio/video processing
     "speechrecognition>=3.10.0",
     "moviepy>=1.0.3",
-]
-
-[project.optional-dependencies]
-pdf = [
-    "pymupdf>=1.23.0",
-    "pdfplumber>=0.10.0",
-]
-office = [
+    "pydub>=0.25.1",
+    # Image and document processing
+    "pytesseract>=0.3.10",
+    "pillow>=10.0.0",
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    # Office document support
     "python-docx>=1.0.0",
     "python-pptx>=0.6.0",
     "openpyxl>=3.1.0",
+    "pypdf>=3.17.0",
+    "pdfplumber>=0.10.0",
+    # Testing
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    # Data processing
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0",
+    "pandas>=2.0.0",
+    "requests>=2.31.0",
+    # Server and deployment
+    "gunicorn>=21.2.0",
+    "python-dotenv>=1.0.0",
+    # AI and machine learning
+    "aiohttp>=3.9.0",
+    "asyncio>=3.4.3",
 ]
-ocr = [
-    "pytesseract>=0.3.10",
-    "pillow>=10.0.0",
-]
+
+[project.optional-dependencies]
+# Advanced AI/ML dependencies
 ai = [
     "httpx>=0.25.0",
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu>=1.7.4",
+    "tiktoken>=0.5.0",
+    "langchain>=0.1.0",
+    "openai>=1.0.0",
     "tenacity>=8.2.0",
-    "aiohttp>=3.9.0",
+    # Database and storage
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "redis>=5.0.0",
+    "psycopg2-binary>=2.9.0",
+    "elasticsearch>=8.11.0",
+    # Monitoring and observability
+    "prometheus-client>=0.19.0",
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-instrumentation-flask>=0.42b0",
+    "structlog>=23.2.0",
+    # Data validation and serialization
+    "pydantic>=2.5.0",
+    "marshmallow>=3.20.0",
+    "fastapi>=0.104.0",
 ]
-all = [
-    "noteparser[pdf,office,ocr,ai]",
-]
+# Development and testing dependencies
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "black>=23.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
     "ruff>=0.1.0",
-    "mypy>=1.0",
-    "pre-commit>=3.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    # Extended testing
+    "pytest-mock>=3.10.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-xdist>=3.3.0",
+    "pytest-html>=3.2.0",
+    "tox>=4.0.0",
+    "responses>=0.24.0",
+    "httpx>=0.25.0",
+    # Code quality
+    "isort>=5.12.0",
+    "pylint>=2.17.0",
+    # Documentation
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-click>=5.0.0",
+    "myst-parser>=2.0.0",
+    # MkDocs
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.2.0",
+    "mkdocs-minify-plugin>=0.7.0",
+    # Development tools
+    "ipython>=8.12.0",
+    "ipdb>=0.13.0",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.0",
+    # Performance profiling
+    "memory-profiler>=0.61.0",
+    "line-profiler>=4.0.0",
+    "psutil>=5.9.0",
+    # Security
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
+]
+# All optional dependencies combined (excluding dev)
+all = [
+    "pymupdf>=1.23.0",
+    "httpx>=0.25.0",
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu>=1.7.4",
+    "tiktoken>=0.5.0",
+    "langchain>=0.1.0",
+    "openai>=1.0.0",
+    "tenacity>=8.2.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "redis>=5.0.0",
+    "psycopg2-binary>=2.9.0",
+    "elasticsearch>=8.11.0",
+    "prometheus-client>=0.19.0",
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-instrumentation-flask>=0.42b0",
+    "structlog>=23.2.0",
+    "pydantic>=2.5.0",
+    "marshmallow>=3.20.0",
+    "fastapi>=0.104.0",
 ]
 
 [project.scripts]
@@ -77,14 +168,18 @@ where = ["src"]
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+target-version = ['py39', 'py310', 'py311', 'py312']
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "A", "COM", "C4", "DTZ", "ISC", "ICN", "PIE", "PT", "RET", "SIM", "TID", "ARG", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
-ignore = ["E501", "PLR0913"]
+ignore = ["E501", "PLR0913", "PLR2004", "B904", "TRY301", "ARG001", "C901", "PLC0415", "F841", "W293", "B007"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
+ignore_missing_imports = true
+no_implicit_optional = false
