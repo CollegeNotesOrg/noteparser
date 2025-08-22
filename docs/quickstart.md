@@ -279,5 +279,5 @@ Now that you're up and running:
 
 ## Need Help?
 
-- **💬 [Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)** - Ask questions
+- **📚 [Troubleshooting Guide](troubleshooting.md)** - Common solutions
 - **🐛 [Issues](https://github.com/CollegeNotesOrg/noteparser/issues)** - Report problems

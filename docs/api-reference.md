@@ -2,7 +2,7 @@
 
 This document provides comprehensive API documentation for the NoteParser system, including Python API, REST API, and CLI interfaces.
 
-## Table of Contents
+## API Overview
 
 1. [Python API](#python-api)
 2. [REST API](#rest-api)
@@ -30,10 +30,24 @@ parser = NoteParser(config=None, llm_client=None)
 
 **Methods:**
 
-##### `parse_to_markdown(file_path, extract_metadata=True, preserve_formatting=True)`
+##### parse_to_markdown()
 
 Parse a document to Markdown format.
 
+```python
+def parse_to_markdown(
+    file_path: Union[str, Path],
+    extract_metadata: bool = True,
+    preserve_formatting: bool = True
+) -> ParseResult
+```
+
+**Parameters:**
+- `file_path` (str|Path): Path to input file
+- `extract_metadata` (bool, optional): Whether to extract metadata. Defaults to True.
+- `preserve_formatting` (bool, optional): Whether to preserve academic formatting. Defaults to True.
+
+**Example:**
 ```python
 result = parser.parse_to_markdown(
     "lecture.pdf",
@@ -41,11 +55,6 @@ result = parser.parse_to_markdown(
     preserve_formatting=True
 )
 ```
-
-**Parameters:**
-- `file_path` (str|Path): Path to input file
-- `extract_metadata` (bool): Whether to extract metadata
-- `preserve_formatting` (bool): Whether to preserve academic formatting
 
 **Returns:**
 ```python
@@ -61,7 +70,7 @@ result = parser.parse_to_markdown(
 }
 ```
 
-##### `parse_to_latex(file_path, template="article", extract_metadata=True)`
+##### parse_to_latex()
 
 Parse a document to LaTeX format.
 
@@ -86,7 +95,7 @@ result = parser.parse_to_latex(
 }
 ```
 
-##### `parse_batch(directory, output_format="markdown", recursive=True, pattern=None)`
+##### parse_batch()
 
 Parse multiple documents in a directory.
 
@@ -132,7 +141,7 @@ org_sync = OrganizationSync(config_path=None)
 
 **Methods:**
 
-##### `sync_parsed_notes(source_files, target_repo="study-notes", course=None)`
+##### sync_parsed_notes()
 
 Sync parsed notes to target repository.
 
@@ -154,7 +163,7 @@ result = org_sync.sync_parsed_notes(
 }
 ```
 
-##### `generate_index()`
+##### generate_index()
 
 Generate searchable index of all notes.
 
@@ -182,7 +191,7 @@ index = org_sync.generate_index()
 }
 ```
 
-##### `create_cross_references(content_map)`
+##### create_cross_references()
 
 Create cross-references between documents.
 
@@ -207,7 +216,7 @@ plugin_manager = PluginManager(plugin_dirs=None)
 
 **Methods:**
 
-##### `get_plugins_for_file(file_path, metadata)`
+##### get_plugins_for_file()
 
 Get applicable plugins for a file.
 
@@ -218,7 +227,7 @@ plugins = plugin_manager.get_plugins_for_file(
 )
 ```
 
-##### `process_with_plugins(file_path, content, metadata)`
+##### process_with_plugins()
 
 Process content with all applicable plugins.
 

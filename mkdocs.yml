@@ -40,7 +40,8 @@ theme:
     - content.code.copy
     - content.action.edit
     - content.action.view
-    - navigation.footer
+  icon:
+    repo: fontawesome/brands/github
 
 plugins:
   - search
@@ -112,5 +113,6 @@ nav:
   - User Guide:
     - Command Line Interface: cli.md
     - AI Integration: ai-integration.md
+    - Troubleshooting: troubleshooting.md
   - Reference:
     - API Reference: api-reference.md
