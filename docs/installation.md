@@ -4,7 +4,7 @@ This guide will help you install NoteParser and all its dependencies.
 
 ## Requirements
 
-- **Python 3.8+** (Python 3.11+ recommended)
+- **Python 3.10+** (Python 3.11+ recommended)
 - **System dependencies** for OCR and media processing (optional)
 
 ## Installation Methods
@@ -258,7 +258,7 @@ pytest tests/ -v
 ### Common Issues
 
 #### Python Version
-Ensure you're using Python 3.8 or newer:
+Ensure you're using Python 3.10 or newer:
 ```bash
 python --version
 ```

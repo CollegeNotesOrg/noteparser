@@ -4,7 +4,7 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 
@@ -16,7 +16,7 @@ from noteparser.plugins.base import PluginManager
 logger = logging.getLogger(__name__)
 
 
-def create_app(config: Optional[dict[str, Any]] = None) -> Flask:
+def create_app(config: dict[str, Any] | None = None) -> Flask:
     """Create and configure the Flask application.
 
     Args:
@@ -42,18 +42,18 @@ def create_app(config: Optional[dict[str, Any]] = None) -> Flask:
 
     # Initialize components
     enable_ai = config.get("AI_ENABLED", True) if config else True
-    app.parser = NoteParser(enable_ai=enable_ai)
-    app.org_sync = OrganizationSync()
-    app.plugin_manager = PluginManager()
+    app.config["PARSER"] = NoteParser(enable_ai=enable_ai)
+    app.config["ORG_SYNC"] = OrganizationSync()
+    app.config["PLUGIN_MANAGER"] = PluginManager()
 
     # Initialize AI services if enabled
-    app.ai_integration = None
+    app.config["AI_INTEGRATION"] = None
     if enable_ai:
         try:
-            app.ai_integration = AIServicesIntegration(config)
+            app.config["AI_INTEGRATION"] = AIServicesIntegration(config)
         except Exception as e:
             logger.warning(f"AI services not available: {e}")
-            app.ai_integration = None
+            app.config["AI_INTEGRATION"] = None
 
     # Register routes
     register_routes(app)
@@ -78,12 +78,12 @@ def register_routes(app: Flask):
                 with open(index_path) as f:
                     org_index = json.load(f)
             else:
-                org_index = app.org_sync.generate_index()
+                org_index = app.config["ORG_SYNC"].generate_index()
 
             return render_template(
                 "dashboard.html",
                 index=org_index,
-                repositories=list(app.org_sync.repositories.keys()),
+                repositories=list(app.config["ORG_SYNC"].repositories.keys()),
             )
         except Exception as e:
             logger.exception(f"Dashboard error: {e}")
@@ -93,14 +93,14 @@ def register_routes(app: Flask):
     def browse_repository(repo_name: str):
         """Browse files in a specific repository."""
         try:
-            if repo_name not in app.org_sync.repositories:
+            if repo_name not in app.config["ORG_SYNC"].repositories:
                 return (
                     render_template("error.html", error=f"Repository '{repo_name}' not found"),
                     404,
                 )
 
-            repo_config = app.org_sync.repositories[repo_name]
-            files = app.org_sync._scan_repository_files(repo_config.path)
+            repo_config = app.config["ORG_SYNC"].repositories[repo_name]
+            files = app.config["ORG_SYNC"]._scan_repository_files(repo_config.path)
 
             return render_template(
                 "repository.html",
@@ -151,8 +151,8 @@ def register_routes(app: Flask):
         if request.method == "GET":
             return render_template(
                 "parse.html",
-                supported_formats=list(app.parser.SUPPORTED_FORMATS),
-                plugins=app.plugin_manager.list_plugins(),
+                supported_formats=list(app.config["PARSER"].SUPPORTED_FORMATS),
+                plugins=app.config["PLUGIN_MANAGER"].list_plugins(),
             )
 
         try:
@@ -180,9 +180,9 @@ def register_routes(app: Flask):
             results = {}
             for format_type in output_formats:
                 if format_type == "markdown":
-                    result = app.parser.parse_to_markdown(file_path)
+                    result = app.config["PARSER"].parse_to_markdown(file_path)
                 elif format_type == "latex":
-                    result = app.parser.parse_to_latex(file_path)
+                    result = app.config["PARSER"].parse_to_latex(file_path)
                 else:
                     continue
 
@@ -239,18 +239,18 @@ def register_routes(app: Flask):
     @app.route("/api/plugins")
     def list_plugins():
         """List all available plugins."""
-        return jsonify({"plugins": app.plugin_manager.list_plugins()})
+        return jsonify({"plugins": app.config["PLUGIN_MANAGER"].list_plugins()})
 
     @app.route("/api/plugins/<plugin_name>/toggle", methods=["POST"])
     def toggle_plugin(plugin_name: str):
         """Enable or disable a plugin."""
         try:
-            action = request.json.get("action")  # 'enable' or 'disable'
+            action = request.json.get("action") if request.json else None  # 'enable' or 'disable'
 
             if action == "enable":
-                app.plugin_manager.enable_plugin(plugin_name)
+                app.config["PLUGIN_MANAGER"].enable_plugin(plugin_name)
             elif action == "disable":
-                app.plugin_manager.disable_plugin(plugin_name)
+                app.config["PLUGIN_MANAGER"].disable_plugin(plugin_name)
             else:
                 return jsonify({"error": "Invalid action"}), 400
 
@@ -269,7 +269,7 @@ def register_routes(app: Flask):
             target_repo = data.get("target_repo", "study-notes")
             course = data.get("course")
 
-            result = app.org_sync.sync_parsed_notes(
+            result = app.config["ORG_SYNC"].sync_parsed_notes(
                 source_files=source_files,
                 target_repo=target_repo,
                 course=course,
@@ -285,7 +285,7 @@ def register_routes(app: Flask):
     def refresh_index():
         """Refresh the organization index."""
         try:
-            index = app.org_sync.generate_index()
+            index = app.config["ORG_SYNC"].generate_index()
             return jsonify(index)
         except Exception as e:
             logger.exception(f"Index refresh error: {e}")
@@ -295,7 +295,7 @@ def register_routes(app: Flask):
     @app.route("/ai")
     def ai_dashboard():
         """AI features dashboard."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             return (
                 render_template(
                     "error.html",
@@ -309,7 +309,7 @@ def register_routes(app: Flask):
     @app.route("/api/ai/parse", methods=["POST"])
     def ai_parse_file():
         """Parse file with AI enhancement."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             return jsonify({"error": "AI services not available"}), 503
 
         try:
@@ -330,7 +330,7 @@ def register_routes(app: Flask):
 
             # Parse with AI enhancement
             async def parse_with_ai():
-                return await app.parser.parse_to_markdown_with_ai(
+                return await app.config["PARSER"].parse_to_markdown_with_ai(
                     file_path,
                     extract_metadata=True,
                     preserve_formatting=True,
@@ -355,7 +355,7 @@ def register_routes(app: Flask):
     @app.route("/api/ai/query", methods=["POST"])
     def ai_query():
         """Query the AI knowledge base."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             return jsonify({"error": "AI services not available"}), 503
 
         try:
@@ -367,7 +367,7 @@ def register_routes(app: Flask):
                 return jsonify({"error": "Query is required"}), 400
 
             async def run_query():
-                return await app.parser.query_knowledge(query, filters)
+                return await app.config["PARSER"].query_knowledge(query, filters)
 
             result = asyncio.run(run_query())
 
@@ -383,7 +383,7 @@ def register_routes(app: Flask):
     @app.route("/api/ai/analyze", methods=["POST"])
     def ai_analyze_text():
         """Analyze text content with AI."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             return jsonify({"error": "AI services not available"}), 503
 
         try:
@@ -394,8 +394,8 @@ def register_routes(app: Flask):
                 return jsonify({"error": "Content is required"}), 400
 
             async def analyze():
-                await app.ai_integration.initialize()
-                return await app.ai_integration.process_document(
+                await app.config["AI_INTEGRATION"].initialize()
+                return await app.config["AI_INTEGRATION"].process_document(
                     {
                         "content": content,
                         "metadata": {
@@ -415,7 +415,7 @@ def register_routes(app: Flask):
     @app.route("/api/ai/health")
     def ai_health():
         """Check AI services health."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             return jsonify({"status": "disabled", "message": "AI services not configured"})
 
         try:
@@ -449,7 +449,7 @@ def register_routes(app: Flask):
     @app.route("/api/ai/search", methods=["POST"])
     def ai_search():
         """Enhanced AI-powered search."""
-        if not app.ai_integration:
+        if not app.config["AI_INTEGRATION"]:
             # Fallback to regular search
             return search()
 
@@ -465,8 +465,8 @@ def register_routes(app: Flask):
             async def enhanced_search():
                 # Try AI search first
                 try:
-                    await app.ai_integration.initialize()
-                    ai_results = await app.ai_integration.query_knowledge(query, filters)
+                    await app.config["AI_INTEGRATION"].initialize()
+                    ai_results = await app.config["AI_INTEGRATION"].query_knowledge(query, filters)
 
                     if "documents" in ai_results:
                         return {

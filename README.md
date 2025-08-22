@@ -2,7 +2,7 @@
 
 **A comprehensive AI-powered document parser for converting and analyzing academic materials**
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/noteparser.svg)](https://badge.fury.io/py/noteparser)
 [![CI](https://github.com/CollegeNotesOrg/noteparser/workflows/CI/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
@@ -113,9 +113,9 @@ choco install tesseract ffmpeg poppler
 
 #### Python Version Compatibility
 
-- **Python 3.9+** is required (updated from 3.8+ in v2.1.0)
-- Tested on Python 3.9, 3.10, 3.11, and 3.12
-- **Python 3.8** support was removed due to compatibility issues with mypy and modern typing features
+- **Python 3.10+** is required (updated from 3.9+ due to markitdown dependency)
+- Tested on Python 3.10, 3.11, and 3.12
+- **Python 3.9 and earlier** support was removed due to compatibility requirements with latest dependencies
 
 ### Basic Usage
 
@@ -509,7 +509,7 @@ make lint  # Runs black, ruff, and mypy
 
 The project uses GitHub Actions for continuous integration with the following jobs:
 
-- **Cross-platform testing** (Ubuntu, Windows, macOS) on Python 3.9-3.12
+- **Cross-platform testing** (Ubuntu, Windows, macOS) on Python 3.10-3.12
 - **Code quality checks** (black, ruff, mypy)
 - **Security scans** (bandit, safety)
 - **Performance benchmarking** with pytest-benchmark

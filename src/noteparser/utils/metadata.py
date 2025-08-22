@@ -4,7 +4,7 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class MetadataExtractor:
         Returns:
             Dictionary with path-based metadata
         """
-        metadata = {}
+        metadata: dict[str, Any] = {}
 
         # Get path parts
         parts = file_path.parts
@@ -108,7 +108,7 @@ class MetadataExtractor:
         Returns:
             Dictionary with content-based metadata
         """
-        metadata = {}
+        metadata: dict[str, Any] = {}
 
         # Basic statistics
         lines = content.split("\n")
@@ -149,7 +149,7 @@ class MetadataExtractor:
 
         return metadata
 
-    def _extract_course_code(self, text: str) -> Optional[str]:
+    def _extract_course_code(self, text: str) -> str | None:
         """Extract course code from text.
 
         Args:
@@ -161,10 +161,10 @@ class MetadataExtractor:
         for pattern in self.course_patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
             if matches:
-                return matches[0].upper().replace(" ", "")
+                return str(matches[0]).upper().replace(" ", "")
         return None
 
-    def _extract_topic(self, filename: str) -> Optional[str]:
+    def _extract_topic(self, filename: str) -> str | None:
         """Extract topic/subject from filename.
 
         Args:
@@ -196,7 +196,7 @@ class MetadataExtractor:
 
         return clean_name if clean_name and len(clean_name) > 2 else None
 
-    def _extract_date_from_string(self, text: str) -> Optional[str]:
+    def _extract_date_from_string(self, text: str) -> str | None:
         """Extract date from text.
 
         Args:
@@ -208,7 +208,7 @@ class MetadataExtractor:
         for pattern in self.date_patterns:
             matches = re.findall(pattern, text)
             if matches:
-                date_str = matches[0]
+                date_str = str(matches[0])
                 # Try to parse and normalize
                 try:
                     if "-" in date_str and len(date_str.split("-")[0]) == 4:
@@ -223,7 +223,7 @@ class MetadataExtractor:
                     continue
         return None
 
-    def _extract_title(self, content: str) -> Optional[str]:
+    def _extract_title(self, content: str) -> str | None:
         """Extract document title from content.
 
         Args:
@@ -252,7 +252,7 @@ class MetadataExtractor:
 
         return None
 
-    def _extract_author(self, content: str) -> Optional[str]:
+    def _extract_author(self, content: str) -> str | None:
         """Extract author from content.
 
         Args:
@@ -271,7 +271,7 @@ class MetadataExtractor:
         for pattern in author_patterns:
             matches = re.findall(pattern, content, re.IGNORECASE)
             if matches:
-                return matches[0].strip()
+                return str(matches[0]).strip()
 
         return None
 
@@ -307,7 +307,7 @@ class MetadataExtractor:
 
         return list({tag.strip() for tag in tags if tag.strip()})
 
-    def _identify_document_type(self, filename: str) -> Optional[str]:
+    def _identify_document_type(self, filename: str) -> str | None:
         """Identify document type from filename.
 
         Args:

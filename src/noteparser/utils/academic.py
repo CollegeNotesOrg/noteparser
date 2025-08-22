@@ -2,7 +2,7 @@
 
 import re
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -12,7 +12,7 @@ class Citation:
     id: str
     type: str  # 'numeric', 'author-year', 'footnote'
     text: str
-    page_number: Optional[int] = None
+    page_number: int | None = None
 
 
 @dataclass
@@ -104,7 +104,7 @@ class AcademicProcessor:
 
         # Extract bibliography entries
         entries = []
-        current_entry = []
+        current_entry: list[str] = []
 
         for i in range(bibliography_start + 1, len(lines)):
             line = lines[i].strip()
@@ -188,7 +188,7 @@ class AcademicProcessor:
                             },
                         )
 
-        max_depth = max([s["level"] for s in sections]) if sections else 0
+        max_depth: int = max([s["level"] for s in sections]) if sections else 0
 
         return TableOfContents(sections=sections, total_sections=len(sections), max_depth=max_depth)
 
@@ -207,7 +207,7 @@ class AcademicProcessor:
         lines = ["## Citations Found", ""]
 
         # Group by type
-        by_type = {}
+        by_type: dict[str, list[Citation]] = {}
         for citation in citations:
             if citation.type not in by_type:
                 by_type[citation.type] = []
@@ -250,7 +250,7 @@ class AcademicProcessor:
 
         return "\n".join(lines)
 
-    def _estimate_page_number(self, content: str, position: int) -> Optional[int]:
+    def _estimate_page_number(self, content: str, position: int) -> int | None:
         """Estimate page number based on position in content.
 
         Args:

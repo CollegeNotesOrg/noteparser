@@ -6,7 +6,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 class ServiceClientManager:
     """Manager for all AI service clients."""
 
-    def __init__(self, config_path: Optional[str] = None):
-        self.clients = {}
+    def __init__(self, config_path: str | None = None):
+        self.clients: dict[str, AIServiceClient] = {}
         self.config = self._load_config(config_path)
 
-    def _load_config(self, config_path: Optional[str]) -> dict[str, Any]:
+    def _load_config(self, config_path: str | None) -> dict[str, Any]:
         """Load configuration from file or environment variables."""
         config = {}
 
@@ -180,7 +180,7 @@ class AIServiceClient:
             return {"status": "error", "error": str(e)}
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def get(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    async def get(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make GET request to service."""
         try:
             response = await self.client.get(f"{self.base_url}/{endpoint}", params=params)
@@ -197,7 +197,7 @@ class AIServiceClient:
 class RagFlowClient(AIServiceClient):
     """Client specifically for RagFlow service."""
 
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: str | None = None):
         if base_url is None:
             base_url = os.getenv("RAGFLOW_URL", "http://localhost:8010")
         super().__init__("ragflow", base_url)
@@ -206,7 +206,7 @@ class RagFlowClient(AIServiceClient):
         """Index a document in RagFlow."""
         return await self.post("index", {"content": content, "metadata": metadata})
 
-    async def query(self, query: str, k: int = 5, filters: Optional[dict] = None) -> dict[str, Any]:
+    async def query(self, query: str, k: int = 5, filters: dict | None = None) -> dict[str, Any]:
         """Query RagFlow for answers."""
         return await self.post("query", {"query": query, "k": k, "filters": filters or {}})
 
@@ -222,7 +222,7 @@ class RagFlowClient(AIServiceClient):
 class DeepWikiClient(AIServiceClient):
     """Client specifically for DeepWiki service."""
 
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: str | None = None):
         if base_url is None:
             base_url = os.getenv("DEEPWIKI_URL", "http://localhost:8011")
         super().__init__("deepwiki", base_url)
@@ -231,7 +231,7 @@ class DeepWikiClient(AIServiceClient):
         self,
         title: str,
         content: str,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> dict[str, Any]:
         """Create a wiki article."""
         return await self.post(
@@ -254,14 +254,14 @@ class DeepWikiClient(AIServiceClient):
     async def ask_assistant(
         self,
         question: str,
-        context_articles: Optional[list[str]] = None,
+        context_articles: list[str] | None = None,
     ) -> dict[str, Any]:
         """Ask the AI assistant a question."""
         return await self.post("ask", {"question": question, "context_articles": context_articles})
 
     async def get_link_graph(
         self,
-        article_id: Optional[str] = None,
+        article_id: str | None = None,
         depth: int = 2,
     ) -> dict[str, Any]:
         """Get the wiki link graph."""

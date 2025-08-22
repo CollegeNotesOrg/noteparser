@@ -38,7 +38,7 @@ Entries are created during the release process using `scripts/generate-changelog
 - 📊 Searchable document indexing
 
 ### Dependencies
-- Python 3.8+ required
+- Python 3.10+ required
 - Microsoft MarkItDown for core parsing
 - Flask for web interface
 - Various academic processing libraries

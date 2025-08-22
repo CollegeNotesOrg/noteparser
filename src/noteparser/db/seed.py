@@ -13,7 +13,6 @@ import sqlite3
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -25,13 +24,13 @@ logger = logging.getLogger(__name__)
 class DatabaseSeeder:
     """Database seeder for noteparser development and testing."""
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str | None = None):
         """Initialize database seeder.
 
         Args:
             db_path: Path to SQLite database file
         """
-        self.db_path = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
+        self.db_path: str = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
 
         if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Database not found: {self.db_path}")
@@ -306,7 +305,8 @@ This is an eigenvalue equation where E represents energy eigenvalues.
                     ),
                 )
 
-                document_ids.append(cursor.lastrowid)
+                if cursor.lastrowid is not None:
+                    document_ids.append(cursor.lastrowid)
 
             conn.commit()
 
@@ -316,7 +316,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
     def seed_ai_processing_results(
         self,
         document_ids: list[int],
-        count: Optional[int] = None,
+        count: int | None = None,
     ) -> int:
         """Seed AI processing results.
 
@@ -393,7 +393,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
     def seed_document_relationships(
         self,
         document_ids: list[int],
-        count: Optional[int] = None,
+        count: int | None = None,
     ) -> int:
         """Seed document relationships.
 
@@ -454,7 +454,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Created {relationships_created} document relationships")
         return relationships_created
 
-    def seed_processing_queue(self, document_ids: list[int], count: Optional[int] = None) -> int:
+    def seed_processing_queue(self, document_ids: list[int], count: int | None = None) -> int:
         """Seed processing queue entries.
 
         Args:
@@ -537,7 +537,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         """
         logger.info("Seeding service health data")
 
-        services = [
+        services: list[dict[str, str | float]] = [
             {"name": "ragflow", "base_response_time": 0.5},
             {"name": "deepwiki", "base_response_time": 0.8},
             {"name": "langextract", "base_response_time": 1.2},
@@ -556,10 +556,13 @@ This is an eigenvalue equation where E represents energy eigenvalues.
                     status = random.choice(statuses)
 
                     if status == "healthy":
-                        response_time = service["base_response_time"] * random.uniform(0.8, 1.5)
+                        response_time = float(service["base_response_time"]) * random.uniform(
+                            0.8,
+                            1.5,
+                        )
                         error_message = None
                     else:
-                        response_time = service["base_response_time"] * random.uniform(5, 20)
+                        response_time = float(service["base_response_time"]) * random.uniform(5, 20)
                         error_message = random.choice(
                             [
                                 "Connection refused",

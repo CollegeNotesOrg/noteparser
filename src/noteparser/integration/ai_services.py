@@ -6,7 +6,7 @@ Integrates various AI/ML services into the noteparser workflow.
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .service_client import ServiceClientManager
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AIServicesIntegration:
     """Main integration class for AI services."""
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.manager = ServiceClientManager()
         self.services_initialized = False
@@ -69,18 +69,19 @@ class AIServicesIntegration:
             results["rag_indexing"] = rag_result
 
             # Extract insights
-            insights = await ragflow.extract_insights({"content": content})
+            insights = await ragflow.post("extract_insights", {"content": content})
             results["ragflow_insights"] = insights
 
         except Exception as e:
             logger.exception(f"RagFlow processing failed: {e}")
-            results["rag_error"] = str(e)
+            results["rag_error"] = {"error": str(e)}
 
         # Create wiki article
         try:
             deepwiki = self.manager.get_client("deepwiki")
 
-            wiki_result = await deepwiki.create_article(
+            wiki_result = await deepwiki.post(
+                "create_article",
                 {
                     "title": metadata.get("title", "Untitled"),
                     "content": content,
@@ -91,11 +92,11 @@ class AIServicesIntegration:
 
         except Exception as e:
             logger.exception(f"DeepWiki processing failed: {e}")
-            results["wiki_error"] = str(e)
+            results["wiki_error"] = {"error": str(e)}
 
         return results
 
-    async def query_knowledge(self, query: str, filters: Optional[dict] = None) -> dict[str, Any]:
+    async def query_knowledge(self, query: str, filters: dict | None = None) -> dict[str, Any]:
         """Query the knowledge base."""
         if not self.services_initialized:
             raise RuntimeError("AI services not initialized")
@@ -105,13 +106,16 @@ class AIServicesIntegration:
         # Query through RagFlow
         try:
             ragflow = self.manager.get_client("ragflow")
-            rag_response = await ragflow.query({"query": query, "k": 5, "filters": filters or {}})
+            rag_response = await ragflow.post(
+                "query",
+                {"query": query, "k": 5, "filters": filters or {}},
+            )
             # Extract documents and answer from the response
             results["documents"] = rag_response.get("documents", [])
             results["answer"] = rag_response.get("answer", "")
         except Exception as e:
             logger.exception(f"RagFlow query failed: {e}")
-            results["rag_error"] = str(e)
+            results["rag_error"] = {"error": str(e)}
 
         # Query through DeepWiki
         try:
@@ -127,7 +131,7 @@ class AIServicesIntegration:
 
         except Exception as e:
             logger.exception(f"DeepWiki query failed: {e}")
-            results["wiki_error"] = str(e)
+            results["wiki_error"] = {"error": str(e)}
 
         return results
 
@@ -145,7 +149,7 @@ class AIServicesIntegration:
             results["knowledge_graph"] = graph_result
         except Exception as e:
             logger.exception(f"Knowledge graph retrieval failed: {e}")
-            results["organization_error"] = str(e)
+            results["organization_error"] = {"error": str(e)}
 
         return results
 

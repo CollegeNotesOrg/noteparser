@@ -5,7 +5,7 @@ import inspect
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class BasePlugin(ABC):
     supported_formats: list[str] = []
     course_types: list[str] = []  # e.g., ['math', 'cs', 'chemistry']
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """Initialize the plugin.
 
         Args:
@@ -100,7 +100,7 @@ class BasePlugin(ABC):
 class PluginManager:
     """Manages loading and execution of plugins."""
 
-    def __init__(self, plugin_dirs: Optional[list[Path]] = None):
+    def __init__(self, plugin_dirs: list[Path] | None = None):
         """Initialize plugin manager.
 
         Args:
@@ -163,7 +163,7 @@ class PluginManager:
                     self.plugins[plugin_instance.name] = plugin_instance
                     logger.info(f"Loaded plugin: {plugin_instance.name} v{plugin_instance.version}")
 
-    def get_plugin(self, name: str) -> Optional[BasePlugin]:
+    def get_plugin(self, name: str) -> BasePlugin | None:
         """Get a plugin by name.
 
         Args:
@@ -210,7 +210,11 @@ class PluginManager:
         Returns:
             Processed content and metadata
         """
-        result = {"content": content, "metadata": metadata.copy(), "plugin_results": {}}
+        result: dict[str, Any] = {
+            "content": content,
+            "metadata": metadata.copy(),
+            "plugin_results": {},
+        }
 
         applicable_plugins = self.get_plugins_for_file(file_path, metadata)
 

@@ -3,10 +3,10 @@
 import json
 import logging
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 
@@ -21,11 +21,7 @@ class RepositoryConfig:
     path: Path
     type: str  # 'notes', 'parser', 'templates', 'dashboard'
     auto_sync: bool = True
-    formats: list[str] = None
-
-    def __post_init__(self):
-        if self.formats is None:
-            self.formats = ["markdown"]
+    formats: list[str] = field(default_factory=lambda: ["markdown"])
 
 
 @dataclass
@@ -43,7 +39,7 @@ class CrossReference:
 class OrganizationSync:
     """Manages synchronization across multiple repositories in the organization."""
 
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Path | None = None):
         """Initialize organization sync.
 
         Args:
@@ -57,7 +53,8 @@ class OrganizationSync:
         """Load organization configuration."""
         if self.config_path.exists():
             with open(self.config_path) as f:
-                return yaml.safe_load(f)
+                result = yaml.safe_load(f)
+                return result if isinstance(result, dict) else {}
 
         # Default configuration
         default_config = {
@@ -140,7 +137,7 @@ class OrganizationSync:
         self,
         source_files: list[Path],
         target_repo: str = "study-notes",
-        course: Optional[str] = None,
+        course: str | None = None,
     ) -> dict[str, Any]:
         """Sync parsed notes to the target repository.
 
@@ -237,7 +234,7 @@ class OrganizationSync:
         Returns:
             Comprehensive index structure
         """
-        index = {
+        index: dict[str, Any] = {
             "metadata": {
                 "generated_at": datetime.now().isoformat(),
                 "repositories": list(self.repositories.keys()),
@@ -347,7 +344,7 @@ class OrganizationSync:
 
         return len(intersection) / len(union)
 
-    def _get_repository_for_file(self, file_path: Path) -> Optional[str]:
+    def _get_repository_for_file(self, file_path: Path) -> str | None:
         """Get repository name for a given file path.
 
         Args:

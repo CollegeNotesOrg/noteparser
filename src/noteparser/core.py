@@ -1,7 +1,7 @@
 """Core NoteParser implementation."""
 
 from pathlib import Path
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 from markitdown import MarkItDown
 
@@ -47,8 +47,8 @@ class NoteParser:
 
     def __init__(
         self,
-        config: Optional[dict[str, Any]] = None,
-        llm_client: Optional[Any] = None,
+        config: dict[str, Any] | None = None,
+        llm_client: Any | None = None,
         enable_ai: bool = False,
     ):
         """Initialize NoteParser with optional configuration.
@@ -78,7 +78,7 @@ class NoteParser:
 
     def parse_to_markdown(
         self,
-        file_path: Union[str, Path],
+        file_path: str | Path,
         extract_metadata: bool = True,
         preserve_formatting: bool = True,
     ) -> dict[str, Any]:
@@ -107,7 +107,7 @@ class NoteParser:
             result = self.markitdown.convert(str(file_path))
             markdown_content = result.text_content
 
-            output = {"content": markdown_content}
+            output: dict[str, Any] = {"content": markdown_content}
 
             if extract_metadata:
                 metadata = self.metadata_extractor.extract(file_path, markdown_content)
@@ -124,8 +124,8 @@ class NoteParser:
 
     def parse_to_latex(
         self,
-        file_path: Union[str, Path],
-        template: Optional[str] = None,
+        file_path: str | Path,
+        template: str | None = None,
         extract_metadata: bool = True,
     ) -> dict[str, Any]:
         """Parse document to LaTeX format.
@@ -142,7 +142,7 @@ class NoteParser:
 
         latex_content = self.latex_converter.convert(
             markdown_result["content"],
-            template=template,
+            template=template or "default",
             metadata=markdown_result.get("metadata", {}),
         )
 
@@ -154,10 +154,10 @@ class NoteParser:
 
     def parse_batch(
         self,
-        directory: Union[str, Path],
+        directory: str | Path,
         output_format: str = "markdown",
         recursive: bool = True,
-        pattern: Optional[str] = None,
+        pattern: str | None = None,
     ) -> dict[str, dict[str, Any]]:
         """Parse multiple documents in a directory.
 
@@ -314,7 +314,7 @@ class NoteParser:
 
     async def parse_to_markdown_with_ai(
         self,
-        file_path: Union[str, Path],
+        file_path: str | Path,
         extract_metadata: bool = True,
         preserve_formatting: bool = True,
     ) -> dict[str, Any]:
@@ -355,7 +355,7 @@ class NoteParser:
 
         return result
 
-    async def query_knowledge(self, query: str, filters: Optional[dict] = None) -> dict[str, Any]:
+    async def query_knowledge(self, query: str, filters: dict | None = None) -> dict[str, Any]:
         """Query the AI knowledge base.
 
         Args:
