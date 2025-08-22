@@ -188,7 +188,11 @@ class AcademicProcessor:
                             },
                         )
 
-        max_depth = max((int(s["level"]) for s in sections), default=0) if sections else 0
+        max_depth = (
+            max((s["level"] for s in sections if isinstance(s["level"], int)), default=0)
+            if sections
+            else 0
+        )
 
         return TableOfContents(sections=sections, total_sections=len(sections), max_depth=max_depth)
 

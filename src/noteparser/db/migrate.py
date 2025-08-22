@@ -54,9 +54,11 @@ class MigrationRunner:
             db_path: Path to SQLite database file
             migrations_dir: Directory containing migration files
         """
-        self.db_path = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
-        if self.db_path is None:
-            raise ValueError("Database path cannot be None")
+        self.db_path: str = (
+            db_path or os.getenv("DATABASE_PATH", "noteparser.db") or "noteparser.db"
+        )
+        if not self.db_path:
+            raise ValueError("Database path cannot be empty")
         self.migrations_dir = Path(migrations_dir or Path(__file__).parent / "migrations")
         self.migrations_dir.mkdir(exist_ok=True)
 
