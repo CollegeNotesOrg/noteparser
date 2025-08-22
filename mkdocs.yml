@@ -40,6 +40,7 @@ theme:
     - content.code.copy
     - content.action.edit
     - content.action.view
+    - navigation.footer
 
 plugins:
   - search
@@ -90,6 +91,9 @@ extra:
       link: https://pypi.org/project/noteparser/
   version:
     provider: mike
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
 
 extra_css:
   - stylesheets/extra.css
