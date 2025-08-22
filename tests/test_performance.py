@@ -443,8 +443,7 @@ class TestBenchmarks:
         successful = sum(1 for r in result.values() if "error" not in r)
         assert successful == 10
 
-    @pytest.mark.asyncio()
-    async def test_async_operations_benchmark(self, benchmark):
+    def test_async_operations_benchmark(self, benchmark):
         """Benchmark async operation performance."""
         manager = ServiceClientManager()
 
@@ -458,12 +457,13 @@ class TestBenchmarks:
             mock_client.health_check.side_effect = fast_health_check
             manager.clients[service] = mock_client
 
-        # Benchmark async health check
-        @benchmark
-        def async_health_check():
+        # Benchmark async health check by running it in new event loop
+        def sync_health_check():
             return asyncio.run(manager.health_check_all())
 
-        result = async_health_check()
+        # Run the benchmark
+        result = benchmark(sync_health_check)
+
         assert "ragflow" in result
         assert "deepwiki" in result
 
