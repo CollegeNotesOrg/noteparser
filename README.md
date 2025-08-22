@@ -5,8 +5,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/noteparser.svg)](https://badge.fury.io/py/noteparser)
-[![CI](https://github.com/CollegeNotesOrg/noteparser/workflows/CI/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
-[![codecov](https://codecov.io/gh/CollegeNotesOrg/noteparser/branch/master/graph/badge.svg)](https://codecov.io/gh/CollegeNotesOrg/noteparser)
+[![CI](https://github.com/CollegeNotesOrg/noteparser/actions/workflows/ci.yml/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
+[![Release](https://github.com/CollegeNotesOrg/noteparser/actions/workflows/publish.yml/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
 
 NoteParser is a powerful AI-enhanced academic document processing system built on Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) library. It combines traditional document parsing with cutting-edge AI services to provide intelligent document analysis, semantic search, and knowledge extraction for university students and educators.
 
@@ -89,7 +89,7 @@ pip install -e .[dev]     # Development tools only
 pip install -e .[ai]      # AI features only
 ```
 
-> **Note**: As of v2.1.0, all dependencies are managed through `pyproject.toml`. The `requirements.txt` files are maintained for compatibility but using pip extras is the recommended approach.
+> **Note**: As of v2.1.2, all dependencies are managed through `pyproject.toml`. The `requirements.txt` files are maintained for compatibility but using pip extras is the recommended approach.
 
 #### System Dependencies
 
@@ -591,7 +591,7 @@ pip install noteparser[all]      # Everything
 
 - **Documentation**: [https://collegenotesorg.github.io/noteparser/](https://collegenotesorg.github.io/noteparser/)
 - **Issues**: [GitHub Issues](https://github.com/CollegeNotesOrg/noteparser/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/CollegeNotesOrg/noteparser/discussions)
+- **Source Code**: [GitHub Repository](https://github.com/CollegeNotesOrg/noteparser)
 
 ---
 
