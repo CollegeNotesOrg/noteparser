@@ -1,7 +1,7 @@
 """Core NoteParser implementation."""
 
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from markitdown import MarkItDown
 
@@ -13,7 +13,7 @@ from .utils.metadata import MetadataExtractor
 class NoteParser:
     """Main parser class that orchestrates document conversion."""
 
-    SUPPORTED_FORMATS = {
+    SUPPORTED_FORMATS: ClassVar = {
         ".pdf",
         ".docx",
         ".doc",

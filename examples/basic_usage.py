@@ -52,7 +52,9 @@ def example_single_document():
     try:
         # Parse to Markdown with metadata extraction
         result = parser.parse_to_markdown(
-            sample_file, extract_metadata=True, preserve_formatting=True,
+            sample_file,
+            extract_metadata=True,
+            preserve_formatting=True,
         )
 
         print(f"✅ Successfully parsed {sample_file}")
@@ -292,7 +294,9 @@ def example_plugin_usage():
         # Process with plugins
         metadata = {"course": "MATH301", "topic": "Calculus"}
         result = plugin_manager.process_with_plugins(
-            file_path=temp_file, content=math_content, metadata=metadata,
+            file_path=temp_file,
+            content=math_content,
+            metadata=metadata,
         )
 
         print("🔄 Processed content with plugins:")

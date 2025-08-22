@@ -195,7 +195,7 @@ def sync(target_repo: str, course: Optional[str], files: list[Path]):
     default="json",
     help="Output format",
 )
-def index(format: str):
+def index(format: str):  # noqa: A002
     """Generate organization-wide index of notes."""
     try:
         org_sync = OrganizationSync()

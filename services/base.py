@@ -102,7 +102,10 @@ class BaseService(ABC):
                 logger.error(f"Error in health check loop: {e}")
 
     async def call_api(
-        self, endpoint: str, method: str = "GET", data: Optional[dict] = None,
+        self,
+        endpoint: str,
+        method: str = "GET",
+        data: Optional[dict] = None,
     ) -> dict[str, Any]:
         """Make API call to the service."""
         if not self._session:

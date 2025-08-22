@@ -1,6 +1,7 @@
 """Tests for plugin system functionality."""
 
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -15,8 +16,8 @@ class TestPlugin(BasePlugin):
     name = "test_plugin"
     version = "1.0.0"
     description = "Test plugin for unit testing"
-    supported_formats = [".txt", ".md"]
-    course_types = ["test", "demo"]
+    supported_formats: ClassVar = [".txt", ".md"]
+    course_types: ClassVar = ["test", "demo"]
 
     def process_content(self, content: str, metadata: dict) -> dict:
         """Simple test processing - just add a prefix."""

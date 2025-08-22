@@ -287,7 +287,10 @@ def main():
     parser.add_argument("--version", "-v", help="Generate changelog for specific version")
     parser.add_argument("--full", "-f", action="store_true", help="Regenerate full changelog")
     parser.add_argument(
-        "--repo-path", "-r", type=Path, help="Repository path (default: current directory)",
+        "--repo-path",
+        "-r",
+        type=Path,
+        help="Repository path (default: current directory)",
     )
 
     args = parser.parse_args()
