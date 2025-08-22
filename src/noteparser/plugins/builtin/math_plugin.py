@@ -65,6 +65,21 @@ class MathPlugin(BasePlugin):
         Returns:
             Tuple of (processed_content, equations_count)
         """
+        # Count display equations
+        display_count = len(re.findall(r"\$\$(.*?)\$\$", content, re.DOTALL))
+
+        # Count inline equations (not part of display equations)
+        # First, temporarily replace display equations to avoid counting them
+        temp_content = re.sub(
+            r"\$\$(.*?)\$\$",
+            "DISPLAY_EQUATION_PLACEHOLDER",
+            content,
+            flags=re.DOTALL,
+        )
+        inline_count = len(re.findall(r"\$([^$]+)\$", temp_content))
+
+        total_equations = display_count + inline_count
+
         equation_count = 0
 
         # Display equations ($$...$$)
@@ -85,7 +100,7 @@ class MathPlugin(BasePlugin):
         content = re.sub(r"\$([^$]+)\$", r" $\1$ ", content)
         content = re.sub(r"\s+", " ", content)  # Clean up extra spaces
 
-        return content, equation_count
+        return content, total_equations
 
     def _format_theorems(self, content: str) -> tuple[str, int]:
         """Format theorems, lemmas, and proofs.

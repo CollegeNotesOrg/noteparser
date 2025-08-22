@@ -51,17 +51,20 @@ class BasePlugin(ABC):
             True if plugin can handle this file
         """
         # Check file extension
+        format_match = True  # Default to True if no restrictions
         if self.supported_formats:
-            if file_path.suffix.lower() not in self.supported_formats:
-                return False
+            format_match = file_path.suffix.lower() in self.supported_formats
 
         # Check course type
+        course_match = True  # Default to True if no restrictions
         if self.course_types:
             course = metadata.get("course", "").lower()
-            if not any(course_type in course for course_type in self.course_types):
-                return False
+            if course:  # Only check if course is provided
+                course_match = any(course_type in course for course_type in self.course_types)
+            # If no course provided but plugin has course restrictions, allow it (course is optional)
 
-        return True
+        # Plugin can handle if format matches AND (no course restrictions OR course matches)
+        return format_match and course_match
 
     def validate_config(self) -> list[str]:
         """Validate plugin configuration.
