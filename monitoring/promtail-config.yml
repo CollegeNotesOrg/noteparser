@@ -1,0 +1,253 @@
+# Promtail configuration for shipping logs to Loki
+
+# Server configuration
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+# Position file to track log reading progress
+positions:
+  filename: /tmp/positions.yaml
+
+# Loki client configuration
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    tenant_id: noteparser-prod
+    backoff_config:
+      min_period: 100ms
+      max_period: 10s
+      max_retries: 10
+    batchsize: 1048576
+    batchwait: 1s
+    timeout: 10s
+
+# Scrape configurations
+scrape_configs:
+  # Application logs
+  - job_name: noteparser-app
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: noteparser-app
+          environment: production
+          service: noteparser
+          __path__: /var/log/noteparser/*.log
+    pipeline_stages:
+      # Parse timestamp
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      # Extract log level
+      - regex:
+          expression: '(?P<timestamp>\S+)\s+-\s+(?P<logger>\S+)\s+-\s+(?P<level>\S+)\s+-\s+(?P<message>.*)'
+      # Set log level label
+      - labels:
+          level:
+          logger:
+
+  # AI Services logs
+  - job_name: ragflow-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: ragflow-service
+          environment: production
+          service: ragflow
+          __path__: /var/log/ragflow/*.log
+    pipeline_stages:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - regex:
+          expression: '(?P<timestamp>\S+)\s+-\s+(?P<logger>\S+)\s+-\s+(?P<level>\S+)\s+-\s+(?P<message>.*)'
+      - labels:
+          level:
+          logger:
+
+  - job_name: deepwiki-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: deepwiki-service
+          environment: production
+          service: deepwiki
+          __path__: /var/log/deepwiki/*.log
+    pipeline_stages:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - regex:
+          expression: '(?P<timestamp>\S+)\s+-\s+(?P<logger>\S+)\s+-\s+(?P<level>\S+)\s+-\s+(?P<message>.*)'
+      - labels:
+          level:
+          logger:
+
+  - job_name: dolphin-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: dolphin-service
+          environment: production
+          service: dolphin
+          __path__: /var/log/dolphin/*.log
+    pipeline_stages:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - regex:
+          expression: '(?P<timestamp>\S+)\s+-\s+(?P<logger>\S+)\s+-\s+(?P<level>\S+)\s+-\s+(?P<message>.*)'
+      - labels:
+          level:
+          logger:
+
+  - job_name: langextract-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: langextract-service
+          environment: production
+          service: langextract
+          __path__: /var/log/langextract/*.log
+    pipeline_stages:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - regex:
+          expression: '(?P<timestamp>\S+)\s+-\s+(?P<logger>\S+)\s+-\s+(?P<level>\S+)\s+-\s+(?P<message>.*)'
+      - labels:
+          level:
+          logger:
+
+  # Nginx access logs
+  - job_name: nginx-access
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx-access
+          environment: production
+          service: nginx
+          log_type: access
+          __path__: /var/log/nginx/access.log
+    pipeline_stages:
+      # Parse nginx access log format
+      - regex:
+          expression: '^(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) (?P<path>\S+) (?P<protocol>\S+)" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>[^"]*)" "(?P<http_user_agent>[^"]*)"'
+      # Extract additional timing information if present
+      - regex:
+          expression: 'rt=(?P<request_time>\S+) uct="(?P<upstream_connect_time>\S+)" uht="(?P<upstream_header_time>\S+)" urt="(?P<upstream_response_time>\S+)"'
+      # Add labels
+      - labels:
+          method:
+          status:
+          log_type: access
+      # Convert status to number for filtering
+      - template:
+          source: status_code
+          template: '{{ .status }}'
+
+  # Nginx error logs
+  - job_name: nginx-error
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx-error
+          environment: production
+          service: nginx
+          log_type: error
+          __path__: /var/log/nginx/error.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\S+ \S+) \[(?P<level>\w+)\] (?P<pid>\d+)#(?P<tid>\d+): \*(?P<connection_id>\d+) (?P<message>.*)'
+      - timestamp:
+          source: timestamp
+          format: '2006/01/02 15:04:05'
+      - labels:
+          level:
+          log_type: error
+
+  # System logs (Docker container logs)
+  - job_name: docker-containers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["logging=promtail"]
+    relabel_configs:
+      # Set container name as job label
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.+)'
+        target_label: container_name
+      # Set image name as label
+      - source_labels: ['__meta_docker_container_image']
+        target_label: image_name
+      # Set compose project as label
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        target_label: compose_project
+      # Set compose service as label  
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: compose_service
+    pipeline_stages:
+      # Parse JSON logs from Docker
+      - json:
+          expressions:
+            timestamp: time
+            message: log
+            stream: stream
+      # Use Docker timestamp
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      # Add stream label (stdout/stderr)
+      - labels:
+          stream:
+      # Clean up message (remove trailing newline)
+      - replace:
+          expression: '(?P<message>.*)\n'
+          replace: '{{ .message }}'
+
+  # PostgreSQL logs
+  - job_name: postgresql
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: postgresql
+          environment: production
+          service: postgresql
+          __path__: /var/log/postgresql/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\S+ \S+ \S+) \[(?P<pid>\d+)\] (?P<level>\S+):  (?P<message>.*)'
+      - timestamp:
+          source: timestamp
+          format: '2006-01-02 15:04:05.000 MST'
+      - labels:
+          level:
+
+  # Redis logs  
+  - job_name: redis
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: redis
+          environment: production
+          service: redis
+          __path__: /var/log/redis/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<pid>\d+):(?P<role>\w) (?P<timestamp>\S+ \S+) (?P<level>\S+) (?P<message>.*)'
+      - timestamp:
+          source: timestamp
+          format: '02 Jan 15:04:05.000'
+      - labels:
+          level:
+          role:

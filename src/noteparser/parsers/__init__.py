@@ -3,4 +3,4 @@
 from .audio import AudioTranscriber
 from .ocr import OCRProcessor
 
-__all__ = ['AudioTranscriber', 'OCRProcessor']
+__all__ = ["AudioTranscriber", "OCRProcessor"]

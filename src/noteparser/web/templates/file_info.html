@@ -1,0 +1,759 @@
+{% extends "base.html" %}
+
+{% block title %}File Info: {{ file.filename }} - NoteParser{% endblock %}
+
+{% block extra_head %}
+<style>
+.file-info-header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+
+.info-card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-card-body {
+    padding: 1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #333;
+    font-size: 1rem;
+    word-break: break-all;
+}
+
+.file-status-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.status-timeline {
+    position: relative;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 100%;
+    width: 2px;
+    height: 100%;
+    background-color: #dee2e6;
+}
+
+.timeline-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-title {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.timeline-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.icon-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.icon-processing {
+    background-color: #cce5ff;
+    color: #004085;
+    animation: pulse 2s infinite;
+}
+
+.icon-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.icon-failed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.ai-insights-card {
+    border-left: 4px solid #17a2b8;
+}
+
+.insights-summary {
+    background: #f8f9fa;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    border: 1px solid #bbdefb;
+}
+
+.tag-entity { background: #e8f5e8; color: #2e7d32; border-color: #c8e6c9; }
+.tag-concept { background: #fff3e0; color: #ef6c00; border-color: #ffcc02; }
+.tag-topic { background: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; }
+
+.readability-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.score-bar {
+    flex: 1;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.score-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.score-excellent { background: #28a745; }
+.score-good { background: #17a2b8; }
+.score-fair { background: #ffc107; }
+.score-difficult { background: #dc3545; }
+
+.processing-details {
+    background: #f8f9fa;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.detail-value {
+    color: #333;
+}
+
+.actions-card {
+    border-left: 4px solid #28a745;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-primary-action {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary-action {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-success-action {
+    background: #28a745;
+    color: white;
+}
+
+.btn-warning-action {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-danger-action {
+    background: #dc3545;
+    color: white;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.related-files {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.related-file-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.related-file-item:hover {
+    background: #e9ecef;
+    border-color: var(--primary-color);
+}
+
+.related-file-name {
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.related-file-relationship {
+    background: #fff;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.related-file-confidence {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.error-card {
+    border-left: 4px solid #dc3545;
+    background: #f8f9fa;
+}
+
+.error-message {
+    background: #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #f1b0b7;
+}
+
+.error-details {
+    font-family: monospace;
+    font-size: 0.9rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        justify-content: center;
+    }
+    
+    .related-files {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="file-info-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 m-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('repository') }}" class="text-white-50">Repository</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ file.filename }}</li>
+            </ol>
+        </nav>
+        <h1 class="mt-2"><i class="{{ get_file_icon(file.file_type) }}"></i> {{ file.filename }}</h1>
+        <p class="mb-0">Detailed file information and processing status</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="info-grid">
+        <!-- Basic File Information -->
+        <div class="info-card">
+            <div class="info-card-header">
+                <h4><i class="fas fa-info-circle"></i> Basic Information</h4>
+            </div>
+            <div class="info-card-body">
+                <div class="info-item">
+                    <div class="info-label">Filename</div>
+                    <div class="info-value">{{ file.filename }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">File Type</div>
+                    <div class="info-value">{{ file.mime_type or file.file_type.upper() }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">File Size</div>
+                    <div class="info-value">
+                        {{ (file.size / 1024 / 1024) | round(2) }} MB 
+                        ({{ file.size | format_number }} bytes)
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Content Hash</div>
+                    <div class="info-value">
+                        <code>{{ file.content_hash[:16] }}...</code>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Upload Date</div>
+                    <div class="info-value">{{ file.created_at.strftime('%A, %B %d, %Y at %I:%M %p') }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Modified</div>
+                    <div class="info-value">{{ file.updated_at.strftime('%A, %B %d, %Y at %I:%M %p') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Status -->
+        <div class="info-card file-status-card">
+            <div class="info-card-header">
+                <h4><i class="fas fa-tasks"></i> Processing Status</h4>
+                <span class="status-badge status-{{ file.status }}">{{ file.status.title() }}</span>
+            </div>
+            <div class="info-card-body">
+                <div class="status-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon icon-completed">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">File Uploaded</div>
+                            <div class="timeline-time">{{ file.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                        </div>
+                    </div>
+                    
+                    {% if file.status in ['completed', 'processing', 'failed'] %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon icon-{{ 'processing' if file.status == 'processing' else 'completed' }}">
+                            <i class="fas fa-{{ 'spinner fa-spin' if file.status == 'processing' else 'cog' }}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Processing Started</div>
+                            <div class="timeline-time">{{ file.processed_at.strftime('%Y-%m-%d %H:%M:%S') if file.processed_at else 'In progress...' }}</div>
+                            <div class="timeline-description">Basic document conversion and text extraction</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if file.ai_processed %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon icon-completed">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">AI Analysis Completed</div>
+                            <div class="timeline-time">{{ ai_processing_time or 'Recently' }}</div>
+                            <div class="timeline-description">Entity extraction, summarization, and semantic analysis</div>
+                        </div>
+                    </div>
+                    {% elif file.status == 'completed' and not file.ai_processed %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon icon-pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">AI Analysis Pending</div>
+                            <div class="timeline-time">Waiting in queue</div>
+                            <div class="timeline-description">Advanced AI processing not yet started</div>
+                        </div>
+                    </div>
+                    {% elif file.status == 'failed' %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon icon-failed">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Processing Failed</div>
+                            <div class="timeline-time">{{ file.processed_at.strftime('%Y-%m-%d %H:%M:%S') if file.processed_at else 'Recently' }}</div>
+                            <div class="timeline-description">An error occurred during processing</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights (if available) -->
+    {% if ai_analysis %}
+    <div class="info-card ai-insights-card">
+        <div class="info-card-header">
+            <h4><i class="fas fa-lightbulb"></i> AI Insights</h4>
+        </div>
+        <div class="info-card-body">
+            {% if ai_analysis.summary %}
+            <div class="info-item mb-3">
+                <div class="info-label">Document Summary</div>
+                <div class="insights-summary">{{ ai_analysis.summary }}</div>
+            </div>
+            {% endif %}
+            
+            {% if ai_analysis.entities %}
+            <div class="info-item mb-3">
+                <div class="info-label">Extracted Entities ({{ ai_analysis.entities|length }})</div>
+                <div class="tags-container">
+                    {% for entity in ai_analysis.entities[:15] %}
+                    <span class="tag tag-entity" title="{{ entity.description or entity.label }}">
+                        {{ entity.text }}
+                    </span>
+                    {% endfor %}
+                    {% if ai_analysis.entities|length > 15 %}
+                    <span class="tag tag-entity">+{{ ai_analysis.entities|length - 15 }} more</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if ai_analysis.key_phrases %}
+            <div class="info-item mb-3">
+                <div class="info-label">Key Concepts ({{ ai_analysis.key_phrases|length }})</div>
+                <div class="tags-container">
+                    {% for phrase in ai_analysis.key_phrases[:10] %}
+                    <span class="tag tag-concept">{{ phrase.phrase }}</span>
+                    {% endfor %}
+                    {% if ai_analysis.key_phrases|length > 10 %}
+                    <span class="tag tag-concept">+{{ ai_analysis.key_phrases|length - 10 }} more</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if ai_analysis.topics %}
+            <div class="info-item mb-3">
+                <div class="info-label">Topic Categories</div>
+                <div class="tags-container">
+                    {% for topic in ai_analysis.topics %}
+                    <span class="tag tag-topic">{{ topic.replace('_', ' ').title() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if ai_analysis.readability %}
+            <div class="info-item">
+                <div class="info-label">Readability Analysis</div>
+                <div class="readability-score">
+                    <span>Reading Level:</span>
+                    <div class="score-bar">
+                        <div class="score-fill score-{{ get_readability_level(ai_analysis.readability.flesch_reading_ease) }}" 
+                             style="width: {{ ai_analysis.readability.flesch_reading_ease }}%"></div>
+                    </div>
+                    <span>{{ ai_analysis.readability.flesch_reading_ease | round(1) }}</span>
+                </div>
+                <small class="text-muted">
+                    Grade Level: {{ ai_analysis.readability.flesch_kincaid_grade | round(1) }} | 
+                    Avg Sentence Length: {{ ai_analysis.readability.avg_sentence_length | round(1) }} words
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Processing Details -->
+    <div class="info-card">
+        <div class="info-card-header">
+            <h4><i class="fas fa-chart-line"></i> Processing Details</h4>
+        </div>
+        <div class="info-card-body">
+            <div class="processing-details">
+                {% if processing_results %}
+                    {% for result in processing_results %}
+                    <div class="detail-row">
+                        <div class="detail-label">{{ result.service_name.title() }} - {{ result.processing_type.title() }}</div>
+                        <div class="detail-value">
+                            {% if result.success %}
+                                <span class="text-success"><i class="fas fa-check"></i> Success</span>
+                                <small class="text-muted">({{ result.processing_time | round(2) }}s)</small>
+                            {% else %}
+                                <span class="text-danger"><i class="fas fa-times"></i> Failed</span>
+                                <small class="text-muted">{{ result.error_message }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="detail-row">
+                    <div class="detail-label">Processing Status</div>
+                    <div class="detail-value text-muted">No detailed processing records available</div>
+                </div>
+                {% endif %}
+                
+                <div class="detail-row">
+                    <div class="detail-label">Content Length</div>
+                    <div class="detail-value">
+                        {% if file.content %}
+                            {{ file.content | length | format_number }} characters
+                        {% else %}
+                            No content extracted
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">AI Processing</div>
+                    <div class="detail-value">
+                        {% if file.ai_processed %}
+                            <span class="text-success"><i class="fas fa-check"></i> Completed</span>
+                        {% else %}
+                            <span class="text-warning"><i class="fas fa-clock"></i> Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Files -->
+    {% if related_files %}
+    <div class="info-card">
+        <div class="info-card-header">
+            <h4><i class="fas fa-link"></i> Related Files</h4>
+        </div>
+        <div class="info-card-body">
+            <div class="related-files">
+                {% for related in related_files %}
+                <div class="related-file-item">
+                    <div class="related-file-name">
+                        <a href="{{ url_for('view_file', file_id=related.id) }}">{{ related.filename }}</a>
+                    </div>
+                    <div class="related-file-relationship">{{ related.relationship_type.replace('_', ' ').title() }}</div>
+                    <div class="related-file-confidence">Confidence: {{ (related.confidence * 100) | round(1) }}%</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error Details (if any) -->
+    {% if file.status == 'failed' and error_details %}
+    <div class="info-card error-card">
+        <div class="info-card-header">
+            <h4><i class="fas fa-exclamation-triangle"></i> Error Details</h4>
+        </div>
+        <div class="info-card-body">
+            <div class="error-message">
+                <strong>Processing Error:</strong> {{ error_details.message }}
+            </div>
+            {% if error_details.details %}
+            <div class="error-details">{{ error_details.details }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="info-card actions-card">
+        <div class="info-card-header">
+            <h4><i class="fas fa-tools"></i> Actions</h4>
+        </div>
+        <div class="info-card-body">
+            <div class="action-buttons">
+                <a href="{{ url_for('view_file', file_id=file.id) }}" class="action-btn btn-primary-action">
+                    <i class="fas fa-eye"></i> View Content
+                </a>
+                <a href="{{ url_for('download_file', file_id=file.id) }}" class="action-btn btn-success-action">
+                    <i class="fas fa-download"></i> Download
+                </a>
+                {% if file.status in ['failed', 'pending'] or not file.ai_processed %}
+                <button class="action-btn btn-warning-action" onclick="reprocessFile('{{ file.id }}')">
+                    <i class="fas fa-redo"></i> Reprocess
+                </button>
+                {% endif %}
+                <button class="action-btn btn-secondary-action" onclick="copyShareLink()">
+                    <i class="fas fa-share"></i> Share Link
+                </button>
+                <button class="action-btn btn-danger-action" onclick="deleteFile('{{ file.id }}')">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function reprocessFile(fileId) {
+    if (confirm('Reprocess this file? This will re-run all analysis.')) {
+        fetch(`/api/files/${fileId}/reprocess`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File queued for reprocessing', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showAlert('Failed to reprocess: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function copyShareLink() {
+    const url = window.location.href.replace('/info', '');
+    navigator.clipboard.writeText(url).then(() => {
+        showAlert('Share link copied to clipboard', 'success');
+    }).catch(() => {
+        showAlert('Failed to copy link', 'danger');
+    });
+}
+
+function deleteFile(fileId) {
+    if (confirm('Delete this file? This action cannot be undone.')) {
+        fetch(`/api/files/${fileId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File deleted successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = '{{ url_for("repository") }}';
+                }, 1000);
+            } else {
+                showAlert('Failed to delete: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

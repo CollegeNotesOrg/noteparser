@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}Repository Browser - NoteParser{% endblock %}
+
+{% block extra_head %}
+<style>
+.repository-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.repository-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.file-tree {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tree-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.tree-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tree-view {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.tree-item {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.2s;
+}
+
+.tree-item:hover {
+    background-color: #f8f9fa;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.file-icon {
+    margin-right: 0.5rem;
+    width: 20px;
+    height: 20px;
+}
+
+.file-name {
+    font-weight: 500;
+    margin-right: 1rem;
+}
+
+.file-path {
+    color: #666;
+    font-size: 0.9rem;
+    font-family: monospace;
+}
+
+.file-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.file-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-failed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-view {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-download {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-reprocess {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.search-bar {
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.filter-select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 120px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.page-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .repository-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+    }
+    
+    .file-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .file-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="repository-header">
+    <div class="container">
+        <h1><i class="fas fa-folder-open"></i> Repository Browser</h1>
+        <p>Browse and manage your processed documents</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Repository Statistics -->
+    <div class="repository-stats">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_files }}</div>
+            <div class="stat-label">Total Files</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.processed_files }}</div>
+            <div class="stat-label">Processed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.pending_files }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ (stats.total_size / 1024 / 1024) | round(2) }} MB</div>
+            <div class="stat-label">Total Size</div>
+        </div>
+    </div>
+
+    <!-- File Browser -->
+    <div class="file-tree">
+        <div class="tree-header">
+            <h3><i class="fas fa-list"></i> Files</h3>
+            <div class="tree-controls">
+                <button class="btn btn-primary" onclick="refreshRepository()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+                <a href="{{ url_for('upload') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Upload New
+                </a>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="p-3 border-bottom">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" 
+                       placeholder="Search files..." onkeyup="filterFiles()">
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select" id="statusFilter" onchange="filterFiles()">
+                        <option value="">All Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">File Type</label>
+                    <select class="filter-select" id="typeFilter" onchange="filterFiles()">
+                        <option value="">All Types</option>
+                        <option value="pdf">PDF</option>
+                        <option value="docx">DOCX</option>
+                        <option value="pptx">PPTX</option>
+                        <option value="txt">Text</option>
+                        <option value="md">Markdown</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select class="filter-select" id="sortFilter" onchange="filterFiles()">
+                        <option value="name">Name</option>
+                        <option value="date">Date Modified</option>
+                        <option value="size">Size</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- File List -->
+        <div class="tree-view" id="fileList">
+            {% for file in files %}
+            <div class="tree-item" data-filename="{{ file.filename }}" 
+                 data-status="{{ file.status }}" data-type="{{ file.file_type }}">
+                <div class="file-info">
+                    <i class="file-icon {{ get_file_icon(file.file_type) }}"></i>
+                    <div>
+                        <div class="file-name">{{ file.filename }}</div>
+                        <div class="file-path">{{ file.path }}</div>
+                    </div>
+                </div>
+                
+                <div class="file-meta">
+                    <span class="file-status status-{{ file.status }}">
+                        {{ file.status.title() }}
+                    </span>
+                    <span>{{ (file.size / 1024) | round(1) }} KB</span>
+                    <span>{{ file.modified_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                
+                <div class="file-actions">
+                    <a href="{{ url_for('view_file', file_id=file.id) }}" 
+                       class="action-btn btn-view" title="View File">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{{ url_for('download_file', file_id=file.id) }}" 
+                       class="action-btn btn-download" title="Download">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    {% if file.status in ['failed', 'pending'] %}
+                    <button class="action-btn btn-reprocess" 
+                            onclick="reprocessFile('{{ file.id }}')" title="Reprocess">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    {% endif %}
+                    <button class="action-btn btn-delete" 
+                            onclick="deleteFile('{{ file.id }}', '{{ file.filename }}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <div class="tree-item">
+                <div class="file-info">
+                    <i class="fas fa-folder-open text-muted"></i>
+                    <div class="text-muted">No files found</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination %}
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('repository', page=pagination.prev_num) }}" class="page-btn">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+        {% endif %}
+        
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                    <a href="{{ url_for('repository', page=page_num) }}" class="page-btn">{{ page_num }}</a>
+                {% else %}
+                    <span class="page-btn active">{{ page_num }}</span>
+                {% endif %}
+            {% else %}
+                <span class="page-btn">…</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if pagination.has_next %}
+            <a href="{{ url_for('repository', page=pagination.next_num) }}" class="page-btn">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteFilename"></strong>?</p>
+                <p class="text-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentFileId = null;
+
+function filterFiles() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+    const sortFilter = document.getElementById('sortFilter').value;
+    
+    const fileItems = document.querySelectorAll('.tree-item[data-filename]');
+    let visibleItems = [];
+    
+    fileItems.forEach(item => {
+        const filename = item.dataset.filename.toLowerCase();
+        const status = item.dataset.status;
+        const type = item.dataset.type;
+        
+        let visible = true;
+        
+        // Apply search filter
+        if (searchTerm && !filename.includes(searchTerm)) {
+            visible = false;
+        }
+        
+        // Apply status filter
+        if (statusFilter && status !== statusFilter) {
+            visible = false;
+        }
+        
+        // Apply type filter
+        if (typeFilter && type !== typeFilter) {
+            visible = false;
+        }
+        
+        item.style.display = visible ? 'flex' : 'none';
+        if (visible) {
+            visibleItems.push(item);
+        }
+    });
+    
+    // Apply sorting
+    if (sortFilter && visibleItems.length > 0) {
+        const parent = visibleItems[0].parentNode;
+        const sortedItems = visibleItems.sort((a, b) => {
+            const aValue = getSortValue(a, sortFilter);
+            const bValue = getSortValue(b, sortFilter);
+            return aValue.localeCompare(bValue);
+        });
+        
+        sortedItems.forEach(item => parent.appendChild(item));
+    }
+}
+
+function getSortValue(item, sortBy) {
+    switch (sortBy) {
+        case 'name':
+            return item.dataset.filename;
+        case 'date':
+            return item.querySelector('.file-meta span:last-child').textContent;
+        case 'size':
+            return item.querySelector('.file-meta span:nth-child(2)').textContent;
+        case 'status':
+            return item.dataset.status;
+        default:
+            return item.dataset.filename;
+    }
+}
+
+function refreshRepository() {
+    location.reload();
+}
+
+function reprocessFile(fileId) {
+    if (confirm('Reprocess this file?')) {
+        fetch(`/api/files/${fileId}/reprocess`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File queued for reprocessing', 'success');
+                setTimeout(refreshRepository, 1000);
+            } else {
+                showAlert('Failed to reprocess file: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function deleteFile(fileId, filename) {
+    currentFileId = fileId;
+    document.getElementById('deleteFilename').textContent = filename;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (currentFileId) {
+        fetch(`/api/files/${currentFileId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File deleted successfully', 'success');
+                setTimeout(refreshRepository, 1000);
+            } else {
+                showAlert('Failed to delete file: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+        
+        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+    }
+});
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.repository-stats'));
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

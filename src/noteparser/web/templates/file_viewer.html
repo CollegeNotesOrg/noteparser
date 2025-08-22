@@ -1,0 +1,726 @@
+{% extends "base.html" %}
+
+{% block title %}{{ file.filename }} - NoteParser{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+<style>
+.file-viewer-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.file-breadcrumb {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.file-metadata {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.metadata-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.metadata-content {
+    padding: 1rem;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metadata-label {
+    font-weight: 500;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.metadata-value {
+    color: #333;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-failed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.file-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.content-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-tabs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tab-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: #666;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.content-viewer {
+    padding: 1rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-raw {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.content-markdown {
+    line-height: 1.6;
+}
+
+.content-markdown h1,
+.content-markdown h2,
+.content-markdown h3 {
+    color: var(--primary-color);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content-markdown h1:first-child,
+.content-markdown h2:first-child,
+.content-markdown h3:first-child {
+    margin-top: 0;
+}
+
+.content-markdown code {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.content-markdown pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.content-markdown blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1rem;
+    margin-left: 0;
+    color: #666;
+    font-style: italic;
+}
+
+.ai-analysis {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.analysis-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    background: linear-gradient(45deg, #f0f8ff, #e6f3ff);
+}
+
+.analysis-content {
+    padding: 1rem;
+}
+
+.analysis-section {
+    margin-bottom: 2rem;
+}
+
+.analysis-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.entities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.entity-tag {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: 1px solid #bbdefb;
+}
+
+.keyphrases-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.keyphrase-item {
+    background: #f3e5f5;
+    color: #4a148c;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid #e1bee7;
+}
+
+.summary-text {
+    background: #f8f9fa;
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.processing-queue {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.queue-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.queue-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.queue-service {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.queue-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .file-actions {
+        flex-direction: column;
+    }
+    
+    .metadata-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .content-viewer {
+        max-height: 400px;
+    }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="file-viewer-header">
+    <div class="container">
+        <div class="file-breadcrumb">
+            <a href="{{ url_for('repository') }}" class="text-white-50">Repository</a>
+            <span class="text-white-50"> / </span>
+            <span>{{ file.filename }}</span>
+        </div>
+        <h1><i class="{{ get_file_icon(file.file_type) }}"></i> {{ file.filename }}</h1>
+        <div class="file-actions">
+            <a href="{{ url_for('download_file', file_id=file.id) }}" 
+               class="btn btn-light">
+                <i class="fas fa-download"></i> Download
+            </a>
+            <button class="btn btn-light" onclick="copyShareLink()">
+                <i class="fas fa-share"></i> Share
+            </button>
+            {% if file.status in ['failed', 'pending'] %}
+            <button class="btn btn-warning" onclick="reprocessFile('{{ file.id }}')">
+                <i class="fas fa-redo"></i> Reprocess
+            </button>
+            {% endif %}
+            <button class="btn btn-danger" onclick="deleteFile('{{ file.id }}')">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- File Metadata -->
+    <div class="file-metadata">
+        <div class="metadata-header">
+            <h3><i class="fas fa-info-circle"></i> File Information</h3>
+            <span class="status-badge status-{{ file.status }}">{{ file.status.title() }}</span>
+        </div>
+        <div class="metadata-content">
+            <div class="metadata-grid">
+                <div class="metadata-item">
+                    <div class="metadata-label">Filename</div>
+                    <div class="metadata-value">{{ file.filename }}</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="metadata-label">File Type</div>
+                    <div class="metadata-value">{{ file.mime_type or file.file_type.upper() }}</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="metadata-label">File Size</div>
+                    <div class="metadata-value">{{ (file.size / 1024) | round(2) }} KB</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="metadata-label">Upload Date</div>
+                    <div class="metadata-value">{{ file.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="metadata-label">Last Modified</div>
+                    <div class="metadata-value">{{ file.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+                <div class="metadata-item">
+                    <div class="metadata-label">Processing Status</div>
+                    <div class="metadata-value">
+                        {% if file.ai_processed %}
+                            <i class="fas fa-check-circle text-success"></i> AI Processed
+                        {% else %}
+                            <i class="fas fa-clock text-warning"></i> Basic Processing Only
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Content -->
+    <div class="file-content">
+        <div class="content-header">
+            <h3><i class="fas fa-file-alt"></i> Content</h3>
+            <div class="content-tabs">
+                <button class="tab-btn active" onclick="switchTab('rendered')">Rendered</button>
+                <button class="tab-btn" onclick="switchTab('raw')">Raw</button>
+                <button class="tab-btn" onclick="switchTab('source')" id="sourceTab">Source</button>
+            </div>
+        </div>
+        <div class="content-viewer">
+            <!-- Rendered Content -->
+            <div id="rendered" class="tab-content active">
+                <div class="content-markdown">
+                    {% if file.content %}
+                        {{ file.content | safe }}
+                    {% else %}
+                        <p class="text-muted">No processed content available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Raw Content -->
+            <div id="raw" class="tab-content">
+                <div class="content-raw">
+                    {% if file.content %}
+                        {{ file.content }}
+                    {% else %}
+                        No processed content available.
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Source Content -->
+            <div id="source" class="tab-content">
+                <div id="sourceContent">
+                    <p class="text-muted">
+                        <span class="loading-spinner"></span> Loading source content...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Results -->
+    {% if file.ai_processed and ai_analysis %}
+    <div class="ai-analysis">
+        <div class="analysis-header">
+            <h3><i class="fas fa-brain"></i> AI Analysis Results</h3>
+            <p class="mb-0 text-muted">Intelligent insights extracted from this document</p>
+        </div>
+        <div class="analysis-content">
+            <!-- Summary -->
+            {% if ai_analysis.summary %}
+            <div class="analysis-section">
+                <div class="analysis-title">
+                    <i class="fas fa-file-alt"></i> Summary
+                </div>
+                <div class="summary-text">{{ ai_analysis.summary }}</div>
+            </div>
+            {% endif %}
+
+            <!-- Key Entities -->
+            {% if ai_analysis.entities %}
+            <div class="analysis-section">
+                <div class="analysis-title">
+                    <i class="fas fa-tags"></i> Key Entities
+                </div>
+                <div class="entities-list">
+                    {% for entity in ai_analysis.entities %}
+                    <span class="entity-tag" title="{{ entity.description or entity.label }}">
+                        {{ entity.text }} ({{ entity.label }})
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Key Phrases -->
+            {% if ai_analysis.key_phrases %}
+            <div class="analysis-section">
+                <div class="analysis-title">
+                    <i class="fas fa-key"></i> Key Phrases
+                </div>
+                <div class="keyphrases-list">
+                    {% for phrase in ai_analysis.key_phrases %}
+                    <div class="keyphrase-item">
+                        {{ phrase.phrase }}
+                        <small class="d-block text-muted">{{ phrase.frequency }} occurrences</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Topic Categories -->
+            {% if ai_analysis.topics %}
+            <div class="analysis-section">
+                <div class="analysis-title">
+                    <i class="fas fa-folder-open"></i> Topic Categories
+                </div>
+                <div class="entities-list">
+                    {% for topic in ai_analysis.topics %}
+                    <span class="entity-tag">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Processing Queue -->
+    {% if processing_queue %}
+    <div class="processing-queue">
+        <div class="queue-header">
+            <h3><i class="fas fa-list-ul"></i> Processing Queue</h3>
+            <button class="btn btn-sm btn-outline-primary" onclick="refreshQueue()">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+        </div>
+        <div id="queueList">
+            {% for item in processing_queue %}
+            <div class="queue-item">
+                <div>
+                    <div class="queue-service">{{ item.service_name.title() }}</div>
+                    <small class="text-muted">{{ item.processing_type }}</small>
+                </div>
+                <div>
+                    <span class="queue-status status-{{ item.status }}">{{ item.status.title() }}</span>
+                    {% if item.status == 'processing' %}
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ item.progress or 50 }}%"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+<script>
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName).classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+    
+    // Load source content if needed
+    if (tabName === 'source' && !document.getElementById('sourceContent').dataset.loaded) {
+        loadSourceContent();
+    }
+}
+
+function loadSourceContent() {
+    fetch(`/api/files/{{ file.id }}/source`)
+        .then(response => response.text())
+        .then(data => {
+            const sourceContent = document.getElementById('sourceContent');
+            sourceContent.innerHTML = `<pre><code class="language-markup line-numbers">${escapeHtml(data)}</code></pre>`;
+            sourceContent.dataset.loaded = 'true';
+            Prism.highlightAll();
+        })
+        .catch(error => {
+            document.getElementById('sourceContent').innerHTML = 
+                `<p class="text-danger">Error loading source: ${error.message}</p>`;
+        });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function copyShareLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        showAlert('Share link copied to clipboard', 'success');
+    }).catch(() => {
+        showAlert('Failed to copy link', 'danger');
+    });
+}
+
+function reprocessFile(fileId) {
+    if (confirm('Reprocess this file? This will re-run AI analysis.')) {
+        fetch(`/api/files/${fileId}/reprocess`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File queued for reprocessing', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showAlert('Failed to reprocess: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function deleteFile(fileId) {
+    if (confirm('Delete this file? This action cannot be undone.')) {
+        fetch(`/api/files/${fileId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('File deleted successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = '{{ url_for("repository") }}';
+                }, 1000);
+            } else {
+                showAlert('Failed to delete: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function refreshQueue() {
+    fetch(`/api/files/{{ file.id }}/queue`)
+        .then(response => response.json())
+        .then(data => {
+            const queueList = document.getElementById('queueList');
+            if (data.queue && data.queue.length > 0) {
+                queueList.innerHTML = data.queue.map(item => `
+                    <div class="queue-item">
+                        <div>
+                            <div class="queue-service">${item.service_name}</div>
+                            <small class="text-muted">${item.processing_type}</small>
+                        </div>
+                        <div>
+                            <span class="queue-status status-${item.status}">${item.status}</span>
+                            ${item.status === 'processing' ? `
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${item.progress || 50}%"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                queueList.innerHTML = '<div class="queue-item"><div class="text-muted">No items in queue</div></div>';
+            }
+        })
+        .catch(error => {
+            console.error('Failed to refresh queue:', error);
+        });
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.file-metadata'));
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Auto-refresh queue if there are processing items
+{% if processing_queue %}
+setInterval(refreshQueue, 5000);
+{% endif %}
+
+// Initialize syntax highlighting
+document.addEventListener('DOMContentLoaded', function() {
+    Prism.highlightAll();
+});
+</script>
+{% endblock %}

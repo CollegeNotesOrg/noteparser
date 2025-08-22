@@ -111,8 +111,8 @@ ai-dev: ## Start development with AI services
 
 ai-test: ## Test AI integration
 	@echo "Testing AI integration..."
-	@python -c "import asyncio; from src.noteparser.integration.service_client import ServiceClientManager; print('✅ ServiceClientManager import successful')"
-	@python -c "import asyncio; from src.noteparser.integration.ai_services import AIServicesIntegration; print('✅ AIServicesIntegration import successful')"
+	@python -c "import asyncio; from noteparser.integration.service_client import ServiceClientManager; print('✅ ServiceClientManager import successful')"
+	@python -c "import asyncio; from noteparser.integration.ai_services import AIServicesIntegration; print('✅ AIServicesIntegration import successful')"
 
 ai-stop: ## Stop all AI services
 	@echo "Stopping AI services..."
@@ -156,10 +156,10 @@ restore: ## Restore databases from backup (usage: make restore BACKUP_FILE=backu
 	@echo "Restore completed!"
 
 migrate: ## Run database migrations
-	docker-compose -f $(COMPOSE_FILE) exec noteparser python -m noteparser.db.migrate
+	docker-compose -f $(COMPOSE_FILE) exec noteparser python -m noteparser.db.migrate up
 
 seed: ## Seed database with sample data
-	docker-compose -f $(COMPOSE_FILE) exec noteparser python -m noteparser.db.seed
+	docker-compose -f $(COMPOSE_FILE) exec noteparser python -m noteparser.db.seed seed-all
 
 api-docs: ## Generate API documentation
 	docker-compose -f $(COMPOSE_FILE) exec noteparser python -m noteparser.docs.generate

@@ -7,6 +7,7 @@ services:
     enabled: true
     host: localhost
     port: 8010
+    base_url: "http://localhost:8010"
     config:
       embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
       vector_db_type: "faiss"  # Options: faiss, pinecone, weaviate, qdrant
@@ -21,6 +22,7 @@ services:
     enabled: true
     host: localhost
     port: 8011
+    base_url: "http://localhost:8011"
     config:
       wiki_db_path: "/data/wiki.db"
       ai_model: "gpt-3.5-turbo"
@@ -31,25 +33,31 @@ services:
   
   # Dolphin - Advanced PDF processing (Phase 2)
   dolphin:
-    enabled: false
-    host: dolphin
+    enabled: true
+    host: localhost
     port: 8012
+    base_url: "http://localhost:8012"
     config:
-      model: "bytedance/dolphin"
-      use_gpu: false
-      batch_size: 1
-      max_pages: 100
+      ocr_enabled: true
+      ocr_language: "eng"
+      preserve_layout: true
+      extract_images: true
+      extract_tables: true
+      quality_threshold: 0.7
   
-  # LangExtract - NLP and entity extraction (Phase 2)
+  # LangExtract - NLP and entity extraction (Phase 2)  
   langextract:
-    enabled: false
-    host: langextract
+    enabled: true
+    host: localhost
     port: 8013
+    base_url: "http://localhost:8013"
     config:
       languages: ["en", "es", "fr", "de"]
       extract_entities: true
       extract_relations: true
       extract_keywords: true
+      spacy_model: "en_core_web_sm"
+      max_text_length: 1000000
   
   # WrenAI - Natural language queries (Phase 3)
   wrenai:
