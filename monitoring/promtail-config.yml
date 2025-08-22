@@ -191,7 +191,7 @@ scrape_configs:
       # Set compose project as label
       - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
         target_label: compose_project
-      # Set compose service as label  
+      # Set compose service as label
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: compose_service
     pipeline_stages:
@@ -232,7 +232,7 @@ scrape_configs:
       - labels:
           level:
 
-  # Redis logs  
+  # Redis logs
   - job_name: redis
     static_configs:
       - targets:

@@ -85,13 +85,13 @@ noteparser web
 === "👨‍🎓 Individual Student"
 
     **Daily workflow for personal note-taking:**
-    
+
     ```bash
     # Convert lecture slides to markdown
-    noteparser parse "Today's Lecture.pdf" 
+    noteparser parse "Today's Lecture.pdf"
     noteparser sync output/todays-lecture.md --course CS101
     ```
-    
+
     Perfect for:
     - Converting professor slides to searchable notes
     - OCR handwritten notes from photos
@@ -100,14 +100,14 @@ noteparser web
 === "🏫 Course Organization"
 
     **Semester setup and batch processing:**
-    
+
     ```bash
     # Process entire semester at once
     noteparser init
     noteparser batch course-materials/ --recursive
     noteparser index --format json > course-index.json
     ```
-    
+
     Perfect for:
     - Organizing multiple courses
     - Batch processing assignments
@@ -116,14 +116,14 @@ noteparser web
 === "👥 Study Group"
 
     **Collaborative note sharing:**
-    
+
     ```bash
     # Process shared materials
     noteparser parse shared-notes.docx --format markdown
     git add . && git commit -m "Add processed notes"
     git push origin main  # Triggers auto-sync
     ```
-    
+
     Perfect for:
     - Sharing processed notes with teammates
     - Automated GitHub Actions integration
@@ -132,13 +132,13 @@ noteparser web
 === "🔬 Research Lab"
 
     **Academic research processing:**
-    
+
     ```bash
     # Convert research papers
     noteparser parse "Research Paper.pdf" --format latex
     noteparser web  # Browse and cross-reference
     ```
-    
+
     Perfect for:
     - Literature review processing
     - Cross-referencing related papers

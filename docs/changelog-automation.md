@@ -23,7 +23,7 @@ Use conventional commits format for all commits:
 
 ### Commit Types
 
-- `feat`: ✨ New features  
+- `feat`: ✨ New features
 - `fix`: 🐛 Bug fixes
 - `docs`: 📚 Documentation changes
 - `style`: 🎨 Code style changes (formatting, etc.)
@@ -109,7 +109,7 @@ repos:
 - Consistent formatting across releases
 - Automatic GitHub release notes
 
-### ✅ **Structured** 
+### ✅ **Structured**
 - Clear categorization by change type
 - Breaking changes highlighted
 - Links to commits and comparisons
@@ -132,7 +132,7 @@ If you have existing commits that don't follow conventional format:
 The changelog generator can be customized by editing `scripts/generate-changelog.py`:
 
 - **Commit types**: Modify `COMMIT_TYPES` dictionary
-- **Grouping logic**: Adjust `group_commits_by_type()` method  
+- **Grouping logic**: Adjust `group_commits_by_type()` method
 - **Output format**: Customize `generate_version_entry()` method
 - **Parsing rules**: Update `parse_conventional_commit()` regex
 

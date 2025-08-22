@@ -14,21 +14,21 @@ repositories:
     auto_sync: true
     formats: ["markdown", "latex"]
     description: "Primary repository for all course notes"
-    
-  # Parser engine repository  
+
+  # Parser engine repository
   noteparser:
     type: "parser"
     auto_sync: false
     formats: ["markdown"]
     description: "Document parsing and conversion engine"
-    
+
   # Template repository
   note-templates:
     type: "templates"
     auto_sync: false
     formats: ["latex", "markdown"]
     description: "Shared templates for consistent formatting"
-    
+
   # Extensions repository
   note-extensions:
     type: "extensions"
@@ -55,7 +55,7 @@ cross_references:
   max_suggestions: 5
   methods:
     - "content_similarity"
-    - "keyword_matching" 
+    - "keyword_matching"
     - "topic_correlation"
 
 # Plugin configuration
@@ -69,8 +69,8 @@ plugins:
       symbol_standardization: true
       theorem_formatting: true
       proof_highlighting: true
-      
-  # Computer Science plugin  
+
+  # Computer Science plugin
   cs_processor:
     enabled: true
     priority: 2
@@ -79,7 +79,7 @@ plugins:
       auto_language_detection: true
       syntax_highlighting: true
       complexity_analysis: true
-      
+
   # Chemistry plugin (example of custom plugin)
   chemistry_processor:
     enabled: false  # Disabled by default
@@ -99,15 +99,15 @@ courses:
     templates:
       - "code_template.md"
       - "algorithm_template.tex"
-      
-  # Mathematics courses  
+
+  # Mathematics courses
   "MATH*":
     default_format: "latex"
     plugins: ["math_processor"]
     templates:
       - "theorem_template.tex"
       - "proof_template.tex"
-      
+
   # Physics courses
   "PHYS*":
     default_format: "latex"
@@ -123,9 +123,9 @@ formatting:
     table_of_contents: true
     math_delimiters: "$$"
     code_highlighting: true
-    
+
   latex:
-    # LaTeX-specific options  
+    # LaTeX-specific options
     document_class: "article"
     packages:
       - "amsmath"
@@ -175,13 +175,13 @@ advanced:
   max_file_size: "50MB"
   max_batch_files: 100
   timeout_seconds: 300
-  
+
   # Performance settings
   parallel_processing: true
   max_workers: 4
   cache_enabled: true
   cache_size: "100MB"
-  
+
   # Logging
   log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
   log_file: "noteparser.log"

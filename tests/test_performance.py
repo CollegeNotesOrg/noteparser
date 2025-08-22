@@ -17,7 +17,7 @@ from noteparser.integration.service_client import ServiceClientManager
 class TestPerformance:
     """Performance tests for AI integration."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_concurrent_service_calls(self):
         """Test concurrent calls to AI services."""
         manager = ServiceClientManager()
@@ -56,7 +56,7 @@ class TestPerformance:
             assert "ragflow" in result
             assert "deepwiki" in result
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_batch_document_processing(self, tmp_path):
         """Test processing multiple documents efficiently."""
         # Create test documents
@@ -125,7 +125,7 @@ class TestPerformance:
         assert "content" in result
         assert len(result["content"]) > 200000  # Should preserve content
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_service_timeout_handling(self):
         """Test handling of service timeouts."""
         manager = ServiceClientManager()
@@ -156,7 +156,7 @@ class TestPerformance:
         assert result["status"] == "unhealthy"
         assert "error" in result
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_memory_usage_stability(self, tmp_path):
         """Test that memory usage remains stable during processing."""
         import os
@@ -207,7 +207,7 @@ class TestPerformance:
 class TestLoadHandling:
     """Load and stress tests for AI services."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_high_concurrency_health_checks(self):
         """Test system under high concurrency."""
         manager = ServiceClientManager()
@@ -253,7 +253,7 @@ class TestLoadHandling:
         if failed_results:
             print(f"Failed requests: {len(failed_results)}")
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_service_recovery_after_failure(self):
         """Test system recovery after service failures."""
         manager = ServiceClientManager()
@@ -287,7 +287,7 @@ class TestLoadHandling:
             else:
                 assert result["ragflow"]["status"] == "healthy"
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_rate_limiting_behavior(self):
         """Test behavior under rate limiting scenarios."""
         manager = ServiceClientManager()
@@ -351,7 +351,7 @@ class TestLoadHandling:
                 # Expected for some invalid configs
                 pass
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_error_propagation_and_handling(self):
         """Test proper error propagation through the system."""
         integration = AIServicesIntegration()
@@ -376,7 +376,7 @@ class TestLoadHandling:
             assert result is False
             assert integration.services_initialized is False
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_cleanup_and_resource_management(self):
         """Test proper cleanup of resources."""
         manager = ServiceClientManager()
@@ -403,7 +403,7 @@ class TestLoadHandling:
                 pass
 
 
-@pytest.mark.benchmark
+@pytest.mark.benchmark()
 class TestBenchmarks:
     """Benchmark tests for performance comparison."""
 
@@ -443,7 +443,7 @@ class TestBenchmarks:
         successful = sum(1 for r in result.values() if "error" not in r)
         assert successful == 10
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_operations_benchmark(self, benchmark):
         """Benchmark async operation performance."""
         manager = ServiceClientManager()

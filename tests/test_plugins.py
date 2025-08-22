@@ -116,7 +116,7 @@ class TestBasePlugin:
 class TestMathPlugin:
     """Test cases for the mathematics plugin."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def math_plugin(self):
         """Create a math plugin instance."""
         return MathPlugin()
@@ -137,10 +137,10 @@ class TestMathPlugin:
         """Test equation enhancement."""
         content = """
         Here is an inline equation $x = y + z$.
-        
+
         And a display equation:
         $$E = mc^2$$
-        
+
         Another equation: $$F = ma$$
         """
 
@@ -180,10 +180,10 @@ class TestMathPlugin:
         """Test complete math content processing."""
         content = """
         # Linear Algebra
-        
+
         Theorem: Vector spaces are important.
         The equation is $v = u + w$ and pi = 3.14.
-        
+
         $$A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}$$
         """
 
@@ -200,7 +200,7 @@ class TestMathPlugin:
 class TestComputerSciencePlugin:
     """Test cases for the computer science plugin."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def cs_plugin(self):
         """Create a CS plugin instance."""
         return ComputerSciencePlugin()
@@ -251,10 +251,10 @@ class TestComputerSciencePlugin:
         """Test complete CS content processing."""
         content = """
         # Data Structures
-        
+
         ## Arrays
         Time complexity: O(1) for access.
-        
+
         ```python
         def binary_search(arr, target):
             left, right = 0, len(arr) - 1
@@ -268,7 +268,7 @@ class TestComputerSciencePlugin:
                     right = mid - 1
             return -1
         ```
-        
+
         Algorithm: Binary search reduces search time.
         """
 
@@ -285,7 +285,7 @@ class TestComputerSciencePlugin:
 class TestPluginManager:
     """Test cases for the plugin manager."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def plugin_manager(self):
         """Create a plugin manager with test plugin."""
         # Create manager without auto-loading
@@ -320,7 +320,8 @@ class TestPluginManager:
 
         # File that doesn't match
         plugins = plugin_manager.get_plugins_for_file(
-            Path("test.xyz"), {"course": "MATH101"},  # Unsupported format  # Unsupported course
+            Path("test.xyz"),
+            {"course": "MATH101"},  # Unsupported format  # Unsupported course
         )
         assert len(plugins) == 0
 

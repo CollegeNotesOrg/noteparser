@@ -1,9 +1,9 @@
 """Mathematics course plugin for enhanced equation processing."""
 
 import re
-from typing import Any, Dict
+from typing import Any
 
-from ..base import BasePlugin
+from noteparser.plugins.base import BasePlugin
 
 
 class MathPlugin(BasePlugin):
@@ -15,7 +15,7 @@ class MathPlugin(BasePlugin):
     supported_formats = [".pdf", ".docx", ".md", ".tex"]
     course_types = ["math", "mathematics", "calculus", "algebra", "statistics", "geometry"]
 
-    def process_content(self, content: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    def process_content(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """Process mathematical content with enhanced formatting.
 
         Args:
@@ -172,7 +172,7 @@ class MathPlugin(BasePlugin):
 
         return content
 
-    def _extract_math_metadata(self, content: str) -> Dict[str, Any]:
+    def _extract_math_metadata(self, content: str) -> dict[str, Any]:
         """Extract mathematical metadata from content.
 
         Args:

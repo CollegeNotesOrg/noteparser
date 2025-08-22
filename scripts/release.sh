@@ -39,12 +39,12 @@ validate_version() {
 update_version() {
     local new_version="$1"
     log "Updating version to $new_version..."
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would update version in pyproject.toml"
         return
     fi
-    
+
     sed -i.bak "s/^version = .*/version = \"$new_version\"/" "$PROJECT_DIR/pyproject.toml"
     rm -f "$PROJECT_DIR/pyproject.toml.bak"
 }
@@ -53,15 +53,15 @@ update_version() {
 update_init_version() {
     local new_version="$1"
     local init_file="$PROJECT_DIR/src/noteparser/__init__.py"
-    
+
     if [[ -f "$init_file" ]]; then
         log "Updating version in __init__.py..."
-        
+
         if [[ "$DRY_RUN" == "--dry-run" ]]; then
             log "DRY RUN: Would update version in __init__.py"
             return
         fi
-        
+
         # Create or update __version__
         if grep -q "__version__" "$init_file"; then
             sed -i.bak "s/__version__ = .*/__version__ = \"$new_version\"/" "$init_file"
@@ -75,52 +75,52 @@ update_init_version() {
 # Run tests
 run_tests() {
     log "Running tests..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would run tests"
         return
     fi
-    
+
     # Install in development mode
     pip install -e ".[dev,all]"
-    
+
     # Run linting
     log "Running linters..."
     ruff check src/ tests/ || error "Linting failed"
     black --check src/ tests/ || error "Code formatting check failed"
-    
+
     # Run tests
     log "Running test suite..."
     pytest tests/ -v || error "Tests failed"
-    
+
     success "All tests passed"
 }
 
 # Build package
 build_package() {
     log "Building package..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would build package"
         return
     fi
-    
+
     # Clean previous builds
     rm -rf dist/ build/ *.egg-info/
-    
+
     # Install build tools
     pip install --upgrade build twine
-    
+
     # Build
     python -m build
-    
+
     # Check package
     twine check dist/*
-    
+
     success "Package built successfully"
 }
 
@@ -128,19 +128,19 @@ build_package() {
 create_tag() {
     local version="$1"
     local tag_name="v$version"
-    
+
     log "Creating git tag $tag_name..."
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would create tag $tag_name and push to remote"
         return
     fi
-    
+
     # Check for uncommitted changes
     if ! git diff-index --quiet HEAD --; then
         error "There are uncommitted changes. Please commit them first."
     fi
-    
+
     # Create annotated tag
     git tag -a "$tag_name" -m "Release version $version
 
@@ -153,29 +153,29 @@ This release includes:
 - Enhanced web interface with interactive AI features
 
 See CHANGELOG.md for detailed changes."
-    
+
     # Push tag
     git push origin "$tag_name"
-    
+
     success "Tag $tag_name created and pushed"
 }
 
 # Upload to PyPI
 upload_to_pypi() {
     local version="$1"
-    
+
     log "Uploading to PyPI..."
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would upload to PyPI"
         return
     fi
-    
+
     cd "$PROJECT_DIR"
-    
+
     # Upload to PyPI
     twine upload dist/*
-    
+
     success "Package uploaded to PyPI"
     log "Package available at: https://pypi.org/project/noteparser/$version/"
 }
@@ -183,17 +183,17 @@ upload_to_pypi() {
 # Generate changelog
 generate_changelog() {
     local version="$1"
-    
+
     log "Generating automated changelog for version $version..."
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         log "DRY RUN: Would generate changelog using automated script"
         return
     fi
-    
+
     # Use the automated changelog generator
     python3 "$SCRIPT_DIR/generate-changelog.py" --version "v$version"
-    
+
     if [[ $? -eq 0 ]]; then
         success "Changelog generated successfully"
     else
@@ -204,13 +204,13 @@ generate_changelog() {
 # Main release function
 main() {
     log "Starting NoteParser release process..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     # Get current version
     local current_version=$(get_current_version)
     log "Current version: $current_version"
-    
+
     # Determine new version
     if [[ -z "$VERSION" ]]; then
         log "Available version bump options:"
@@ -220,7 +220,7 @@ main() {
         echo ""
         read -p "Enter new version (or patch/minor/major): " VERSION
     fi
-    
+
     # Handle semantic shortcuts
     case "$VERSION" in
         "patch")
@@ -233,11 +233,11 @@ main() {
             VERSION=$(echo $current_version | awk -F. '{$1 = $1 + 1; $(NF-1) = 0; $NF = 0} 1' | sed 's/ /./g')
             ;;
     esac
-    
+
     validate_version "$VERSION"
-    
+
     log "Releasing version: $VERSION"
-    
+
     if [[ "$DRY_RUN" == "--dry-run" ]]; then
         warn "DRY RUN MODE - No changes will be made"
     else
@@ -248,14 +248,14 @@ main() {
             exit 0
         fi
     fi
-    
+
     # Release steps
     run_tests
     update_version "$VERSION"
     update_init_version "$VERSION"
     build_package
     generate_changelog "$VERSION"
-    
+
     if [[ "$DRY_RUN" != "--dry-run" ]]; then
         # Commit version changes
         git add pyproject.toml src/noteparser/__init__.py CHANGELOG.md
@@ -269,9 +269,9 @@ main() {
 
 Ready for PyPI publication and GitHub release."
     fi
-    
+
     create_tag "$VERSION"
-    
+
     # Note: PyPI upload will be handled by GitHub Actions
     log "🎉 Release $VERSION completed!"
     log ""

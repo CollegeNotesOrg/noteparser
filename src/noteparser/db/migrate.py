@@ -13,7 +13,7 @@ import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Optional
 
 import yaml
 
@@ -34,7 +34,7 @@ class Migration:
     version: str
     up_sql: str
     down_sql: str
-    dependencies: List[str] = None
+    dependencies: list[str] = None
     created_at: str = None
 
     def __post_init__(self):
@@ -47,7 +47,7 @@ class Migration:
 class MigrationRunner:
     """Database migration runner and manager."""
 
-    def __init__(self, db_path: str = None, migrations_dir: str = None):
+    def __init__(self, db_path: Optional[str] = None, migrations_dir: Optional[str] = None):
         """Initialize migration runner.
 
         Args:
@@ -79,7 +79,12 @@ class MigrationRunner:
             )
             conn.commit()
 
-    def create_migration(self, name: str, description: str = "", version: str = None) -> str:
+    def create_migration(
+        self,
+        name: str,
+        description: str = "",
+        version: Optional[str] = None,
+    ) -> str:
         """Create a new migration file.
 
         Args:
@@ -112,7 +117,7 @@ class MigrationRunner:
         logger.info(f"Created migration: {migration_file}")
         return migration_id
 
-    def load_migrations(self) -> Dict[str, Migration]:
+    def load_migrations(self) -> dict[str, Migration]:
         """Load all migrations from the migrations directory."""
         migrations = {}
 
@@ -125,17 +130,17 @@ class MigrationRunner:
                 migrations[migration.id] = migration
 
             except Exception as e:
-                logger.error(f"Failed to load migration {migration_file}: {e}")
+                logger.exception(f"Failed to load migration {migration_file}: {e}")
 
         return migrations
 
-    def get_applied_migrations(self) -> List[str]:
+    def get_applied_migrations(self) -> list[str]:
         """Get list of applied migration IDs."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute("SELECT id FROM schema_migrations ORDER BY applied_at")
             return [row[0] for row in cursor.fetchall()]
 
-    def get_pending_migrations(self) -> List[Migration]:
+    def get_pending_migrations(self) -> list[Migration]:
         """Get list of pending migrations."""
         all_migrations = self.load_migrations()
         applied_migrations = set(self.get_applied_migrations())
@@ -152,10 +157,7 @@ class MigrationRunner:
 
     def _dependencies_satisfied(self, migration: Migration, applied: set) -> bool:
         """Check if migration dependencies are satisfied."""
-        for dep in migration.dependencies:
-            if dep not in applied:
-                return False
-        return True
+        return all(dep in applied for dep in migration.dependencies)
 
     def _calculate_checksum(self, sql: str) -> str:
         """Calculate checksum for SQL content."""
@@ -183,7 +185,7 @@ class MigrationRunner:
                 # Record migration
                 conn.execute(
                     """
-                    INSERT INTO schema_migrations 
+                    INSERT INTO schema_migrations
                     (id, name, description, version, checksum, execution_time)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """,
@@ -203,7 +205,7 @@ class MigrationRunner:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to apply migration {migration.id}: {e}")
+            logger.exception(f"Failed to apply migration {migration.id}: {e}")
             return False
 
     def rollback_migration(self, migration_id: str) -> bool:
@@ -237,10 +239,10 @@ class MigrationRunner:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to rollback migration {migration_id}: {e}")
+            logger.exception(f"Failed to rollback migration {migration_id}: {e}")
             return False
 
-    def migrate_up(self, target: str = None) -> bool:
+    def migrate_up(self, target: Optional[str] = None) -> bool:
         """Run all pending migrations up to target.
 
         Args:
@@ -279,7 +281,7 @@ class MigrationRunner:
         logger.info("All migrations completed successfully")
         return True
 
-    def migrate_down(self, target: str = None, steps: int = 1) -> bool:
+    def migrate_down(self, target: Optional[str] = None, steps: int = 1) -> bool:
         """Rollback migrations.
 
         Args:
@@ -301,7 +303,7 @@ class MigrationRunner:
                 target_index = applied.index(target)
                 to_rollback = applied[target_index + 1 :]
             except ValueError:
-                logger.error(f"Target migration {target} not found in applied list")
+                logger.exception(f"Target migration {target} not found in applied list")
                 return False
         else:
             # Rollback specified number of steps
@@ -316,7 +318,7 @@ class MigrationRunner:
         logger.info(f"Rolled back {len(to_rollback)} migrations")
         return True
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get migration status."""
         all_migrations = self.load_migrations()
         applied = set(self.get_applied_migrations())
@@ -667,11 +669,11 @@ def main():
 
     elif args.command == "up":
         success = runner.migrate_up(args.target)
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
     elif args.command == "down":
         success = runner.migrate_down(args.target, args.steps)
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
     elif args.command == "status":
         status = runner.status()
@@ -679,13 +681,13 @@ def main():
 
     elif args.command == "reset":
         success = runner.reset(args.confirm)
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
     elif args.command == "init":
         create_base_migrations(runner)
         success = runner.migrate_up()
         print("Database initialized with base migrations")
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":

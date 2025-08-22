@@ -5,7 +5,7 @@ All notable changes to NoteParser will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-**📝 Note**: This changelog is automatically generated from git commits using [Conventional Commits](https://conventionalcommits.org/) format. 
+**📝 Note**: This changelog is automatically generated from git commits using [Conventional Commits](https://conventionalcommits.org/) format.
 Entries are created during the release process using `scripts/generate-changelog.py`.
 
 ## [1.0.0] - 2024-01-15
@@ -47,5 +47,5 @@ Entries are created during the release process using `scripts/generate-changelog
 
 ---
 
-**Maintained by**: Suryansh Sijwali ([@SuryanshSS1011](https://github.com/SuryanshSS1011))  
+**Maintained by**: Suryansh Sijwali ([@SuryanshSS1011](https://github.com/SuryanshSS1011))
 **Organization**: [CollegeNotesOrg](https://github.com/CollegeNotesOrg)

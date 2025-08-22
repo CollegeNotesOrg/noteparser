@@ -45,20 +45,15 @@ dependencies = [
     "openpyxl>=3.1.0",
     "pypdf>=3.17.0",
     "pdfplumber>=0.10.0",
-    # Testing
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
     # Data processing
     "beautifulsoup4>=4.12.0",
     "lxml>=4.9.0",
-    "pandas>=2.0.0",
     "requests>=2.31.0",
     # Server and deployment
     "gunicorn>=21.2.0",
     "python-dotenv>=1.0.0",
     # AI and machine learning
     "aiohttp>=3.9.0",
-    "asyncio>=3.4.3",
 ]
 
 [project.optional-dependencies]

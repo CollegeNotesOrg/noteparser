@@ -196,11 +196,11 @@ similar = await deepwiki.find_similar(
 ```python
 async def process_course_materials(file_paths):
     """Process multiple course files with AI integration."""
-    
+
     for file_path in file_paths:
         # Parse document
         result = parser.parse_to_markdown(file_path)
-        
+
         # Index in RagFlow for search
         await ragflow.index_document(
             content=result["content"],
@@ -210,14 +210,14 @@ async def process_course_materials(file_paths):
                 "semester": "Fall 2025"
             }
         )
-        
+
         # Create wiki article
         await deepwiki.create_article(
             title=result["metadata"]["title"],
             content=result["content"],
             metadata=result["metadata"]
         )
-    
+
     # Organize knowledge structure
     await ai_integration.organize_knowledge()
 ```
@@ -273,7 +273,7 @@ services:
       chunk_size: 512          # Text chunk size for indexing
       top_k: 5                 # Number of results to return
       temperature: 0.7         # AI response creativity
-      
+
   deepwiki:
     enabled: true
     config:
@@ -325,7 +325,7 @@ Access metrics at:
    ```bash
    # Check if services are running
    docker-compose -f ../noteparser-ai-services/docker-compose.yml ps
-   
+
    # Restart if needed
    docker-compose -f ../noteparser-ai-services/docker-compose.yml restart
    ```
@@ -369,7 +369,7 @@ If upgrading from mock services:
    ```python
    # Old
    from services.ragflow_service import RagFlowService
-   
+
    # New
    from noteparser.integration.service_client import RagFlowClient
    ```

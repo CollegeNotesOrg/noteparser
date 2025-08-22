@@ -132,7 +132,7 @@ scrape_configs:
   # Application-specific health checks
   - job_name: 'health-checks'
     static_configs:
-      - targets: 
+      - targets:
         - 'noteparser:8000'
         - 'ragflow:8010'
         - 'deepwiki:8011'
@@ -162,7 +162,7 @@ storage:
     retention.time: 30d
     retention.size: 50GB
     wal-compression: true
-    
+
 # Feature flags
 feature_flags:
   - web.enable-remote-shutdown

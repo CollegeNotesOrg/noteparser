@@ -46,7 +46,7 @@ noteparser parse input.pdf [options]
     ```bash
     # Parse PDF to markdown
     noteparser parse lecture.pdf
-    
+
     # Parse with specific output file
     noteparser parse notes.docx -o processed-notes.md
     ```
@@ -55,7 +55,7 @@ noteparser parse input.pdf [options]
     ```bash
     # Parse to LaTeX
     noteparser parse slides.pptx -f latex
-    
+
     # Parse without metadata
     noteparser parse handout.pdf --no-metadata
     ```
@@ -64,7 +64,7 @@ noteparser parse input.pdf [options]
     ```bash
     # Custom output with preserved formatting
     noteparser parse complex-doc.pdf -o output.md --preserve-formatting
-    
+
     # Parse with verbose logging
     noteparser -v parse document.pdf
     ```
@@ -88,7 +88,7 @@ noteparser batch input_directory/ [options]
     ```bash
     # Process all files in directory
     noteparser batch documents/
-    
+
     # Process with custom output directory
     noteparser batch input/ -o processed/
     ```
@@ -97,7 +97,7 @@ noteparser batch input_directory/ [options]
     ```bash
     # Process only PDFs
     noteparser batch docs/ -p "*.pdf"
-    
+
     # Process multiple file types
     noteparser batch notes/ -p "*.{pdf,docx,pptx}"
     ```
@@ -106,7 +106,7 @@ noteparser batch input_directory/ [options]
     ```bash
     # Non-recursive processing
     noteparser batch semester-notes/ --no-recursive
-    
+
     # LaTeX output with custom directory
     noteparser batch input/ -f latex -o latex-output/
     ```
@@ -129,7 +129,7 @@ noteparser sync [files...] [options]
     ```bash
     # Sync specific files
     noteparser sync output/*.md -t study-notes
-    
+
     # Sync with course specification
     noteparser sync notes.md -t study-notes -c CS101
     ```
@@ -138,7 +138,7 @@ noteparser sync [files...] [options]
     ```bash
     # Sync to specific branch
     noteparser sync *.md -t study-notes -b develop
-    
+
     # Sync with custom commit message
     noteparser sync notes.md -m "Add lecture notes for Week 5"
     ```

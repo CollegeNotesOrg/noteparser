@@ -47,55 +47,63 @@ statsd_host = os.getenv("STATSD_HOST")
 if statsd_host:
     statsd_prefix = "noteparser"
 
+
 # Worker process hooks
 def on_starting(server):
     """Called just before the master process is initialized."""
     server.log.info("Starting NoteParser server")
 
+
 def on_reload(server):
     """Called to recycle workers during a reload via SIGHUP."""
     server.log.info("Reloading NoteParser server")
+
 
 def worker_int(worker):
     """Called just after a worker exited on SIGINT or SIGQUIT."""
     worker.log.info("Worker received INT or QUIT signal")
 
+
 def pre_fork(server, worker):
     """Called just before a worker is forked."""
     server.log.info(f"Pre-fork worker {worker.pid}")
+
 
 def post_fork(server, worker):
     """Called just after a worker has been forked."""
     server.log.info(f"Post-fork worker {worker.pid}")
 
+
 def pre_exec(server):
     """Called just before a new master process is forked."""
     server.log.info("Forked child, re-executing")
+
 
 def when_ready(server):
     """Called just after the server is started."""
     server.log.info("Server is ready. Spawning workers")
 
+
 def worker_abort(worker):
     """Called when a worker receives the SIGABRT signal."""
     worker.log.info(f"Worker {worker.pid} aborted")
+
 
 # Application-specific settings
 def post_worker_init(worker):
     """Called just after a worker has initialized the application."""
     from noteparser.web.app import create_app
-    
+
     # Initialize application-specific resources
     app = create_app()
-    
+
     # Setup logging for the worker
     import logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s %(levelname)s %(name)s %(message)s'
-    )
-    
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+
     worker.log.info(f"Worker {worker.pid} initialized with AI services")
+
 
 # Environment-specific configurations
 if os.getenv("NOTEPARSER_ENV") == "production":
@@ -103,7 +111,7 @@ if os.getenv("NOTEPARSER_ENV") == "production":
     workers = max(2, multiprocessing.cpu_count())
     worker_class = "uvicorn.workers.UvicornWorker"
     preload_app = True
-    
+
 elif os.getenv("NOTEPARSER_ENV") == "development":
     # Development-specific settings
     workers = 1

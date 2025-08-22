@@ -16,7 +16,7 @@ services:
       top_k: 5
       temperature: 0.7
       max_tokens: 2048
-    
+
   # DeepWiki - AI-powered wiki system
   deepwiki:
     enabled: true
@@ -30,7 +30,7 @@ services:
       auto_link: true
       versioning: true
       similarity_threshold: 0.7
-  
+
   # Dolphin - Advanced PDF processing (Phase 2)
   dolphin:
     enabled: true
@@ -44,8 +44,8 @@ services:
       extract_images: true
       extract_tables: true
       quality_threshold: 0.7
-  
-  # LangExtract - NLP and entity extraction (Phase 2)  
+
+  # LangExtract - NLP and entity extraction (Phase 2)
   langextract:
     enabled: true
     host: localhost
@@ -58,7 +58,7 @@ services:
       extract_keywords: true
       spacy_model: "en_core_web_sm"
       max_text_length: 1000000
-  
+
   # WrenAI - Natural language queries (Phase 3)
   wrenai:
     enabled: false
@@ -68,7 +68,7 @@ services:
       model: "wren-base"
       enable_sql_generation: true
       enable_analytics: true
-  
+
   # SmolDocling - VLLM OCR (Phase 3)
   smoldocling:
     enabled: false
@@ -78,7 +78,7 @@ services:
       model: "smol-docling-vllm"
       use_gpu: false
       languages: ["en"]
-  
+
   # AgenticDoc - Alternative parser (Phase 4)
   agenticdoc:
     enabled: false
@@ -98,7 +98,7 @@ database:
     password: noteparser
     pool_size: 10
     max_overflow: 20
-    
+
   redis:
     host: redis
     port: 6379
@@ -106,7 +106,7 @@ database:
     password: null
     decode_responses: true
     max_connections: 50
-    
+
   elasticsearch:
     host: elasticsearch
     port: 9200
@@ -133,18 +133,18 @@ monitoring:
     enabled: true
     port: 9090
     scrape_interval: 15s
-    
+
   grafana:
     enabled: true
     port: 3000
     admin_user: admin
     admin_password: admin
-    
+
   jaeger:
     enabled: true
     port: 16686
     sampling_rate: 1.0
-    
+
   logging:
     level: INFO
     format: json
@@ -198,17 +198,17 @@ integrations:
     enabled: false
     token: "${GITHUB_TOKEN}"
     organization: "CollegeNotesOrg"
-    
+
   openai:
     enabled: false
     api_key: "${OPENAI_API_KEY}"
     model: "gpt-3.5-turbo"
     max_tokens: 2048
-    
+
   huggingface:
     enabled: false
     token: "${HUGGINGFACE_TOKEN}"
-    
+
   google_cloud:
     enabled: false
     project_id: "${GCP_PROJECT_ID}"

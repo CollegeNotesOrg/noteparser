@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class LatexConverter:
         self,
         markdown_content: str,
         template: str = "article",
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[dict[str, Any]] = None,
     ) -> str:
         """Convert markdown content to LaTeX.
 
@@ -194,7 +194,7 @@ class LatexConverter:
 
         return "\n".join(latex_lines)
 
-    def _convert_table_to_latex(self, table_lines: List[str]) -> List[str]:
+    def _convert_table_to_latex(self, table_lines: list[str]) -> list[str]:
         """Convert markdown table to LaTeX tabular.
 
         Args:
@@ -254,7 +254,7 @@ class LatexConverter:
 
         return latex_lines
 
-    def _extract_template_variables(self, metadata: Dict[str, Any]) -> Dict[str, str]:
+    def _extract_template_variables(self, metadata: dict[str, Any]) -> dict[str, str]:
         """Extract variables for template population.
 
         Args:

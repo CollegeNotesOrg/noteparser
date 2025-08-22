@@ -40,7 +40,7 @@ success() {
 # Pre-deployment checks
 check_prerequisites() {
     log "Checking prerequisites for $DEPLOY_TYPE deployment..."
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             command -v docker >/dev/null 2>&1 || error "Docker is not installed"
@@ -58,7 +58,7 @@ check_prerequisites() {
             error "Unsupported deployment type: $DEPLOY_TYPE"
             ;;
     esac
-    
+
     # Check if .env file exists
     if [[ ! -f "$PROJECT_DIR/.env.$ENVIRONMENT" ]]; then
         warn "Environment file .env.$ENVIRONMENT not found"
@@ -66,16 +66,16 @@ check_prerequisites() {
             error "No environment configuration found"
         fi
     fi
-    
+
     success "Prerequisites check passed"
 }
 
 # Environment setup
 setup_environment() {
     log "Setting up environment for $ENVIRONMENT..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     # Load environment variables
     if [[ -f ".env.$ENVIRONMENT" ]]; then
         source ".env.$ENVIRONMENT"
@@ -84,37 +84,37 @@ setup_environment() {
         source ".env"
         log "Loaded environment from .env"
     fi
-    
+
     # Generate secrets if they don't exist
     if [[ -z "${SECRET_KEY:-}" ]]; then
         export SECRET_KEY=$(openssl rand -hex 32)
         warn "Generated new SECRET_KEY"
     fi
-    
+
     if [[ -z "${JWT_SECRET:-}" ]]; then
         export JWT_SECRET=$(openssl rand -hex 32)
         warn "Generated new JWT_SECRET"
     fi
-    
+
     if [[ -z "${DB_PASSWORD:-}" ]]; then
         export DB_PASSWORD=$(openssl rand -base64 32)
         warn "Generated new DB_PASSWORD"
     fi
-    
+
     success "Environment setup complete"
 }
 
 # Build application
 build_application() {
     log "Building NoteParser application..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     case $DEPLOY_TYPE in
         "docker-compose"|"docker-swarm")
             # Build Docker images
             docker build -t noteparser:$VERSION -f Dockerfile.prod .
-            
+
             # Tag for registry if needed
             if [[ -n "${DOCKER_REGISTRY:-}" ]]; then
                 docker tag noteparser:$VERSION $DOCKER_REGISTRY/noteparser:$VERSION
@@ -127,19 +127,19 @@ build_application() {
             if [[ -z "${DOCKER_REGISTRY:-}" ]]; then
                 error "DOCKER_REGISTRY must be set for Kubernetes deployment"
             fi
-            
+
             docker build -t $DOCKER_REGISTRY/noteparser:$VERSION -f Dockerfile.prod .
             docker push $DOCKER_REGISTRY/noteparser:$VERSION
             ;;
     esac
-    
+
     success "Application build complete"
 }
 
 # Database migrations
 run_migrations() {
     log "Running database migrations..."
-    
+
     # Check if AI services are running (needed for some migrations)
     if [[ -d "../noteparser-ai-services" ]]; then
         cd ../noteparser-ai-services
@@ -150,7 +150,7 @@ run_migrations() {
         fi
         cd "$PROJECT_DIR"
     fi
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             docker-compose -f docker-compose.prod.yml run --rm noteparser python -m noteparser.db.migrate
@@ -162,24 +162,24 @@ run_migrations() {
             docker service create --name noteparser-migrate --restart-condition none $DOCKER_REGISTRY/noteparser:$VERSION python -m noteparser.db.migrate
             ;;
     esac
-    
+
     success "Database migrations complete"
 }
 
 # Deploy application
 deploy_application() {
     log "Deploying NoteParser $VERSION to $ENVIRONMENT..."
-    
+
     cd "$PROJECT_DIR"
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             # Stop existing services
             docker-compose -f docker-compose.prod.yml down
-            
+
             # Deploy new version
             VERSION=$VERSION docker-compose -f docker-compose.prod.yml up -d
-            
+
             # Wait for services to be healthy
             log "Waiting for services to be healthy..."
             timeout 300 bash -c '
@@ -189,7 +189,7 @@ deploy_application() {
                 done
             ' || error "Services failed to become healthy"
             ;;
-            
+
         "kubernetes")
             # Apply Kubernetes configurations
             kubectl apply -f k8s/namespace.yml
@@ -199,15 +199,15 @@ deploy_application() {
             kubectl apply -f k8s/redis.yml
             kubectl apply -f k8s/noteparser.yml
             kubectl apply -f k8s/ingress.yml
-            
+
             # Wait for deployment to be ready
             kubectl rollout status deployment/noteparser -n noteparser-$ENVIRONMENT --timeout=300s
             ;;
-            
+
         "docker-swarm")
             # Deploy stack
             docker stack deploy -c docker-compose.prod.yml noteparser-$ENVIRONMENT
-            
+
             # Wait for services to converge
             log "Waiting for services to converge..."
             timeout 300 bash -c '
@@ -218,14 +218,14 @@ deploy_application() {
             ' || error "Services failed to converge"
             ;;
     esac
-    
+
     success "Deployment complete"
 }
 
 # Health checks
 run_health_checks() {
     log "Running health checks..."
-    
+
     local base_url
     case $DEPLOY_TYPE in
         "docker-compose")
@@ -239,11 +239,11 @@ run_health_checks() {
             base_url="http://localhost:5000"
             ;;
     esac
-    
+
     # Test basic health endpoint
     local max_attempts=30
     local attempt=1
-    
+
     while [[ $attempt -le $max_attempts ]]; do
         if curl -sf "$base_url/health" >/dev/null 2>&1; then
             success "Basic health check passed"
@@ -254,59 +254,59 @@ run_health_checks() {
             ((attempt++))
         fi
     done
-    
+
     if [[ $attempt -gt $max_attempts ]]; then
         error "Health check failed after $max_attempts attempts"
     fi
-    
+
     # Test AI services health
     if curl -sf "$base_url/api/ai/health" >/dev/null 2>&1; then
         success "AI services health check passed"
     else
         warn "AI services health check failed - this may be expected if AI services are not running"
     fi
-    
+
     # Test database connectivity
     if curl -sf "$base_url/api/index/refresh" -X POST >/dev/null 2>&1; then
         success "Database connectivity check passed"
     else
         warn "Database connectivity check failed"
     fi
-    
+
     success "Health checks complete"
 }
 
 # Backup before deployment
 backup_data() {
     log "Creating backup before deployment..."
-    
+
     local backup_dir="$PROJECT_DIR/backups/$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$backup_dir"
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             # Backup database
             docker-compose -f docker-compose.prod.yml exec postgres pg_dump -U noteparser noteparser > "$backup_dir/database.sql"
-            
+
             # Backup volumes
             docker run --rm -v noteparser_postgres-data:/data -v "$backup_dir:/backup" alpine tar czf /backup/postgres-data.tar.gz -C /data .
             docker run --rm -v noteparser_noteparser-data:/data -v "$backup_dir:/backup" alpine tar czf /backup/noteparser-data.tar.gz -C /data .
             ;;
     esac
-    
+
     success "Backup created at $backup_dir"
 }
 
 # Rollback function
 rollback() {
     local previous_version="${1:-}"
-    
+
     if [[ -z "$previous_version" ]]; then
         error "Previous version not specified for rollback"
     fi
-    
+
     warn "Rolling back to version $previous_version..."
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             VERSION=$previous_version docker-compose -f docker-compose.prod.yml up -d
@@ -319,19 +319,19 @@ rollback() {
             VERSION=$previous_version docker stack deploy -c docker-compose.prod.yml noteparser-$ENVIRONMENT
             ;;
     esac
-    
+
     success "Rollback to version $previous_version complete"
 }
 
 # Cleanup old resources
 cleanup() {
     log "Cleaning up old resources..."
-    
+
     case $DEPLOY_TYPE in
         "docker-compose")
             # Remove unused images
             docker image prune -f
-            
+
             # Remove old volumes (be careful with this)
             # docker volume prune -f
             ;;
@@ -340,7 +340,7 @@ cleanup() {
             kubectl delete jobs --field-selector=status.successful=1 -n noteparser-$ENVIRONMENT
             ;;
     esac
-    
+
     success "Cleanup complete"
 }
 
@@ -350,7 +350,7 @@ main() {
     log "Environment: $ENVIRONMENT"
     log "Version: $VERSION"
     log "Deployment Type: $DEPLOY_TYPE"
-    
+
     # Run deployment steps
     check_prerequisites
     setup_environment
@@ -360,9 +360,9 @@ main() {
     deploy_application
     run_health_checks
     cleanup
-    
+
     success "NoteParser $VERSION deployed successfully to $ENVIRONMENT!"
-    
+
     # Print access information
     log "Access Information:"
     case $DEPLOY_TYPE in

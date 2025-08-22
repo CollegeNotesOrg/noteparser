@@ -1,9 +1,9 @@
 """Computer Science course plugin for code processing."""
 
 import re
-from typing import Any, Dict, List
+from typing import Any
 
-from ..base import BasePlugin
+from noteparser.plugins.base import BasePlugin
 
 
 class ComputerSciencePlugin(BasePlugin):
@@ -22,7 +22,7 @@ class ComputerSciencePlugin(BasePlugin):
         "data structures",
     ]
 
-    def process_content(self, content: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    def process_content(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """Process CS content with enhanced code formatting.
 
         Args:
@@ -68,7 +68,7 @@ class ComputerSciencePlugin(BasePlugin):
             },
         }
 
-    def _enhance_code_blocks(self, content: str) -> tuple[str, List[Dict[str, Any]]]:
+    def _enhance_code_blocks(self, content: str) -> tuple[str, list[dict[str, Any]]]:
         """Enhance code blocks with better formatting and language detection.
 
         Args:
@@ -223,7 +223,7 @@ class ComputerSciencePlugin(BasePlugin):
         stripped = line.strip()
 
         # Skip empty lines and markdown
-        if not stripped or stripped.startswith("#") or stripped.startswith("*"):
+        if not stripped or stripped.startswith(("#", "*")):
             return False
 
         # Code indicators
@@ -354,8 +354,8 @@ class ComputerSciencePlugin(BasePlugin):
     def _extract_cs_metadata(
         self,
         content: str,
-        code_blocks: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        code_blocks: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """Extract CS-specific metadata.
 
         Args:

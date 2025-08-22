@@ -1,0 +1,1325 @@
+{
+  "errors": [],
+  "generated_at": "2025-08-22T17:33:06Z",
+  "metrics": {
+    "_totals": {
+      "CONFIDENCE.HIGH": 43,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 41,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4797,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 11,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/cli.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 388,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/converters/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 3,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/converters/latex.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 313,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/core.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 287,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/db/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/db/migrate.py": {
+      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 552,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/db/seed.py": {
+      "CONFIDENCE.HIGH": 31,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 30,
+      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 524,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/exceptions.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 7,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/integration/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 5,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/integration/ai_services.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 129,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/integration/org_sync.py": {
+      "CONFIDENCE.HIGH": 5,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 5,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 300,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/integration/service_client.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 251,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/parsers/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/parsers/audio.py": {
+      "CONFIDENCE.HIGH": 4,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 4,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 165,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/parsers/ocr.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 222,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/base.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 198,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/builtin/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 1,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/builtin/cs_plugin.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 294,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/builtin/math_plugin.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 154,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/plugins/registry.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 38,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/utils/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/utils/academic.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 221,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/utils/metadata.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 256,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/web/__init__.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 4,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/web/api.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 57,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "src/noteparser/web/app.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 401,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "163         \"\"\"Calculate checksum for SQL content.\"\"\"\n164         return hashlib.md5(sql.encode()).hexdigest()\n165 \n",
+      "col_offset": 15,
+      "end_col_offset": 40,
+      "filename": "src/noteparser/db/migrate.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 164,
+      "line_range": [
+        164
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "70                 for table in tables:\n71                     conn.execute(f\"DELETE FROM {table}\")\n72 \n",
+      "col_offset": 35,
+      "end_col_offset": 47,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 71,
+      "line_range": [
+        71
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "272             for i in range(count):\n273                 doc_template = random.choice(document_types)\n274 \n",
+      "col_offset": 31,
+      "end_col_offset": 60,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 273,
+      "line_range": [
+        273
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "277                 content = doc_template[\"content\"] + f\"\\n\\n<!-- Document ID: {i} -->\"\n278                 content_hash = hashlib.md5(content.encode()).hexdigest()\n279 \n",
+      "col_offset": 31,
+      "end_col_offset": 60,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 278,
+      "line_range": [
+        278
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "281                 statuses = [\"completed\", \"pending\", \"processing\", \"failed\"]\n282                 status = random.choice(statuses)\n283 \n",
+      "col_offset": 25,
+      "end_col_offset": 48,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 282,
+      "line_range": [
+        282
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "284                 # Random timestamps\n285                 created_at = base_time + timedelta(days=random.randint(0, 30))\n286                 processed_at = created_at + timedelta(minutes=random.randint(1, 60))\n",
+      "col_offset": 56,
+      "end_col_offset": 77,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 285,
+      "line_range": [
+        285
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "285                 created_at = base_time + timedelta(days=random.randint(0, 30))\n286                 processed_at = created_at + timedelta(minutes=random.randint(1, 60))\n287 \n",
+      "col_offset": 62,
+      "end_col_offset": 83,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 286,
+      "line_range": [
+        286
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "342             for i in range(count):\n343                 document_id = random.choice(document_ids)\n344                 service = random.choice(services)\n",
+      "col_offset": 30,
+      "end_col_offset": 57,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 343,
+      "line_range": [
+        343
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "343                 document_id = random.choice(document_ids)\n344                 service = random.choice(services)\n345                 proc_type = random.choice(processing_types)\n",
+      "col_offset": 26,
+      "end_col_offset": 49,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 344,
+      "line_range": [
+        344
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "344                 service = random.choice(services)\n345                 proc_type = random.choice(processing_types)\n346 \n",
+      "col_offset": 28,
+      "end_col_offset": 59,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 345,
+      "line_range": [
+        345
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "357                         \"status\": \"success\",\n358                         \"entities_count\": random.randint(5, 50),\n359                         \"processing_time\": random.uniform(0.5, 10.0),\n",
+      "col_offset": 42,
+      "end_col_offset": 63,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 358,
+      "line_range": [
+        358
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "358                         \"entities_count\": random.randint(5, 50),\n359                         \"processing_time\": random.uniform(0.5, 10.0),\n360                         \"confidence\": random.uniform(0.7, 0.99),\n",
+      "col_offset": 43,
+      "end_col_offset": 68,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 359,
+      "line_range": [
+        359
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "359                         \"processing_time\": random.uniform(0.5, 10.0),\n360                         \"confidence\": random.uniform(0.7, 0.99),\n361                     },\n",
+      "col_offset": 38,
+      "end_col_offset": 63,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 360,
+      "line_range": [
+        360
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "363 \n364                 success = random.choice([True, True, True, False])  # 75% success rate\n365                 error_msg = None if success else \"Connection timeout\"\n",
+      "col_offset": 26,
+      "end_col_offset": 66,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 364,
+      "line_range": [
+        364
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "379                         response_data,\n380                         random.uniform(0.1, 5.0),\n381                         success,\n",
+      "col_offset": 24,
+      "end_col_offset": 48,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 380,
+      "line_range": [
+        380
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "418                 # Ensure different documents\n419                 source_id = random.choice(document_ids)\n420                 target_id = random.choice(\n",
+      "col_offset": 28,
+      "end_col_offset": 55,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 419,
+      "line_range": [
+        419
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "419                 source_id = random.choice(document_ids)\n420                 target_id = random.choice(\n421                     [doc_id for doc_id in document_ids if doc_id != source_id],\n422                 )\n423 \n",
+      "col_offset": 28,
+      "end_col_offset": 17,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 420,
+      "line_range": [
+        420,
+        421,
+        422
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "423 \n424                 rel_type = random.choice(relationship_types)\n425                 confidence = random.uniform(0.6, 0.95)\n",
+      "col_offset": 27,
+      "end_col_offset": 60,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 424,
+      "line_range": [
+        424
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "424                 rel_type = random.choice(relationship_types)\n425                 confidence = random.uniform(0.6, 0.95)\n426 \n",
+      "col_offset": 29,
+      "end_col_offset": 54,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 425,
+      "line_range": [
+        425
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "429                         \"detection_method\": \"content_similarity\",\n430                         \"common_keywords\": random.randint(3, 15),\n431                         \"semantic_score\": confidence,\n",
+      "col_offset": 43,
+      "end_col_offset": 64,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 430,
+      "line_range": [
+        430
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "480             for i in range(count):\n481                 document_id = random.choice(document_ids)\n482                 service = random.choice(services)\n",
+      "col_offset": 30,
+      "end_col_offset": 57,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 481,
+      "line_range": [
+        481
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "481                 document_id = random.choice(document_ids)\n482                 service = random.choice(services)\n483                 proc_type = random.choice(processing_types)\n",
+      "col_offset": 26,
+      "end_col_offset": 49,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 482,
+      "line_range": [
+        482
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "482                 service = random.choice(services)\n483                 proc_type = random.choice(processing_types)\n484                 status = random.choice(statuses)\n",
+      "col_offset": 28,
+      "end_col_offset": 59,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 483,
+      "line_range": [
+        483
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "483                 proc_type = random.choice(processing_types)\n484                 status = random.choice(statuses)\n485                 priority = random.randint(1, 10)\n",
+      "col_offset": 25,
+      "end_col_offset": 48,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 484,
+      "line_range": [
+        484
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "484                 status = random.choice(statuses)\n485                 priority = random.randint(1, 10)\n486 \n",
+      "col_offset": 27,
+      "end_col_offset": 48,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 485,
+      "line_range": [
+        485
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "488                 now = datetime.now()\n489                 scheduled_at = now - timedelta(minutes=random.randint(1, 1440))\n490 \n",
+      "col_offset": 55,
+      "end_col_offset": 78,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 489,
+      "line_range": [
+        489
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "495                 if status in [\"processing\", \"completed\", \"failed\"]:\n496                     started_at = scheduled_at + timedelta(minutes=random.randint(1, 30))\n497 \n",
+      "col_offset": 66,
+      "end_col_offset": 87,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 496,
+      "line_range": [
+        496
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "498                     if status in [\"completed\", \"failed\"]:\n499                         completed_at = started_at + timedelta(minutes=random.randint(1, 60))\n500 \n",
+      "col_offset": 70,
+      "end_col_offset": 91,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 499,
+      "line_range": [
+        499
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "516                         status,\n517                         random.randint(1, 3),\n518                         scheduled_at.isoformat(),\n",
+      "col_offset": 24,
+      "end_col_offset": 44,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 517,
+      "line_range": [
+        517
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "555                 for service in services:\n556                     status = random.choice(statuses)\n557 \n",
+      "col_offset": 29,
+      "end_col_offset": 52,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 556,
+      "line_range": [
+        556
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "558                     if status == \"healthy\":\n559                         response_time = service[\"base_response_time\"] * random.uniform(0.8, 1.5)\n560                         error_message = None\n",
+      "col_offset": 72,
+      "end_col_offset": 96,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 559,
+      "line_range": [
+        559
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "561                     else:\n562                         response_time = service[\"base_response_time\"] * random.uniform(5, 20)\n563                         error_message = random.choice(\n",
+      "col_offset": 72,
+      "end_col_offset": 93,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 562,
+      "line_range": [
+        562
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "562                         response_time = service[\"base_response_time\"] * random.uniform(5, 20)\n563                         error_message = random.choice(\n564                             [\n565                                 \"Connection refused\",\n566                                 \"Request timeout\",\n567                                 \"Service unavailable\",\n568                                 \"Internal server error\",\n569                             ],\n570                         )\n571 \n",
+      "col_offset": 40,
+      "end_col_offset": 25,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 563,
+      "line_range": [
+        563,
+        564,
+        565,
+        566,
+        567,
+        568,
+        569,
+        570
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "639             for table in tables:\n640                 cursor = conn.execute(f\"SELECT COUNT(*) FROM {table}\")\n641                 stats[table] = cursor.fetchone()[0]\n",
+      "col_offset": 40,
+      "end_col_offset": 61,
+      "filename": "src/noteparser/db/seed.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 640,
+      "line_range": [
+        640
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "4 import logging\n5 import subprocess\n6 from dataclasses import dataclass\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "src/noteparser/integration/org_sync.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "305             # Add files\n306             subprocess.run([\"git\", \"add\", *files], cwd=repo_path, check=True)\n307 \n",
+      "col_offset": 12,
+      "end_col_offset": 77,
+      "filename": "src/noteparser/integration/org_sync.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 306,
+      "line_range": [
+        306
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "305             # Add files\n306             subprocess.run([\"git\", \"add\", *files], cwd=repo_path, check=True)\n307 \n",
+      "col_offset": 12,
+      "end_col_offset": 77,
+      "filename": "src/noteparser/integration/org_sync.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 306,
+      "line_range": [
+        306
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "318             # Commit\n319             subprocess.run([\"git\", \"commit\", \"-m\", commit_message], cwd=repo_path, check=True)\n320 \n",
+      "col_offset": 12,
+      "end_col_offset": 94,
+      "filename": "src/noteparser/integration/org_sync.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 319,
+      "line_range": [
+        319
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "318             # Commit\n319             subprocess.run([\"git\", \"commit\", \"-m\", commit_message], cwd=repo_path, check=True)\n320 \n",
+      "col_offset": 12,
+      "end_col_offset": 94,
+      "filename": "src/noteparser/integration/org_sync.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 319,
+      "line_range": [
+        319
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "4 import os\n5 import subprocess\n6 import tempfile\n",
+      "col_offset": 0,
+      "end_col_offset": 17,
+      "filename": "src/noteparser/parsers/audio.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Consider possible security implications associated with the subprocess module.",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/blacklists/blacklist_imports.html#b404-import-subprocess",
+      "test_id": "B404",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "141         try:\n142             result = subprocess.run(\n143                 [\n144                     \"ffprobe\",\n145                     \"-v\",\n146                     \"quiet\",\n147                     \"-show_entries\",\n148                     \"format=duration\",\n149                     \"-of\",\n150                     \"csv=p=0\",\n151                     str(audio_path),\n152                 ],\n153                 check=False,\n154                 capture_output=True,\n155                 text=True,\n156             )\n157 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "src/noteparser/parsers/audio.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Starting a process with a partial executable path",
+      "line_number": 142,
+      "line_range": [
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b607_start_process_with_partial_path.html",
+      "test_id": "B607",
+      "test_name": "start_process_with_partial_path"
+    },
+    {
+      "code": "141         try:\n142             result = subprocess.run(\n143                 [\n144                     \"ffprobe\",\n145                     \"-v\",\n146                     \"quiet\",\n147                     \"-show_entries\",\n148                     \"format=duration\",\n149                     \"-of\",\n150                     \"csv=p=0\",\n151                     str(audio_path),\n152                 ],\n153                 check=False,\n154                 capture_output=True,\n155                 text=True,\n156             )\n157 \n",
+      "col_offset": 21,
+      "end_col_offset": 13,
+      "filename": "src/noteparser/parsers/audio.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "subprocess call - check for execution of untrusted input.",
+      "line_number": 142,
+      "line_range": [
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b603_subprocess_without_shell_equals_true.html",
+      "test_id": "B603",
+      "test_name": "subprocess_without_shell_equals_true"
+    },
+    {
+      "code": "159                 return float(result.stdout.strip())\n160         except Exception:\n161             pass\n162 \n",
+      "col_offset": 8,
+      "end_col_offset": 16,
+      "filename": "src/noteparser/parsers/audio.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 160,
+      "line_range": [
+        160,
+        161
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "221                             return f\"{parts[2]}-{parts[0].zfill(2)}-{parts[1].zfill(2)}\"\n222                 except:\n223                     continue\n224         return None\n",
+      "col_offset": 16,
+      "end_col_offset": 28,
+      "filename": "src/noteparser/utils/metadata.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Continue detected.",
+      "line_number": 222,
+      "line_range": [
+        222,
+        223
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b112_try_except_continue.html",
+      "test_id": "B112",
+      "test_name": "try_except_continue"
+    },
+    {
+      "code": "304                         tags.extend(frontmatter[\"tags\"].split(\",\"))\n305             except:\n306                 pass\n307 \n",
+      "col_offset": 12,
+      "end_col_offset": 20,
+      "filename": "src/noteparser/utils/metadata.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 305,
+      "line_range": [
+        305,
+        306
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/0.0.0/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    }
+  ]
+}

@@ -40,7 +40,7 @@ plugins:
     config:
       equation_numbering: true
       symbol_standardization: true
-  
+
   cs_processor:
     enabled: true
     config:
@@ -93,7 +93,7 @@ repositories:
     formats: ["markdown", "latex"]   # Supported output formats
     branch: "main"                   # Target branch
     path: "../study-notes"           # Relative path
-  
+
   shared-resources:
     type: "resources"
     auto_sync: false
@@ -239,7 +239,7 @@ course_overrides:
           code_line_numbers: true
       math_processor:
         enabled: false
-    
+
   MATH201:
     plugins:
       math_processor:
@@ -261,7 +261,7 @@ output_formats:
     template: "academic"
     front_matter: true
     toc: true
-    
+
   latex:
     extension: ".tex"
     template: "article"

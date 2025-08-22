@@ -319,15 +319,15 @@
     .file-actions {
         flex-direction: column;
     }
-    
+
     .metadata-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .content-tabs {
         flex-wrap: wrap;
     }
-    
+
     .content-viewer {
         max-height: 400px;
     }
@@ -360,7 +360,7 @@
         </div>
         <h1><i class="{{ get_file_icon(file.file_type) }}"></i> {{ file.filename }}</h1>
         <div class="file-actions">
-            <a href="{{ url_for('download_file', file_id=file.id) }}" 
+            <a href="{{ url_for('download_file', file_id=file.id) }}"
                class="btn btn-light">
                 <i class="fas fa-download"></i> Download
             </a>
@@ -443,7 +443,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Raw Content -->
             <div id="raw" class="tab-content">
                 <div class="content-raw">
@@ -454,7 +454,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Source Content -->
             <div id="source" class="tab-content">
                 <div id="sourceContent">
@@ -575,18 +575,18 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
-    
+
     // Remove active class from all tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Show selected tab content
     document.getElementById(tabName).classList.add('active');
-    
+
     // Add active class to clicked button
     event.target.classList.add('active');
-    
+
     // Load source content if needed
     if (tabName === 'source' && !document.getElementById('sourceContent').dataset.loaded) {
         loadSourceContent();
@@ -603,7 +603,7 @@ function loadSourceContent() {
             Prism.highlightAll();
         })
         .catch(error => {
-            document.getElementById('sourceContent').innerHTML = 
+            document.getElementById('sourceContent').innerHTML =
                 `<p class="text-danger">Error loading source: ${error.message}</p>`;
         });
 }
@@ -705,9 +705,9 @@ function showAlert(message, type) {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
+
     document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.file-metadata'));
-    
+
     setTimeout(() => {
         alertDiv.remove();
     }, 5000);

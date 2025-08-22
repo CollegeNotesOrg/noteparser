@@ -5,7 +5,7 @@ import inspect
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +16,10 @@ class BasePlugin(ABC):
     name: str = "base_plugin"
     version: str = "1.0.0"
     description: str = "Base plugin class"
-    supported_formats: List[str] = []
-    course_types: List[str] = []  # e.g., ['math', 'cs', 'chemistry']
+    supported_formats: list[str] = []
+    course_types: list[str] = []  # e.g., ['math', 'cs', 'chemistry']
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[dict[str, Any]] = None):
         """Initialize the plugin.
 
         Args:
@@ -29,7 +29,7 @@ class BasePlugin(ABC):
         self.enabled = self.config.get("enabled", True)
 
     @abstractmethod
-    def process_content(self, content: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    def process_content(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """Process document content with plugin-specific logic.
 
         Args:
@@ -40,7 +40,7 @@ class BasePlugin(ABC):
             Dictionary with processed content and any additional metadata
         """
 
-    def can_handle(self, file_path: Path, metadata: Dict[str, Any]) -> bool:
+    def can_handle(self, file_path: Path, metadata: dict[str, Any]) -> bool:
         """Check if this plugin can handle the given file.
 
         Args:
@@ -63,7 +63,7 @@ class BasePlugin(ABC):
 
         return True
 
-    def validate_config(self) -> List[str]:
+    def validate_config(self) -> list[str]:
         """Validate plugin configuration.
 
         Returns:
@@ -80,7 +80,7 @@ class BasePlugin(ABC):
 
         return errors
 
-    def get_info(self) -> Dict[str, Any]:
+    def get_info(self) -> dict[str, Any]:
         """Get plugin information.
 
         Returns:
@@ -100,7 +100,7 @@ class BasePlugin(ABC):
 class PluginManager:
     """Manages loading and execution of plugins."""
 
-    def __init__(self, plugin_dirs: Optional[List[Path]] = None):
+    def __init__(self, plugin_dirs: Optional[list[Path]] = None):
         """Initialize plugin manager.
 
         Args:
@@ -111,7 +111,7 @@ class PluginManager:
             Path.cwd() / "plugins",
             Path.home() / ".noteparser" / "plugins",
         ]
-        self.plugins: Dict[str, BasePlugin] = {}
+        self.plugins: dict[str, BasePlugin] = {}
         self.load_plugins()
 
     def load_plugins(self):
@@ -133,7 +133,7 @@ class PluginManager:
             try:
                 self._load_plugin_file(plugin_file)
             except Exception as e:
-                logger.error(f"Failed to load plugin {plugin_file}: {e}")
+                logger.exception(f"Failed to load plugin {plugin_file}: {e}")
 
     def _load_plugin_file(self, plugin_file: Path):
         """Load a single plugin file.
@@ -150,7 +150,6 @@ class PluginManager:
             # Find plugin classes
             for name, obj in inspect.getmembers(module):
                 if inspect.isclass(obj) and issubclass(obj, BasePlugin) and obj != BasePlugin:
-
                     # Instantiate plugin
                     plugin_instance = obj()
 
@@ -175,7 +174,7 @@ class PluginManager:
         """
         return self.plugins.get(name)
 
-    def get_plugins_for_file(self, file_path: Path, metadata: Dict[str, Any]) -> List[BasePlugin]:
+    def get_plugins_for_file(self, file_path: Path, metadata: dict[str, Any]) -> list[BasePlugin]:
         """Get all plugins that can handle a specific file.
 
         Args:
@@ -199,8 +198,8 @@ class PluginManager:
         self,
         file_path: Path,
         content: str,
-        metadata: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        metadata: dict[str, Any],
+    ) -> dict[str, Any]:
         """Process content with all applicable plugins.
 
         Args:
@@ -232,12 +231,12 @@ class PluginManager:
                 logger.debug(f"Applied plugin {plugin.name} to {file_path}")
 
             except Exception as e:
-                logger.error(f"Plugin {plugin.name} failed on {file_path}: {e}")
+                logger.exception(f"Plugin {plugin.name} failed on {file_path}: {e}")
                 result["plugin_results"][plugin.name] = {"error": str(e)}
 
         return result
 
-    def list_plugins(self) -> List[Dict[str, Any]]:
+    def list_plugins(self) -> list[dict[str, Any]]:
         """List all loaded plugins.
 
         Returns:

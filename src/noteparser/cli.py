@@ -4,7 +4,7 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 import click
 
@@ -160,7 +160,7 @@ def batch(
 @click.option("--target-repo", "-t", default="study-notes", help="Target repository name")
 @click.option("--course", "-c", help="Course identifier")
 @click.argument("files", nargs=-1, type=click.Path(exists=True, path_type=Path))
-def sync(target_repo: str, course: Optional[str], files: List[Path]):
+def sync(target_repo: str, course: Optional[str], files: list[Path]):
     """Sync parsed notes to target repository."""
     try:
         org_sync = OrganizationSync()
@@ -325,8 +325,7 @@ def query(ctx, query: str, filters: Optional[str], output_format: str):
 
         # Run async query
         async def run_query():
-            result = await parser.query_knowledge(query, parsed_filters)
-            return result
+            return await parser.query_knowledge(query, parsed_filters)
 
         result = asyncio.run(run_query())
 
@@ -387,12 +386,11 @@ def analyze(
 
         # Run async AI analysis
         async def run_analysis():
-            result = await parser.parse_to_markdown_with_ai(
+            return await parser.parse_to_markdown_with_ai(
                 input_file,
                 extract_metadata=extract_metadata,
                 preserve_formatting=preserve_formatting,
             )
-            return result
 
         result = asyncio.run(run_analysis())
 

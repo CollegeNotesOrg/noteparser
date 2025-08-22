@@ -211,4 +211,4 @@ sample_data/
 # Publishing and development files
 publish.py
 .pypirc
-.pypirc.*
+.pypirc.*bandit-report.json

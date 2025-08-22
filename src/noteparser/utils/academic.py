@@ -2,7 +2,7 @@
 
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -19,7 +19,7 @@ class Citation:
 class TableOfContents:
     """Represents the table of contents structure."""
 
-    sections: List[Dict[str, Any]]
+    sections: list[dict[str, Any]]
     total_sections: int
     max_depth: int
 
@@ -46,7 +46,7 @@ class AcademicProcessor:
             "further reading",
         ]
 
-    def extract_citations(self, content: str) -> List[Citation]:
+    def extract_citations(self, content: str) -> list[Citation]:
         """Extract citations from document content.
 
         Args:
@@ -79,7 +79,7 @@ class AcademicProcessor:
 
         return unique_citations
 
-    def extract_bibliography(self, content: str) -> Dict[str, Any]:
+    def extract_bibliography(self, content: str) -> dict[str, Any]:
         """Extract bibliography section from document.
 
         Args:
@@ -192,7 +192,7 @@ class AcademicProcessor:
 
         return TableOfContents(sections=sections, total_sections=len(sections), max_depth=max_depth)
 
-    def format_citations_section(self, citations: List[Citation]) -> str:
+    def format_citations_section(self, citations: list[Citation]) -> str:
         """Format citations as a markdown section.
 
         Args:
@@ -282,10 +282,7 @@ class AcademicProcessor:
             return True
 
         # Check for bracketed numbers
-        if re.match(r"^\[\d+\]\s+", line):
-            return True
-
-        return False
+        return bool(re.match(r"^\[\d+\]\s+", line))
 
     def _create_anchor(self, title: str) -> str:
         """Create URL-safe anchor from title.

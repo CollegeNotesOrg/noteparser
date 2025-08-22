@@ -13,12 +13,12 @@ from noteparser.exceptions import UnsupportedFormatError
 class TestNoteParser:
     """Test cases for the main NoteParser class."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def parser(self):
         """Create a NoteParser instance for testing."""
         return NoteParser()
 
-    @pytest.fixture
+    @pytest.fixture()
     def sample_markdown(self):
         """Sample markdown content for testing."""
         return """# Test Document
@@ -45,7 +45,7 @@ The quadratic formula is: $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$
 **Bold text** and *italic text* example.
 """
 
-    @pytest.fixture
+    @pytest.fixture()
     def temp_file(self, sample_markdown):
         """Create a temporary file with sample content."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
@@ -133,15 +133,15 @@ The quadratic formula is: $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$
         """Test academic formatting preservation."""
         content_with_math = """
         This is a theorem: **Theorem**: The sum of angles in a triangle is 180°.
-        
+
         Mathematical equation: $E = mc^2$
-        
+
         Display equation: $$\\int_0^1 x^2 dx = \\frac{1}{3}$$
-        
+
         Citation: [1] and author-year citation [Smith2024]
-        
+
         Chemical formula: H2O and C6H12O6
-        
+
         Figure 1 shows the results.
         """
 

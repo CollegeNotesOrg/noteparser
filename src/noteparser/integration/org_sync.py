@@ -6,7 +6,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import yaml
 
@@ -21,7 +21,7 @@ class RepositoryConfig:
     path: Path
     type: str  # 'notes', 'parser', 'templates', 'dashboard'
     auto_sync: bool = True
-    formats: List[str] = None
+    formats: list[str] = None
 
     def __post_init__(self):
         if self.formats is None:
@@ -53,7 +53,7 @@ class OrganizationSync:
         self.config = self._load_config()
         self.repositories = self._discover_repositories()
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load organization configuration."""
         if self.config_path.exists():
             with open(self.config_path) as f:
@@ -89,7 +89,7 @@ class OrganizationSync:
 
         return default_config
 
-    def _discover_repositories(self) -> Dict[str, RepositoryConfig]:
+    def _discover_repositories(self) -> dict[str, RepositoryConfig]:
         """Discover repositories in the organization."""
         repositories = {}
         base_path = Path(self.config["organization"]["base_path"])
@@ -138,10 +138,10 @@ class OrganizationSync:
 
     def sync_parsed_notes(
         self,
-        source_files: List[Path],
+        source_files: list[Path],
         target_repo: str = "study-notes",
         course: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Sync parsed notes to the target repository.
 
         Args:
@@ -162,10 +162,7 @@ class OrganizationSync:
         for source_file in source_files:
             try:
                 # Determine target location
-                if course:
-                    target_dir = target_path / "courses" / course
-                else:
-                    target_dir = target_path / "parsed"
+                target_dir = target_path / "courses" / course if course else target_path / "parsed"
 
                 target_dir.mkdir(parents=True, exist_ok=True)
                 target_file = target_dir / source_file.name
@@ -180,7 +177,7 @@ class OrganizationSync:
 
             except Exception as e:
                 errors.append(f"Failed to sync {source_file}: {e}")
-                logger.error(f"Sync error: {e}")
+                logger.exception(f"Sync error: {e}")
 
         # Auto-commit if enabled
         if self.config["sync_settings"].get("auto_commit", True):
@@ -193,7 +190,7 @@ class OrganizationSync:
             "timestamp": datetime.now().isoformat(),
         }
 
-    def create_cross_references(self, content_map: Dict[str, str]) -> List[CrossReference]:
+    def create_cross_references(self, content_map: dict[str, str]) -> list[CrossReference]:
         """Create cross-references between documents.
 
         Args:
@@ -234,7 +231,7 @@ class OrganizationSync:
         cross_refs.sort(key=lambda x: x.confidence, reverse=True)
         return cross_refs[:max_suggestions]
 
-    def generate_index(self) -> Dict[str, Any]:
+    def generate_index(self) -> dict[str, Any]:
         """Generate searchable index of all notes across repositories.
 
         Returns:
@@ -292,7 +289,7 @@ class OrganizationSync:
 
         return index
 
-    def _auto_commit(self, repo_name: str, files: List[str]) -> bool:
+    def _auto_commit(self, repo_name: str, files: list[str]) -> bool:
         """Auto-commit synced files.
 
         Args:
@@ -306,7 +303,7 @@ class OrganizationSync:
 
         try:
             # Add files
-            subprocess.run(["git", "add"] + files, cwd=repo_path, check=True)
+            subprocess.run(["git", "add", *files], cwd=repo_path, check=True)
 
             # Create commit message
             template = self.config["sync_settings"].get(
@@ -325,7 +322,7 @@ class OrganizationSync:
             return True
 
         except subprocess.CalledProcessError as e:
-            logger.error(f"Auto-commit failed for {repo_name}: {e}")
+            logger.exception(f"Auto-commit failed for {repo_name}: {e}")
             return False
 
     def _calculate_similarity(self, content1: str, content2: str) -> float:
@@ -367,7 +364,7 @@ class OrganizationSync:
                 continue
         return None
 
-    def _scan_repository_files(self, repo_path: Path) -> List[Dict[str, Any]]:
+    def _scan_repository_files(self, repo_path: Path) -> list[dict[str, Any]]:
         """Scan repository for note files.
 
         Args:

@@ -4,7 +4,7 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class MetadataExtractor:
             r"(\d{1,2}-\d{1,2}-\d{4})",  # 1-15-2024
         ]
 
-    def extract(self, file_path: Path, content: str) -> Dict[str, Any]:
+    def extract(self, file_path: Path, content: str) -> dict[str, Any]:
         """Extract metadata from file path and content.
 
         Args:
@@ -52,11 +52,9 @@ class MetadataExtractor:
         metadata.update(content_metadata)
 
         # Post-process and validate
-        metadata = self._validate_and_clean(metadata)
+        return self._validate_and_clean(metadata)
 
-        return metadata
-
-    def _extract_from_path(self, file_path: Path) -> Dict[str, Any]:
+    def _extract_from_path(self, file_path: Path) -> dict[str, Any]:
         """Extract metadata from file path structure.
 
         Args:
@@ -101,7 +99,7 @@ class MetadataExtractor:
 
         return metadata
 
-    def _extract_from_content(self, content: str) -> Dict[str, Any]:
+    def _extract_from_content(self, content: str) -> dict[str, Any]:
         """Extract metadata from document content.
 
         Args:
@@ -277,7 +275,7 @@ class MetadataExtractor:
 
         return None
 
-    def _extract_tags(self, content: str) -> List[str]:
+    def _extract_tags(self, content: str) -> list[str]:
         """Extract tags from content.
 
         Args:
@@ -307,7 +305,7 @@ class MetadataExtractor:
             except:
                 pass
 
-        return list(set(tag.strip() for tag in tags if tag.strip()))
+        return list({tag.strip() for tag in tags if tag.strip()})
 
     def _identify_document_type(self, filename: str) -> Optional[str]:
         """Identify document type from filename.
@@ -334,7 +332,7 @@ class MetadataExtractor:
 
         return None
 
-    def _validate_and_clean(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate_and_clean(self, metadata: dict[str, Any]) -> dict[str, Any]:
         """Validate and clean extracted metadata.
 
         Args:

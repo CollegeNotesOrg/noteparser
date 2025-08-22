@@ -21,7 +21,7 @@
                     <!-- File Upload Area -->
                     <div class="mb-4">
                         <label for="fileInput" class="form-label fw-bold">Select Document</label>
-                        <div class="upload-area border-2 border-dashed rounded-3 p-4 text-center" 
+                        <div class="upload-area border-2 border-dashed rounded-3 p-4 text-center"
                              id="uploadArea"
                              ondragover="handleDragOver(event)"
                              ondrop="handleDrop(event)"
@@ -30,10 +30,10 @@
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                                 <h5>Drag and drop your file here</h5>
                                 <p class="text-muted">or click to browse</p>
-                                <input type="file" id="fileInput" name="file" class="d-none" 
+                                <input type="file" id="fileInput" name="file" class="d-none"
                                        accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.md,.txt,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.mp3,.wav,.m4a,.mp4,.mov,.avi"
                                        onchange="handleFileSelect(event)">
-                                <button type="button" class="btn btn-outline-primary" 
+                                <button type="button" class="btn btn-outline-primary"
                                         onclick="document.getElementById('fileInput').click()">
                                     Choose File
                                 </button>
@@ -47,7 +47,7 @@
                                         <div class="fw-bold" id="fileName"></div>
                                         <small class="text-muted" id="fileSize"></small>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
                                             onclick="clearFile()">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -62,7 +62,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="formats" 
+                                    <input class="form-check-input" type="checkbox" name="formats"
                                            value="markdown" id="formatMarkdown" checked>
                                     <label class="form-check-label" for="formatMarkdown">
                                         <i class="fab fa-markdown text-primary"></i> Markdown
@@ -72,7 +72,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="formats" 
+                                    <input class="form-check-input" type="checkbox" name="formats"
                                            value="latex" id="formatLatex">
                                     <label class="form-check-label" for="formatLatex">
                                         <i class="fas fa-file-code text-success"></i> LaTeX
@@ -89,7 +89,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="extract_metadata" 
+                                    <input class="form-check-input" type="checkbox" name="extract_metadata"
                                            id="extractMetadata" checked>
                                     <label class="form-check-label" for="extractMetadata">
                                         Extract Metadata
@@ -99,7 +99,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="preserve_formatting" 
+                                    <input class="form-check-input" type="checkbox" name="preserve_formatting"
                                            id="preserveFormatting" checked>
                                     <label class="form-check-label" for="preserveFormatting">
                                         Preserve Academic Formatting
@@ -240,10 +240,10 @@ let loadingModal = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-    
+
     // Form submission
     document.getElementById('parseForm').addEventListener('submit', handleFormSubmit);
-    
+
     // Click on upload area
     document.getElementById('uploadArea').addEventListener('click', function() {
         document.getElementById('fileInput').click();
@@ -266,7 +266,7 @@ function handleDrop(event) {
     event.preventDefault();
     event.stopPropagation();
     document.getElementById('uploadArea').classList.remove('border-primary', 'bg-light');
-    
+
     const files = event.dataTransfer.files;
     if (files.length > 0) {
         handleFile(files[0]);
@@ -282,15 +282,15 @@ function handleFileSelect(event) {
 
 function handleFile(file) {
     selectedFile = file;
-    
+
     // Show file preview
     document.getElementById('uploadPrompt').classList.add('d-none');
     document.getElementById('filePreview').classList.remove('d-none');
-    
+
     // Set file info
     document.getElementById('fileName').textContent = file.name;
     document.getElementById('fileSize').textContent = formatFileSize(file.size);
-    
+
     // Set appropriate icon
     const icon = getFileIcon(getFileExtension(file.name));
     document.getElementById('fileIcon').className = icon;
@@ -326,7 +326,7 @@ function getFileIcon(extension) {
         '.mp4': 'fas fa-file-video text-danger fa-2x',
         '.mov': 'fas fa-file-video text-danger fa-2x'
     };
-    
+
     return icons[extension] || 'fas fa-file text-muted fa-2x';
 }
 
@@ -340,50 +340,50 @@ function formatFileSize(bytes) {
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    
+
     if (!selectedFile) {
         showAlert('Please select a file to parse.', 'warning');
         return;
     }
-    
+
     // Validate formats
     const formats = Array.from(document.querySelectorAll('input[name="formats"]:checked'))
                           .map(cb => cb.value);
-    
+
     if (formats.length === 0) {
         showAlert('Please select at least one output format.', 'warning');
         return;
     }
-    
+
     // Show loading modal
     loadingModal.show();
-    
+
     // Prepare form data
     const formData = new FormData();
     formData.append('file', selectedFile);
-    
+
     formats.forEach(format => {
         formData.append('formats', format);
     });
-    
+
     if (document.getElementById('extractMetadata').checked) {
         formData.append('extract_metadata', 'true');
     }
-    
+
     if (document.getElementById('preserveFormatting').checked) {
         formData.append('preserve_formatting', 'true');
     }
-    
+
     const courseCode = document.getElementById('courseCode').value.trim();
     if (courseCode) {
         formData.append('course_code', courseCode);
     }
-    
+
     const topic = document.getElementById('topic').value.trim();
     if (topic) {
         formData.append('topic', topic);
     }
-    
+
     // Submit to server
     fetch('/parse', {
         method: 'POST',
@@ -392,7 +392,7 @@ function handleFormSubmit(event) {
     .then(response => response.json())
     .then(data => {
         loadingModal.hide();
-        
+
         if (data.success) {
             displayResults(data);
             showAlert('Document parsed successfully!', 'success');
@@ -409,21 +409,21 @@ function handleFormSubmit(event) {
 function displayResults(data) {
     const resultsSection = document.getElementById('resultsSection');
     const resultsContent = document.getElementById('resultsContent');
-    
+
     let html = `
         <div class="mb-3">
             <h5><i class="fas fa-file"></i> ${selectedFile.name}</h5>
             <p class="text-muted">Parsed to ${Object.keys(data.results).join(', ')} format(s)</p>
         </div>
     `;
-    
+
     // Display results for each format
     for (const [format, result] of Object.entries(data.results)) {
         html += `
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between">
                     <span>
-                        <i class="fas fa-${format === 'markdown' ? 'fab fa-markdown' : 'file-code'}"></i> 
+                        <i class="fas fa-${format === 'markdown' ? 'fab fa-markdown' : 'file-code'}"></i>
                         ${format.charAt(0).toUpperCase() + format.slice(1)} Output
                     </span>
                     <button class="btn btn-sm btn-outline-primary" onclick="downloadResult('${format}', \`${btoa(result.content)}\`)">
@@ -435,12 +435,12 @@ function displayResults(data) {
                         <strong>Content Preview:</strong>
                         <pre class="bg-light p-3 mt-2" style="max-height: 200px; overflow-y: auto;"><code>${escapeHtml(result.content.substring(0, 500))}${result.content.length > 500 ? '...' : ''}</code></pre>
                     </div>
-                    
+
                     ${result.metadata ? `
                     <div>
                         <strong>Metadata:</strong>
                         <ul class="list-unstyled mt-2">
-                            ${Object.entries(result.metadata).map(([key, value]) => 
+                            ${Object.entries(result.metadata).map(([key, value]) =>
                                 `<li><strong>${key}:</strong> ${value}</li>`
                             ).join('')}
                         </ul>
@@ -450,7 +450,7 @@ function displayResults(data) {
             </div>
         `;
     }
-    
+
     // Add sync option
     html += `
         <div class="d-flex gap-2 mt-4">
@@ -462,10 +462,10 @@ function displayResults(data) {
             </button>
         </div>
     `;
-    
+
     resultsContent.innerHTML = html;
     resultsSection.style.display = 'block';
-    
+
     // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth' });
 }
@@ -474,10 +474,10 @@ function downloadResult(format, encodedContent) {
     const content = atob(encodedContent);
     const extension = format === 'markdown' ? 'md' : 'tex';
     const filename = `${selectedFile.name.split('.')[0]}.${extension}`;
-    
+
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;

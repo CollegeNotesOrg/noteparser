@@ -4,19 +4,19 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Optional
 
 from flask import Flask, jsonify, render_template, request
 
-from ..core import NoteParser
-from ..integration.ai_services import AIServicesIntegration
-from ..integration.org_sync import OrganizationSync
-from ..plugins.base import PluginManager
+from noteparser.core import NoteParser
+from noteparser.integration.ai_services import AIServicesIntegration
+from noteparser.integration.org_sync import OrganizationSync
+from noteparser.plugins.base import PluginManager
 
 logger = logging.getLogger(__name__)
 
 
-def create_app(config: Dict[str, Any] = None) -> Flask:
+def create_app(config: Optional[dict[str, Any]] = None) -> Flask:
     """Create and configure the Flask application.
 
     Args:
@@ -86,7 +86,7 @@ def register_routes(app: Flask):
                 repositories=list(app.org_sync.repositories.keys()),
             )
         except Exception as e:
-            logger.error(f"Dashboard error: {e}")
+            logger.exception(f"Dashboard error: {e}")
             return render_template("error.html", error=str(e)), 500
 
     @app.route("/browse/<repo_name>")
@@ -109,7 +109,7 @@ def register_routes(app: Flask):
                 files=files,
             )
         except Exception as e:
-            logger.error(f"Repository browse error: {e}")
+            logger.exception(f"Repository browse error: {e}")
             return render_template("error.html", error=str(e)), 500
 
     @app.route("/view/<path:file_path>")
@@ -142,7 +142,7 @@ def register_routes(app: Flask):
 
             return render_template("file_info.html", file_path=file_path, file_info=file_info)
         except Exception as e:
-            logger.error(f"File view error: {e}")
+            logger.exception(f"File view error: {e}")
             return render_template("error.html", error=str(e)), 500
 
     @app.route("/parse", methods=["GET", "POST"])
@@ -191,7 +191,7 @@ def register_routes(app: Flask):
             return jsonify({"success": True, "file_path": str(file_path), "results": results})
 
         except Exception as e:
-            logger.error(f"Parse error: {e}")
+            logger.exception(f"Parse error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/search")
@@ -233,7 +233,7 @@ def register_routes(app: Flask):
             return jsonify({"results": results[:20]})  # Limit results
 
         except Exception as e:
-            logger.error(f"Search error: {e}")
+            logger.exception(f"Search error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/plugins")
@@ -257,7 +257,7 @@ def register_routes(app: Flask):
             return jsonify({"success": True, "action": action})
 
         except Exception as e:
-            logger.error(f"Plugin toggle error: {e}")
+            logger.exception(f"Plugin toggle error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/sync", methods=["POST"])
@@ -278,7 +278,7 @@ def register_routes(app: Flask):
             return jsonify(result)
 
         except Exception as e:
-            logger.error(f"Sync error: {e}")
+            logger.exception(f"Sync error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/index/refresh", methods=["POST"])
@@ -288,7 +288,7 @@ def register_routes(app: Flask):
             index = app.org_sync.generate_index()
             return jsonify(index)
         except Exception as e:
-            logger.error(f"Index refresh error: {e}")
+            logger.exception(f"Index refresh error: {e}")
             return jsonify({"error": str(e)}), 500
 
     # AI-powered routes
@@ -349,7 +349,7 @@ def register_routes(app: Flask):
             )
 
         except Exception as e:
-            logger.error(f"AI parse error: {e}")
+            logger.exception(f"AI parse error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/ai/query", methods=["POST"])
@@ -377,7 +377,7 @@ def register_routes(app: Flask):
             return jsonify(result)
 
         except Exception as e:
-            logger.error(f"AI query error: {e}")
+            logger.exception(f"AI query error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/ai/analyze", methods=["POST"])
@@ -409,7 +409,7 @@ def register_routes(app: Flask):
             return jsonify(result)
 
         except Exception as e:
-            logger.error(f"AI analysis error: {e}")
+            logger.exception(f"AI analysis error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/ai/health")
@@ -419,7 +419,7 @@ def register_routes(app: Flask):
             return jsonify({"status": "disabled", "message": "AI services not configured"})
 
         try:
-            from ..integration.service_client import ServiceClientManager
+            from noteparser.integration.service_client import ServiceClientManager
 
             async def check_health():
                 manager = ServiceClientManager()
@@ -443,7 +443,7 @@ def register_routes(app: Flask):
             )
 
         except Exception as e:
-            logger.error(f"AI health check error: {e}")
+            logger.exception(f"AI health check error: {e}")
             return jsonify({"status": "error", "error": str(e)}), 500
 
     @app.route("/api/ai/search", methods=["POST"])
@@ -511,7 +511,7 @@ def register_routes(app: Flask):
             return jsonify(result)
 
         except Exception as e:
-            logger.error(f"Enhanced search error: {e}")
+            logger.exception(f"Enhanced search error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.errorhandler(404)

@@ -303,7 +303,7 @@ plugins:
     config:
       equation_numbering: true
       symbol_standardization: true
-  
+
   cs_processor:
     enabled: true
     config:
@@ -323,11 +323,11 @@ class ChemistryPlugin(BasePlugin):
     version = "1.0.0"
     description = "Enhanced processing for chemistry courses"
     course_types = ['chemistry', 'organic', 'biochemistry']
-    
+
     def process_content(self, content: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
         # Your custom processing logic here
         processed_content = self.enhance_chemical_formulas(content)
-        
+
         return {
             'content': processed_content,
             'metadata': {**metadata, 'chemical_formulas_found': count}
@@ -405,7 +405,7 @@ open http://localhost:5000/ai  # AI Dashboard
 ### 📖 **Individual Student**
 ```bash
 # Daily workflow
-noteparser parse "Today's Lecture.pdf" 
+noteparser parse "Today's Lecture.pdf"
 noteparser sync output/todays-lecture.md --course CS101
 ```
 
@@ -576,7 +576,7 @@ Combines AI and development dependencies for complete functionality.
 ### Installation Examples
 ```bash
 pip install noteparser           # Core only
-pip install noteparser[ai]       # Core + AI features  
+pip install noteparser[ai]       # Core + AI features
 pip install noteparser[dev]      # Core + dev tools
 pip install noteparser[all]      # Everything
 ```
@@ -601,6 +601,6 @@ pip install noteparser[all]      # Everything
 
 ---
 
-**Author**: Suryansh Sijwali  
-**GitHub**: [@SuryanshSS1011](https://github.com/SuryanshSS1011)  
+**Author**: Suryansh Sijwali
+**GitHub**: [@SuryanshSS1011](https://github.com/SuryanshSS1011)
 **Organization**: [CollegeNotesOrg](https://github.com/CollegeNotesOrg)

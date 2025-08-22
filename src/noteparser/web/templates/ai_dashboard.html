@@ -8,12 +8,12 @@
         transition: transform 0.2s;
         border-left: 4px solid var(--secondary-color);
     }
-    
+
     .ai-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
-    
+
     .ai-status {
         display: inline-block;
         width: 12px;
@@ -21,22 +21,22 @@
         border-radius: 50%;
         margin-right: 8px;
     }
-    
+
     .ai-status.healthy { background-color: #27ae60; }
     .ai-status.unhealthy { background-color: #e74c3c; }
     .ai-status.disabled { background-color: #95a5a6; }
-    
+
     .query-input {
         border-radius: 1rem;
         border: 2px solid #ddd;
         padding: 0.75rem 1.5rem;
     }
-    
+
     .query-input:focus {
         border-color: var(--secondary-color);
         box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
     }
-    
+
     .ai-response {
         background-color: #f8f9fa;
         border-left: 4px solid var(--secondary-color);
@@ -44,7 +44,7 @@
         border-radius: 0.25rem;
         margin-top: 1rem;
     }
-    
+
     .document-result {
         border: 1px solid #dee2e6;
         border-radius: 0.25rem;
@@ -52,7 +52,7 @@
         margin-bottom: 0.5rem;
         background-color: white;
     }
-    
+
     .confidence-bar {
         width: 100%;
         height: 6px;
@@ -60,27 +60,27 @@
         border-radius: 3px;
         overflow: hidden;
     }
-    
+
     .confidence-fill {
         height: 100%;
         background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
         transition: width 0.3s ease;
     }
-    
+
     .service-status-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
     }
-    
+
     .service-card {
         padding: 1rem;
         border-radius: 0.5rem;
         border: 1px solid #dee2e6;
         background-color: white;
     }
-    
+
     .loading-overlay {
         display: none;
         position: fixed;
@@ -93,7 +93,7 @@
         justify-content: center;
         align-items: center;
     }
-    
+
     .analysis-result {
         background-color: white;
         border: 1px solid #dee2e6;
@@ -101,7 +101,7 @@
         padding: 1.5rem;
         margin-top: 1rem;
     }
-    
+
     .keyword-tag {
         display: inline-block;
         background-color: var(--secondary-color);
@@ -155,35 +155,35 @@
             </div>
             <div class="card-body">
                 <p class="text-muted">Ask questions about your documents using natural language.</p>
-                
+
                 <div class="mb-3">
-                    <input type="text" id="queryInput" class="form-control query-input" 
-                           placeholder="Ask a question about your documents..." 
+                    <input type="text" id="queryInput" class="form-control query-input"
+                           placeholder="Ask a question about your documents..."
                            onkeypress="handleQueryKeyPress(event)">
                 </div>
-                
+
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Course Filter (optional)</label>
-                        <input type="text" id="courseFilter" class="form-control" 
+                        <input type="text" id="courseFilter" class="form-control"
                                placeholder="e.g., math, physics">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Topic Filter (optional)</label>
-                        <input type="text" id="topicFilter" class="form-control" 
+                        <input type="text" id="topicFilter" class="form-control"
                                placeholder="e.g., calculus, quantum">
                     </div>
                 </div>
-                
+
                 <button class="btn btn-primary" onclick="performAIQuery()">
                     <i class="fas fa-search"></i> Query Knowledge Base
                 </button>
-                
+
                 <div id="queryResults" class="mt-3"></div>
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="card ai-card">
             <div class="card-header">
@@ -191,17 +191,17 @@
             </div>
             <div class="card-body">
                 <p class="text-muted">Upload and parse documents with AI enhancement.</p>
-                
+
                 <form id="aiParseForm" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <input type="file" id="aiFileInput" class="form-control" 
+                        <input type="file" id="aiFileInput" class="form-control"
                                accept=".pdf,.docx,.pptx,.txt,.md">
                     </div>
                     <button type="submit" class="btn btn-success w-100">
                         <i class="fas fa-magic"></i> Parse with AI
                     </button>
                 </form>
-                
+
                 <div id="aiParseResults" class="mt-3"></div>
             </div>
         </div>
@@ -215,16 +215,16 @@
     </div>
     <div class="card-body">
         <p class="text-muted">Analyze text content with AI to extract insights, keywords, and topics.</p>
-        
+
         <div class="row">
             <div class="col-md-8">
-                <textarea id="analysisText" class="form-control" rows="6" 
+                <textarea id="analysisText" class="form-control" rows="6"
                           placeholder="Paste your text here for AI analysis..."></textarea>
             </div>
             <div class="col-md-4">
                 <div class="mb-3">
                     <label class="form-label">Title (optional)</label>
-                    <input type="text" id="analysisTitle" class="form-control" 
+                    <input type="text" id="analysisTitle" class="form-control"
                            placeholder="Document title">
                 </div>
                 <button class="btn btn-info w-100" onclick="analyzeText()">
@@ -232,7 +232,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div id="analysisResults" class="mt-3"></div>
     </div>
 </div>
@@ -244,11 +244,11 @@
     </div>
     <div class="card-body">
         <p class="text-muted">Semantic search across your document library with AI-powered relevance ranking.</p>
-        
+
         <div class="row">
             <div class="col-md-10">
-                <input type="text" id="enhancedSearchInput" class="form-control query-input" 
-                       placeholder="Search your documents with AI..." 
+                <input type="text" id="enhancedSearchInput" class="form-control query-input"
+                       placeholder="Search your documents with AI..."
                        onkeypress="handleSearchKeyPress(event)">
             </div>
             <div class="col-md-2">
@@ -257,7 +257,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div id="enhancedSearchResults" class="mt-3"></div>
     </div>
 </div>
@@ -271,7 +271,7 @@ let aiHealthStatus = {};
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     checkAIHealth();
-    
+
     // Set up forms
     document.getElementById('aiParseForm').addEventListener('submit', handleAIParseSubmit);
 });
@@ -304,7 +304,7 @@ function checkAIHealth() {
 
 function displayHealthStatus(data) {
     const container = document.getElementById('servicesStatus');
-    
+
     if (data.status === 'disabled') {
         container.innerHTML = `
             <div class="service-card text-center">
@@ -315,7 +315,7 @@ function displayHealthStatus(data) {
         `;
         return;
     }
-    
+
     if (data.status === 'error') {
         container.innerHTML = `
             <div class="service-card text-center">
@@ -326,12 +326,12 @@ function displayHealthStatus(data) {
         `;
         return;
     }
-    
+
     const services = data.services || {};
     container.innerHTML = Object.entries(services).map(([name, status]) => {
         const isHealthy = status.status === 'healthy';
         const isDisabled = status.status === 'disabled';
-        
+
         return `
             <div class="service-card">
                 <div class="d-flex align-items-center mb-2">
@@ -360,16 +360,16 @@ function performAIQuery() {
         showAlert('Please enter a query', 'warning');
         return;
     }
-    
+
     const filters = {};
     const course = document.getElementById('courseFilter').value.trim();
     const topic = document.getElementById('topicFilter').value.trim();
-    
+
     if (course) filters.course = course;
     if (topic) filters.topic = topic;
-    
+
     showLoadingOverlay();
-    
+
     fetch('/api/ai/query', {
         method: 'POST',
         headers: {
@@ -390,7 +390,7 @@ function performAIQuery() {
 
 function displayQueryResults(data) {
     const container = document.getElementById('queryResults');
-    
+
     if (data.error) {
         container.innerHTML = `
             <div class="alert alert-danger">
@@ -400,9 +400,9 @@ function displayQueryResults(data) {
         `;
         return;
     }
-    
+
     let html = '';
-    
+
     // AI Answer
     if (data.answer) {
         html += `
@@ -412,13 +412,13 @@ function displayQueryResults(data) {
             </div>
         `;
     }
-    
+
     // Documents
     if (data.documents && data.documents.length > 0) {
         html += `
             <h6 class="mt-3"><i class="fas fa-file-alt"></i> Relevant Documents (${data.documents.length})</h6>
         `;
-        
+
         data.documents.slice(0, 5).forEach(doc => {
             const confidence = doc.score ? Math.round(doc.score * 100) : 0;
             html += `
@@ -440,31 +440,31 @@ function displayQueryResults(data) {
             `;
         });
     }
-    
+
     if (!html) {
         html = '<div class="text-muted">No results found.</div>';
     }
-    
+
     container.innerHTML = html;
 }
 
 // AI Parse
 function handleAIParseSubmit(event) {
     event.preventDefault();
-    
+
     const fileInput = document.getElementById('aiFileInput');
     const file = fileInput.files[0];
-    
+
     if (!file) {
         showAlert('Please select a file', 'warning');
         return;
     }
-    
+
     const formData = new FormData();
     formData.append('file', file);
-    
+
     showLoadingOverlay();
-    
+
     fetch('/api/ai/parse', {
         method: 'POST',
         body: formData
@@ -482,7 +482,7 @@ function handleAIParseSubmit(event) {
 
 function displayAIParseResults(data) {
     const container = document.getElementById('aiParseResults');
-    
+
     if (data.error) {
         container.innerHTML = `
             <div class="alert alert-danger">
@@ -492,14 +492,14 @@ function displayAIParseResults(data) {
         `;
         return;
     }
-    
+
     let html = `
         <div class="alert alert-success">
             <i class="fas fa-check"></i>
             File parsed successfully!
         </div>
     `;
-    
+
     // AI Processing Results
     if (data.ai_processing && !data.ai_processing.error) {
         const ai = data.ai_processing;
@@ -517,7 +517,7 @@ function displayAIParseResults(data) {
             </div>
         `;
     }
-    
+
     container.innerHTML = html;
 }
 
@@ -525,14 +525,14 @@ function displayAIParseResults(data) {
 function analyzeText() {
     const content = document.getElementById('analysisText').value.trim();
     const title = document.getElementById('analysisTitle').value.trim();
-    
+
     if (!content) {
         showAlert('Please enter text to analyze', 'warning');
         return;
     }
-    
+
     showLoadingOverlay();
-    
+
     fetch('/api/ai/analyze', {
         method: 'POST',
         headers: {
@@ -553,7 +553,7 @@ function analyzeText() {
 
 function displayAnalysisResults(data) {
     const container = document.getElementById('analysisResults');
-    
+
     if (data.error) {
         container.innerHTML = `
             <div class="alert alert-danger">
@@ -563,7 +563,7 @@ function displayAnalysisResults(data) {
         `;
         return;
     }
-    
+
     let html = `
         <div class="analysis-result">
             <h6><i class="fas fa-chart-line"></i> Analysis Results</h6>
@@ -577,7 +577,7 @@ function displayAnalysisResults(data) {
             ${data.confidence ? `<p><strong>Confidence:</strong> ${Math.round(data.confidence * 100)}%</p>` : ''}
         </div>
     `;
-    
+
     container.innerHTML = html;
 }
 
@@ -594,9 +594,9 @@ function performEnhancedSearch() {
         showAlert('Please enter a search term', 'warning');
         return;
     }
-    
+
     showLoadingOverlay();
-    
+
     fetch('/api/ai/search', {
         method: 'POST',
         headers: {
@@ -617,7 +617,7 @@ function performEnhancedSearch() {
 
 function displayEnhancedSearchResults(data) {
     const container = document.getElementById('enhancedSearchResults');
-    
+
     if (data.error) {
         container.innerHTML = `
             <div class="alert alert-danger">
@@ -627,7 +627,7 @@ function displayEnhancedSearchResults(data) {
         `;
         return;
     }
-    
+
     let html = `
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6><i class="fas fa-search"></i> Search Results (${data.results.length})</h6>
@@ -636,7 +636,7 @@ function displayEnhancedSearchResults(data) {
             </span>
         </div>
     `;
-    
+
     if (data.answer) {
         html += `
             <div class="ai-response mb-3">
@@ -645,7 +645,7 @@ function displayEnhancedSearchResults(data) {
             </div>
         `;
     }
-    
+
     if (data.results.length === 0) {
         html += '<div class="text-muted">No results found.</div>';
     } else {
@@ -674,7 +674,7 @@ function displayEnhancedSearchResults(data) {
             `;
         });
     }
-    
+
     container.innerHTML = html;
 }
 </script>

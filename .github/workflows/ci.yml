@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: .
     strategy:
       fail-fast: false
       matrix:
@@ -70,6 +73,9 @@ jobs:
 
   integration-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     services:
       redis:
         image: redis:7-alpine
@@ -118,6 +124,9 @@ jobs:
 
   docker-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v4
 
@@ -142,6 +151,9 @@ jobs:
 
   security-scan:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v4
 
@@ -173,6 +185,9 @@ jobs:
 
   performance-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v4
 
@@ -200,6 +215,9 @@ jobs:
 
   pre-commit:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
     - uses: actions/checkout@v4
 

@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import cv2
 import numpy as np
@@ -31,7 +31,7 @@ class OCRProcessor:
         image_path: Path,
         preprocess: bool = True,
         handwritten: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process image with OCR to extract text.
 
         Args:
@@ -78,7 +78,7 @@ class OCRProcessor:
             }
 
         except Exception as e:
-            logger.error(f"OCR processing failed for {image_path}: {e}")
+            logger.exception(f"OCR processing failed for {image_path}: {e}")
             return {
                 "text": "",
                 "confidence": 0.0,
@@ -138,9 +138,7 @@ class OCRProcessor:
 
         # Morphological operations to connect broken characters
         kernel = np.ones((1, 1), np.uint8)
-        cv_image = cv2.morphologyEx(cv_image, cv2.MORPH_CLOSE, kernel)
-
-        return cv_image
+        return cv2.morphologyEx(cv_image, cv2.MORPH_CLOSE, kernel)
 
     def _preprocess_printed(self, cv_image: np.ndarray) -> np.ndarray:
         """Preprocessing optimized for printed text.
@@ -160,9 +158,7 @@ class OCRProcessor:
         # Dilation and erosion to remove noise
         kernel = np.ones((1, 1), np.uint8)
         cv_image = cv2.dilate(cv_image, kernel, iterations=1)
-        cv_image = cv2.erode(cv_image, kernel, iterations=1)
-
-        return cv_image
+        return cv2.erode(cv_image, kernel, iterations=1)
 
     def _get_ocr_config(self, handwritten: bool) -> str:
         """Get Tesseract configuration based on content type.
@@ -179,7 +175,7 @@ class OCRProcessor:
         # Configuration for printed text
         return "--psm 6"
 
-    def _extract_text_from_data(self, ocr_data: Dict) -> str:
+    def _extract_text_from_data(self, ocr_data: dict) -> str:
         """Extract clean text from OCR data.
 
         Args:
@@ -197,7 +193,7 @@ class OCRProcessor:
 
         return " ".join(words)
 
-    def _calculate_confidence(self, ocr_data: Dict) -> float:
+    def _calculate_confidence(self, ocr_data: dict) -> float:
         """Calculate overall confidence score.
 
         Args:
@@ -211,7 +207,7 @@ class OCRProcessor:
             return sum(confidences) / len(confidences) / 100.0
         return 0.0
 
-    def _detect_text_structure(self, ocr_data: Dict) -> Dict[str, Any]:
+    def _detect_text_structure(self, ocr_data: dict) -> dict[str, Any]:
         """Detect text structure like headers, paragraphs, lists.
 
         Args:
@@ -252,7 +248,7 @@ class OCRProcessor:
             "has_structure": len(headers) > 0 or len(paragraphs) > 1,
         }
 
-    def format_ocr_markdown(self, ocr_result: Dict[str, Any], title: str = None) -> str:
+    def format_ocr_markdown(self, ocr_result: dict[str, Any], title: Optional[str] = None) -> str:
         """Format OCR results as structured markdown.
 
         Args:

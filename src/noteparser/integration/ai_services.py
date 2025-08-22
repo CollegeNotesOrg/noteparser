@@ -6,7 +6,7 @@ Integrates various AI/ML services into the noteparser workflow.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .service_client import ServiceClientManager
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AIServicesIntegration:
     """Main integration class for AI services."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[dict[str, Any]] = None):
         self.config = config or {}
         self.manager = ServiceClientManager()
         self.services_initialized = False
@@ -44,7 +44,7 @@ class AIServicesIntegration:
         self.services_initialized = True
         logger.info("AI services initialization completed")
 
-    async def process_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_document(self, document: dict[str, Any]) -> dict[str, Any]:
         """Process a document through AI services."""
         if not self.services_initialized:
             await self.initialize()
@@ -68,7 +68,7 @@ class AIServicesIntegration:
             results["insights"] = insights
 
         except Exception as e:
-            logger.error(f"RagFlow processing failed: {e}")
+            logger.exception(f"RagFlow processing failed: {e}")
             results["rag_error"] = str(e)
 
         # Create wiki article
@@ -86,12 +86,12 @@ class AIServicesIntegration:
             results["wiki_article"] = wiki_result
 
         except Exception as e:
-            logger.error(f"DeepWiki processing failed: {e}")
+            logger.exception(f"DeepWiki processing failed: {e}")
             results["wiki_error"] = str(e)
 
         return results
 
-    async def query_knowledge(self, query: str, filters: Optional[Dict] = None) -> Dict[str, Any]:
+    async def query_knowledge(self, query: str, filters: Optional[dict] = None) -> dict[str, Any]:
         """Query the knowledge base."""
         if not self.services_initialized:
             await self.initialize()
@@ -107,7 +107,7 @@ class AIServicesIntegration:
             )
             results["rag_response"] = rag_response
         except Exception as e:
-            logger.error(f"RagFlow query failed: {e}")
+            logger.exception(f"RagFlow query failed: {e}")
             results["rag_error"] = str(e)
 
         # Query through DeepWiki
@@ -123,12 +123,12 @@ class AIServicesIntegration:
             results["ai_assistant"] = ai_response
 
         except Exception as e:
-            logger.error(f"DeepWiki query failed: {e}")
+            logger.exception(f"DeepWiki query failed: {e}")
             results["wiki_error"] = str(e)
 
         return results
 
-    async def organize_knowledge(self) -> Dict[str, Any]:
+    async def organize_knowledge(self) -> dict[str, Any]:
         """Organize and structure the knowledge base."""
         if not self.services_initialized:
             await self.initialize()
@@ -141,7 +141,7 @@ class AIServicesIntegration:
             graph_result = await deepwiki.get("graph")
             results["knowledge_graph"] = graph_result
         except Exception as e:
-            logger.error(f"Knowledge graph retrieval failed: {e}")
+            logger.exception(f"Knowledge graph retrieval failed: {e}")
             results["organization_error"] = str(e)
 
         return results
@@ -167,7 +167,7 @@ def integrate_ai_services(parser_instance):
     # Extend parser methods
     original_parse = parser_instance.parse_to_markdown
 
-    async def enhanced_parse(file_path: str, **kwargs) -> Dict[str, Any]:
+    async def enhanced_parse(file_path: str, **kwargs) -> dict[str, Any]:
         """Enhanced parse with AI services."""
         # Original parsing
         result = original_parse(file_path, **kwargs)

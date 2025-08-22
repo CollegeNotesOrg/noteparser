@@ -1,7 +1,7 @@
 """Core NoteParser implementation."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 from markitdown import MarkItDown
 
@@ -46,7 +46,7 @@ class NoteParser:
 
     def __init__(
         self,
-        config: Optional[Dict[str, Any]] = None,
+        config: Optional[dict[str, Any]] = None,
         llm_client: Optional[Any] = None,
         enable_ai: bool = False,
     ):
@@ -82,7 +82,7 @@ class NoteParser:
         file_path: Union[str, Path],
         extract_metadata: bool = True,
         preserve_formatting: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Parse document to Markdown format.
 
         Args:
@@ -128,7 +128,7 @@ class NoteParser:
         file_path: Union[str, Path],
         template: Optional[str] = None,
         extract_metadata: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Parse document to LaTeX format.
 
         Args:
@@ -159,7 +159,7 @@ class NoteParser:
         output_format: str = "markdown",
         recursive: bool = True,
         pattern: Optional[str] = None,
-    ) -> Dict[str, Dict[str, Any]]:
+    ) -> dict[str, dict[str, Any]]:
         """Parse multiple documents in a directory.
 
         Args:
@@ -174,10 +174,7 @@ class NoteParser:
         directory = Path(directory)
         results = {}
 
-        if recursive:
-            files = directory.rglob(pattern or "*")
-        else:
-            files = directory.glob(pattern or "*")
+        files = directory.rglob(pattern or "*") if recursive else directory.glob(pattern or "*")
 
         for file_path in files:
             if file_path.is_file() and file_path.suffix.lower() in self.SUPPORTED_FORMATS:
@@ -257,8 +254,7 @@ class NoteParser:
             return formula
 
         # Convert numbers to subscripts
-        formatted = re.sub(r"(\d+)", r"<sub>\1</sub>", formula)
-        return formatted
+        return re.sub(r"(\d+)", r"<sub>\1</sub>", formula)
 
     def _enhance_code_block(self, language: str, code: str) -> str:
         """Enhance code blocks with better formatting.
@@ -322,7 +318,7 @@ class NoteParser:
         file_path: Union[str, Path],
         extract_metadata: bool = True,
         preserve_formatting: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Parse document to Markdown with AI enhancement.
 
         Args:
@@ -360,7 +356,7 @@ class NoteParser:
 
         return result
 
-    async def query_knowledge(self, query: str, filters: Optional[Dict] = None) -> Dict[str, Any]:
+    async def query_knowledge(self, query: str, filters: Optional[dict] = None) -> dict[str, Any]:
         """Query the AI knowledge base.
 
         Args:

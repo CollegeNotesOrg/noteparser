@@ -19,7 +19,7 @@
 <div class="row mb-4">
     <div class="col-md-8 mx-auto">
         <div class="input-group">
-            <input type="text" id="searchInput" class="form-control search-box" 
+            <input type="text" id="searchInput" class="form-control search-box"
                    placeholder="Search across all notes..." onkeypress="handleSearchKeyPress(event)">
             <button class="btn btn-primary" onclick="performSearch()">
                 <i class="fas fa-search"></i>
@@ -67,7 +67,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center">
@@ -81,7 +81,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center">
@@ -95,7 +95,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center">
@@ -152,7 +152,7 @@
                         </div>
                     </div>
                     {% endfor %}
-                    
+
                     {% if index.files | length > 10 %}
                     <div class="text-center mt-3">
                         <a href="/browse" class="btn btn-sm btn-outline-primary">View All Files</a>
@@ -164,7 +164,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Courses -->
     <div class="col-md-6">
         <div class="card">
@@ -257,7 +257,7 @@
                         </button>
                     </div>
                     <div class="col-md-3 mb-2">
-                        <a href="https://github.com/CollegeNotesOrg/noteparser" target="_blank" 
+                        <a href="https://github.com/CollegeNotesOrg/noteparser" target="_blank"
                            class="btn btn-outline-dark btn-lg w-100">
                             <i class="fab fa-github d-block mb-2"></i>
                             Documentation
@@ -285,7 +285,7 @@ function performSearch() {
         clearSearch();
         return;
     }
-    
+
     showLoading();
     fetch(`/api/search?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
@@ -302,9 +302,9 @@ function performSearch() {
 function displaySearchResults(results, query) {
     const resultsSection = document.getElementById('searchResultsSection');
     const resultsContainer = document.getElementById('searchResults');
-    
+
     resultsSection.style.display = 'block';
-    
+
     if (results.length === 0) {
         resultsContainer.innerHTML = `
             <div class="text-center py-4">
@@ -315,7 +315,7 @@ function displaySearchResults(results, query) {
         `;
         return;
     }
-    
+
     resultsContainer.innerHTML = `
         <div class="mb-3">
             <small class="text-muted">Found ${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"</small>
@@ -372,7 +372,7 @@ function getFileIcon(format) {
         '.jpeg': '<i class="fas fa-file-image text-info"></i>',
         '.png': '<i class="fas fa-file-image text-info"></i>'
     };
-    
+
     return icons[format] || '<i class="fas fa-file text-muted"></i>';
 }
 

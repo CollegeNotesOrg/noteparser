@@ -13,7 +13,7 @@ import sqlite3
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List
+from typing import Optional
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class DatabaseSeeder:
     """Database seeder for noteparser development and testing."""
 
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: Optional[str] = None):
         """Initialize database seeder.
 
         Args:
@@ -76,10 +76,10 @@ class DatabaseSeeder:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to clear data: {e}")
+            logger.exception(f"Failed to clear data: {e}")
             return False
 
-    def seed_sample_documents(self, count: int = 10) -> List[int]:
+    def seed_sample_documents(self, count: int = 10) -> list[int]:
         """Seed sample documents.
 
         Args:
@@ -95,7 +95,7 @@ class DatabaseSeeder:
                 "filename": "calculus_notes.pdf",
                 "mime_type": "application/pdf",
                 "content": """# Calculus I - Limits and Derivatives
-                
+
 ## Chapter 1: Limits
 The concept of limit is fundamental to calculus. A limit describes the behavior of a function as the input approaches a particular value.
 
@@ -133,7 +133,7 @@ f'(x) = lim(h→0) [f(x+h) - f(x)] / h
                 "filename": "data_structures_algorithms.md",
                 "mime_type": "text/markdown",
                 "content": """# Data Structures and Algorithms
-                
+
 ## Binary Trees
 A binary tree is a hierarchical data structure where each node has at most two children.
 
@@ -181,7 +181,7 @@ Optimal load factor is typically 0.75
                 "filename": "organic_chemistry_reactions.pdf",
                 "mime_type": "application/pdf",
                 "content": """# Organic Chemistry - Reaction Mechanisms
-                
+
 ## Nucleophilic Substitution Reactions
 
 ### SN1 Mechanism
@@ -227,7 +227,7 @@ The reaction proceeds through a single transition state with partial bonds to bo
                 "filename": "quantum_mechanics_intro.tex",
                 "mime_type": "application/x-latex",
                 "content": """# Introduction to Quantum Mechanics
-                
+
 ## Wave-Particle Duality
 Quantum objects exhibit both wave-like and particle-like properties depending on the experimental setup.
 
@@ -287,8 +287,8 @@ This is an eigenvalue equation where E represents energy eigenvalues.
 
                 cursor = conn.execute(
                     """
-                    INSERT INTO documents 
-                    (filename, content_hash, file_size, mime_type, processing_status, 
+                    INSERT INTO documents
+                    (filename, content_hash, file_size, mime_type, processing_status,
                      metadata, content, ai_processed, created_at, processed_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -313,7 +313,11 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Created {len(document_ids)} sample documents")
         return document_ids
 
-    def seed_ai_processing_results(self, document_ids: List[int], count: int = None) -> int:
+    def seed_ai_processing_results(
+        self,
+        document_ids: list[int],
+        count: Optional[int] = None,
+    ) -> int:
         """Seed AI processing results.
 
         Args:
@@ -362,8 +366,8 @@ This is an eigenvalue equation where E represents energy eigenvalues.
 
                 conn.execute(
                     """
-                    INSERT INTO ai_processing_results 
-                    (document_id, service_name, processing_type, request_data, 
+                    INSERT INTO ai_processing_results
+                    (document_id, service_name, processing_type, request_data,
                      response_data, processing_time, success, error_message)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -386,7 +390,11 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Created {results_created} AI processing results")
         return results_created
 
-    def seed_document_relationships(self, document_ids: List[int], count: int = None) -> int:
+    def seed_document_relationships(
+        self,
+        document_ids: list[int],
+        count: Optional[int] = None,
+    ) -> int:
         """Seed document relationships.
 
         Args:
@@ -427,8 +435,8 @@ This is an eigenvalue equation where E represents energy eigenvalues.
                 try:
                     conn.execute(
                         """
-                        INSERT INTO document_relationships 
-                        (source_document_id, target_document_id, relationship_type, 
+                        INSERT INTO document_relationships
+                        (source_document_id, target_document_id, relationship_type,
                          confidence, metadata)
                         VALUES (?, ?, ?, ?, ?)
                     """,
@@ -446,7 +454,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Created {relationships_created} document relationships")
         return relationships_created
 
-    def seed_processing_queue(self, document_ids: List[int], count: int = None) -> int:
+    def seed_processing_queue(self, document_ids: list[int], count: Optional[int] = None) -> int:
         """Seed processing queue entries.
 
         Args:
@@ -495,7 +503,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
 
                 conn.execute(
                     """
-                    INSERT INTO processing_queue 
+                    INSERT INTO processing_queue
                     (document_id, service_name, processing_type, priority, status,
                      attempts, scheduled_at, started_at, completed_at, error_message)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -563,7 +571,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
 
                     conn.execute(
                         """
-                        INSERT INTO service_health 
+                        INSERT INTO service_health
                         (service_name, status, response_time, error_message, checked_at)
                         VALUES (?, ?, ?, ?, ?)
                     """,
@@ -583,7 +591,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Created {records_created} service health records")
         return records_created
 
-    def seed_all(self, document_count: int = 20) -> Dict[str, int]:
+    def seed_all(self, document_count: int = 20) -> dict[str, int]:
         """Seed all data types.
 
         Args:
@@ -609,7 +617,7 @@ This is an eigenvalue equation where E represents energy eigenvalues.
         logger.info(f"Seeding completed: {results}")
         return results
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Get current database statistics.
 
         Returns:
@@ -673,7 +681,7 @@ def main():
     except FileNotFoundError as e:
         print(f"Error: {e}")
         print("Run migrations first: python migrate.py init")
-        exit(1)
+        sys.exit(1)
 
     if args.command == "seed-all":
         results = seeder.seed_all(args.count)
@@ -681,7 +689,7 @@ def main():
 
     elif args.command == "clear":
         success = seeder.clear_data(args.confirm)
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
     elif args.command == "stats":
         stats = seeder.get_stats()

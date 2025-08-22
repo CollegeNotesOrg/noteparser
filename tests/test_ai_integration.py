@@ -63,7 +63,7 @@ class TestServiceClientManager:
         with pytest.raises(ValueError, match="Service invalid_service not configured"):
             manager.get_client("invalid_service")
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_health_check_all(self):
         """Test health check for all services."""
         manager = ServiceClientManager()
@@ -88,7 +88,7 @@ class TestServiceClientManager:
 class TestAIServiceClient:
     """Test the AIServiceClient class."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_health_check_success(self):
         """Test successful health check."""
         client = AIServiceClient("test", "http://localhost:8000")
@@ -107,7 +107,7 @@ class TestAIServiceClient:
         assert "details" in result
         assert result["details"]["uptime"] == 3600
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_health_check_failure(self):
         """Test failed health check."""
         client = AIServiceClient("test", "http://localhost:8000")
@@ -121,7 +121,7 @@ class TestAIServiceClient:
         assert "error" in result
         assert "Connection refused" in result["error"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_post_request_success(self):
         """Test successful POST request."""
         client = AIServiceClient("test", "http://localhost:8000")
@@ -137,10 +137,11 @@ class TestAIServiceClient:
 
         assert result["result"] == "success"
         client.client.post.assert_called_once_with(
-            "http://localhost:8000/endpoint", json={"data": "test"},
+            "http://localhost:8000/endpoint",
+            json={"data": "test"},
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_post_request_failure(self):
         """Test failed POST request."""
         client = AIServiceClient("test", "http://localhost:8000")
@@ -149,7 +150,9 @@ class TestAIServiceClient:
 
         client.client = AsyncMock()
         client.client.post.side_effect = httpx.HTTPStatusError(
-            "Error", request=Mock(), response=Mock(status_code=500),
+            "Error",
+            request=Mock(),
+            response=Mock(status_code=500),
         )
 
         result = await client.post("endpoint", {"data": "test"})
@@ -173,7 +176,7 @@ class TestAIServicesIntegration:
         integration = AIServicesIntegration(config)
         assert integration.config == config
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_initialize_success(self):
         """Test successful service initialization."""
         integration = AIServicesIntegration()
@@ -191,7 +194,7 @@ class TestAIServicesIntegration:
         assert result is True
         assert integration.services_initialized is True
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_initialize_failure(self):
         """Test failed service initialization."""
         integration = AIServicesIntegration()
@@ -206,7 +209,7 @@ class TestAIServicesIntegration:
         assert result is False
         assert integration.services_initialized is False
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_process_document_success(self):
         """Test successful document processing."""
         integration = AIServicesIntegration()
@@ -240,7 +243,7 @@ class TestAIServicesIntegration:
         assert result["ragflow_insights"]["summary"] == "Test summary"
         assert result["deepwiki_article"]["id"] == "test-123"
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_process_document_not_initialized(self):
         """Test document processing when services not initialized."""
         integration = AIServicesIntegration()
@@ -251,7 +254,7 @@ class TestAIServicesIntegration:
         with pytest.raises(RuntimeError, match="AI services not initialized"):
             await integration.process_document(document)
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_query_knowledge_success(self):
         """Test successful knowledge query."""
         integration = AIServicesIntegration()
@@ -278,7 +281,7 @@ class TestAIServicesIntegration:
         assert len(result["documents"]) == 2
         assert result["answer"] == "This is the AI answer."
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_query_knowledge_not_initialized(self):
         """Test knowledge query when services not initialized."""
         integration = AIServicesIntegration()
@@ -315,7 +318,7 @@ class TestNoteParserAIIntegration:
         assert parser.enable_ai is False
         assert parser.ai_integration is None
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_parse_to_markdown_with_ai_success(self, tmp_path):
         """Test AI-enhanced markdown parsing."""
         # Create test file
@@ -341,7 +344,7 @@ class TestNoteParserAIIntegration:
         assert result["ai_processing"]["summary"] == "Test document summary"
         assert "test" in result["ai_processing"]["keywords"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_parse_to_markdown_with_ai_failure(self, tmp_path):
         """Test AI-enhanced parsing when AI processing fails."""
         # Create test file
@@ -361,7 +364,7 @@ class TestNoteParserAIIntegration:
         assert "ai_processing" in result
         assert "error" in result["ai_processing"]
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_query_knowledge_success(self):
         """Test successful knowledge query."""
         mock_ai = AsyncMock()
@@ -380,7 +383,7 @@ class TestNoteParserAIIntegration:
         assert "answer" in result
         assert result["answer"] == "AI answer"
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_query_knowledge_no_ai(self):
         """Test knowledge query when AI is disabled."""
         parser = NoteParser(enable_ai=False)
@@ -472,7 +475,7 @@ class TestWebAppAIIntegration:
         assert data["status"] == "disabled"
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_config():
     """Sample configuration for testing."""
     return {
@@ -483,19 +486,18 @@ def sample_config():
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_httpx_client():
     """Mock httpx client for testing."""
-    client = AsyncMock()
-    return client
+    return AsyncMock()
 
 
 # Integration tests that require actual services
-@pytest.mark.integration
+@pytest.mark.integration()
 class TestRealServiceIntegration:
     """Integration tests that require running AI services."""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_real_service_health_check(self):
         """Test health check against real services (if running)."""
         manager = ServiceClientManager()
@@ -515,7 +517,7 @@ class TestRealServiceIntegration:
         except Exception as e:
             pytest.skip(f"Real services not available: {e}")
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_real_service_integration_flow(self, tmp_path):
         """Test full integration flow with real services."""
         # Create a test document

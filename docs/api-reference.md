@@ -546,11 +546,11 @@ class MyPlugin(BasePlugin):
     description = "My custom plugin"
     supported_formats = ['.pdf', '.md']
     course_types = ['physics', 'chemistry']
-    
+
     def process_content(self, content: str, metadata: dict) -> dict:
         # Your processing logic here
         processed_content = self.enhance_content(content)
-        
+
         return {
             'content': processed_content,
             'metadata': {
@@ -559,7 +559,7 @@ class MyPlugin(BasePlugin):
                 'custom_field': 'value'
             }
         }
-    
+
     def can_handle(self, file_path, metadata):
         # Custom logic to determine if plugin should process file
         return super().can_handle(file_path, metadata)
@@ -702,6 +702,6 @@ For additional help:
 
 ---
 
-**Author**: Suryansh Sijwali  
-**Version**: 1.0.0  
+**Author**: Suryansh Sijwali
+**Version**: 1.0.0
 **Last Updated**: January 15, 2024

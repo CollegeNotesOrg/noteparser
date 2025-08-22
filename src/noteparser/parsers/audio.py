@@ -5,7 +5,7 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import speech_recognition as sr
 from moviepy.editor import VideoFileClip
@@ -28,7 +28,7 @@ class AudioTranscriber:
         self.recognizer = sr.Recognizer()
         self.use_google_api = use_google_api
 
-    def transcribe(self, file_path: Path) -> Dict[str, Any]:
+    def transcribe(self, file_path: Path) -> dict[str, Any]:
         """Transcribe audio or video file to text.
 
         Args:
@@ -45,7 +45,7 @@ class AudioTranscriber:
             return self._transcribe_audio(file_path)
         raise ValueError(f"Unsupported format: {file_path.suffix}")
 
-    def _transcribe_video(self, video_path: Path) -> Dict[str, Any]:
+    def _transcribe_video(self, video_path: Path) -> dict[str, Any]:
         """Extract audio from video and transcribe.
 
         Args:
@@ -76,10 +76,10 @@ class AudioTranscriber:
                 return result
 
         except Exception as e:
-            logger.error(f"Video transcription failed: {e}")
+            logger.exception(f"Video transcription failed: {e}")
             return {"text": "", "confidence": 0.0, "error": str(e), "source_type": "video"}
 
-    def _transcribe_audio(self, audio_path: Path) -> Dict[str, Any]:
+    def _transcribe_audio(self, audio_path: Path) -> dict[str, Any]:
         """Transcribe audio file to text.
 
         Args:
@@ -126,7 +126,7 @@ class AudioTranscriber:
                 "source_type": "audio",
             }
         except Exception as e:
-            logger.error(f"Audio transcription failed: {e}")
+            logger.exception(f"Audio transcription failed: {e}")
             return {"text": "", "confidence": 0.0, "error": str(e), "source_type": "audio"}
 
     def _get_audio_duration(self, audio_path: Path) -> Optional[float]:
@@ -164,8 +164,8 @@ class AudioTranscriber:
 
     def format_transcription_markdown(
         self,
-        transcription: Dict[str, Any],
-        title: str = None,
+        transcription: dict[str, Any],
+        title: Optional[str] = None,
     ) -> str:
         """Format transcription results as markdown.
 

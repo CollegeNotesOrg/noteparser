@@ -348,15 +348,15 @@
     .info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .action-buttons {
         flex-direction: column;
     }
-    
+
     .action-btn {
         justify-content: center;
     }
-    
+
     .related-files {
         grid-template-columns: 1fr;
     }
@@ -397,7 +397,7 @@
                 <div class="info-item">
                     <div class="info-label">File Size</div>
                     <div class="info-value">
-                        {{ (file.size / 1024 / 1024) | round(2) }} MB 
+                        {{ (file.size / 1024 / 1024) | round(2) }} MB
                         ({{ file.size | format_number }} bytes)
                     </div>
                 </div>
@@ -435,7 +435,7 @@
                             <div class="timeline-time">{{ file.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
                         </div>
                     </div>
-                    
+
                     {% if file.status in ['completed', 'processing', 'failed'] %}
                     <div class="timeline-item">
                         <div class="timeline-icon icon-{{ 'processing' if file.status == 'processing' else 'completed' }}">
@@ -448,7 +448,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+
                     {% if file.ai_processed %}
                     <div class="timeline-item">
                         <div class="timeline-icon icon-completed">
@@ -501,7 +501,7 @@
                 <div class="insights-summary">{{ ai_analysis.summary }}</div>
             </div>
             {% endif %}
-            
+
             {% if ai_analysis.entities %}
             <div class="info-item mb-3">
                 <div class="info-label">Extracted Entities ({{ ai_analysis.entities|length }})</div>
@@ -517,7 +517,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             {% if ai_analysis.key_phrases %}
             <div class="info-item mb-3">
                 <div class="info-label">Key Concepts ({{ ai_analysis.key_phrases|length }})</div>
@@ -531,7 +531,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             {% if ai_analysis.topics %}
             <div class="info-item mb-3">
                 <div class="info-label">Topic Categories</div>
@@ -542,20 +542,20 @@
                 </div>
             </div>
             {% endif %}
-            
+
             {% if ai_analysis.readability %}
             <div class="info-item">
                 <div class="info-label">Readability Analysis</div>
                 <div class="readability-score">
                     <span>Reading Level:</span>
                     <div class="score-bar">
-                        <div class="score-fill score-{{ get_readability_level(ai_analysis.readability.flesch_reading_ease) }}" 
+                        <div class="score-fill score-{{ get_readability_level(ai_analysis.readability.flesch_reading_ease) }}"
                              style="width: {{ ai_analysis.readability.flesch_reading_ease }}%"></div>
                     </div>
                     <span>{{ ai_analysis.readability.flesch_reading_ease | round(1) }}</span>
                 </div>
                 <small class="text-muted">
-                    Grade Level: {{ ai_analysis.readability.flesch_kincaid_grade | round(1) }} | 
+                    Grade Level: {{ ai_analysis.readability.flesch_kincaid_grade | round(1) }} |
                     Avg Sentence Length: {{ ai_analysis.readability.avg_sentence_length | round(1) }} words
                 </small>
             </div>
@@ -592,7 +592,7 @@
                     <div class="detail-value text-muted">No detailed processing records available</div>
                 </div>
                 {% endif %}
-                
+
                 <div class="detail-row">
                     <div class="detail-label">Content Length</div>
                     <div class="detail-value">
@@ -603,7 +603,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 <div class="detail-row">
                     <div class="detail-label">AI Processing</div>
                     <div class="detail-value">
@@ -748,9 +748,9 @@ function showAlert(message, type) {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     setTimeout(() => {
         alertDiv.remove();
     }, 5000);

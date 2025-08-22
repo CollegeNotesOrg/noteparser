@@ -20,7 +20,7 @@ def temp_dir():
     shutil.rmtree(temp_path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_documents(temp_dir):
     """Create sample documents for testing."""
     documents = {}
@@ -32,7 +32,7 @@ def sample_documents(temp_dir):
     This is a sample text document for testing the NoteParser AI integration.
     It contains information about machine learning, neural networks, and
     artificial intelligence that should be processed by the AI services.
-    
+
     Key concepts:
     - Machine Learning: Computer systems that learn from data
     - Neural Networks: Computing systems inspired by biological neural networks
@@ -97,7 +97,7 @@ def neural_network_forward(X, W, b):
     return documents
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_ai_config():
     """Mock configuration for AI services."""
     return {
@@ -132,7 +132,7 @@ def mock_ai_config():
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_service_responses():
     """Mock responses from AI services."""
     return {
@@ -229,7 +229,7 @@ def mock_service_responses():
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_healthy_services(mock_service_responses):
     """Create mock services that return healthy responses."""
 
@@ -257,7 +257,7 @@ def mock_healthy_services(mock_service_responses):
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_unhealthy_services():
     """Create mock services that return unhealthy responses."""
 
@@ -281,7 +281,7 @@ def mock_unhealthy_services():
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def ai_test_config(temp_dir, mock_ai_config):
     """Create a test configuration file."""
     config_file = temp_dir / "test_services.yml"
@@ -290,7 +290,7 @@ def ai_test_config(temp_dir, mock_ai_config):
     return str(config_file)
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_parser_with_ai():
     """Create a mock NoteParser with AI integration."""
     from noteparser.core import NoteParser
@@ -306,7 +306,7 @@ def mock_parser_with_ai():
     return parser, mock_ai
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_web_app():
     """Create a mock Flask app for testing web integration."""
     from noteparser.web.app import create_app
@@ -325,7 +325,8 @@ def mock_web_app():
 def pytest_configure(config):
     """Configure custom pytest markers."""
     config.addinivalue_line(
-        "markers", "integration: mark test as integration test requiring real services",
+        "markers",
+        "integration: mark test as integration test requiring real services",
     )
     config.addinivalue_line("markers", "benchmark: mark test as benchmark/performance test")
     config.addinivalue_line("markers", "slow: mark test as slow running")
@@ -390,7 +391,7 @@ def clean_environment():
 
 
 # Test data generators
-@pytest.fixture
+@pytest.fixture()
 def generate_test_queries():
     """Generate test queries for AI testing."""
     return [
@@ -417,7 +418,7 @@ def generate_test_queries():
     ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def performance_test_data():
     """Generate data for performance testing."""
     return {

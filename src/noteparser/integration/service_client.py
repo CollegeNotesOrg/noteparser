@@ -6,7 +6,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -21,7 +21,7 @@ class ServiceClientManager:
         self.clients = {}
         self.config = self._load_config(config_path)
 
-    def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
+    def _load_config(self, config_path: Optional[str]) -> dict[str, Any]:
         """Load configuration from file or environment variables."""
         config = {}
 
@@ -102,7 +102,7 @@ class ServiceClientManager:
 
         return self.clients[service_name]
 
-    async def health_check_all(self) -> Dict[str, Dict[str, Any]]:
+    async def health_check_all(self) -> dict[str, dict[str, Any]]:
         """Check health of all configured services."""
         results = {}
         for service_name in self.config["services"]:
@@ -117,7 +117,7 @@ class ServiceClientManager:
                     else:
                         results[service_name] = health_result
                 except Exception as e:
-                    logger.error(f"Health check failed for {service_name}: {e}")
+                    logger.exception(f"Health check failed for {service_name}: {e}")
                     results[service_name] = {"status": "unhealthy", "error": str(e)}
             else:
                 results[service_name] = {"status": "disabled"}
@@ -149,7 +149,7 @@ class AIServiceClient:
         await self.client.aclose()
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check if service is healthy."""
         try:
             response = await self.client.get(f"{self.base_url}/health")
@@ -162,59 +162,59 @@ class AIServiceClient:
             else:
                 return {"status": "unhealthy", "error": f"HTTP {response.status_code}"}
         except Exception as e:
-            logger.error(f"Health check failed for {self.service_name}: {e}")
+            logger.exception(f"Health check failed for {self.service_name}: {e}")
             return {"status": "unhealthy", "error": str(e)}
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def post(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def post(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Make POST request to service."""
         try:
             response = await self.client.post(f"{self.base_url}/{endpoint}", json=data)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error from {self.service_name}: {e}")
+            logger.exception(f"HTTP error from {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
         except Exception as e:
-            logger.error(f"Error calling {self.service_name}: {e}")
+            logger.exception(f"Error calling {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    async def get(self, endpoint: str, params: Optional[Dict] = None) -> Dict[str, Any]:
+    async def get(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
         """Make GET request to service."""
         try:
             response = await self.client.get(f"{self.base_url}/{endpoint}", params=params)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error from {self.service_name}: {e}")
+            logger.exception(f"HTTP error from {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
         except Exception as e:
-            logger.error(f"Error calling {self.service_name}: {e}")
+            logger.exception(f"Error calling {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
 
 
 class RagFlowClient(AIServiceClient):
     """Client specifically for RagFlow service."""
 
-    def __init__(self, base_url: str = None):
+    def __init__(self, base_url: Optional[str] = None):
         if base_url is None:
             base_url = os.getenv("RAGFLOW_URL", "http://localhost:8010")
         super().__init__("ragflow", base_url)
 
-    async def index_document(self, content: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    async def index_document(self, content: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """Index a document in RagFlow."""
         return await self.post("index", {"content": content, "metadata": metadata})
 
-    async def query(self, query: str, k: int = 5, filters: Optional[Dict] = None) -> Dict[str, Any]:
+    async def query(self, query: str, k: int = 5, filters: Optional[dict] = None) -> dict[str, Any]:
         """Query RagFlow for answers."""
         return await self.post("query", {"query": query, "k": k, "filters": filters or {}})
 
-    async def extract_insights(self, content: str) -> Dict[str, Any]:
+    async def extract_insights(self, content: str) -> dict[str, Any]:
         """Extract insights from content."""
         return await self.post("insights", {"content": content})
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get RagFlow statistics."""
         return await self.get("stats")
 
@@ -222,7 +222,7 @@ class RagFlowClient(AIServiceClient):
 class DeepWikiClient(AIServiceClient):
     """Client specifically for DeepWiki service."""
 
-    def __init__(self, base_url: str = None):
+    def __init__(self, base_url: Optional[str] = None):
         if base_url is None:
             base_url = os.getenv("DEEPWIKI_URL", "http://localhost:8011")
         super().__init__("deepwiki", base_url)
@@ -231,31 +231,31 @@ class DeepWikiClient(AIServiceClient):
         self,
         title: str,
         content: str,
-        metadata: Optional[Dict] = None,
-    ) -> Dict[str, Any]:
+        metadata: Optional[dict] = None,
+    ) -> dict[str, Any]:
         """Create a wiki article."""
         return await self.post(
             "article",
             {"title": title, "content": content, "metadata": metadata or {}},
         )
 
-    async def update_article(self, article_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
+    async def update_article(self, article_id: str, updates: dict[str, Any]) -> dict[str, Any]:
         """Update a wiki article."""
         return await self.post(f"article/{article_id}", updates)
 
-    async def get_article(self, article_id: str) -> Dict[str, Any]:
+    async def get_article(self, article_id: str) -> dict[str, Any]:
         """Get a wiki article."""
         return await self.get(f"article/{article_id}")
 
-    async def search(self, query: str, limit: int = 10) -> Dict[str, Any]:
+    async def search(self, query: str, limit: int = 10) -> dict[str, Any]:
         """Search wiki articles."""
         return await self.post("search", {"query": query, "limit": limit})
 
     async def ask_assistant(
         self,
         question: str,
-        context_articles: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        context_articles: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
         """Ask the AI assistant a question."""
         return await self.post("ask", {"question": question, "context_articles": context_articles})
 
@@ -263,14 +263,14 @@ class DeepWikiClient(AIServiceClient):
         self,
         article_id: Optional[str] = None,
         depth: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get the wiki link graph."""
         params = {"depth": depth}
         if article_id:
             params["article_id"] = article_id
         return await self.get("graph", params)
 
-    async def find_similar(self, article_id: str, limit: int = 5) -> Dict[str, Any]:
+    async def find_similar(self, article_id: str, limit: int = 5) -> dict[str, Any]:
         """Find similar articles."""
         return await self.get(f"similar/{article_id}", {"limit": limit})
 

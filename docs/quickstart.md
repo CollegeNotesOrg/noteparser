@@ -18,7 +18,7 @@ pip install noteparser[all]
 
 !!! tip "System Dependencies"
     For OCR and media processing, install system dependencies:
-    
+
     === "Ubuntu/Debian"
         ```bash
         sudo apt-get install tesseract-ocr ffmpeg poppler-utils
@@ -192,7 +192,7 @@ plugins:
     enabled: true
     config:
       equation_numbering: true
-  
+
   cs_processor:
     enabled: true
     config:
@@ -216,7 +216,7 @@ noteparser plugins
 Built-in plugins include:
 
 - **Math Processor**: Enhanced equation handling
-- **CS Processor**: Code block improvements  
+- **CS Processor**: Code block improvements
 - **Chemistry Processor**: Chemical formula formatting
 
 ## GitHub Actions Integration
