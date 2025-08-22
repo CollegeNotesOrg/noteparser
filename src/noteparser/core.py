@@ -7,6 +7,7 @@ from markitdown import MarkItDown
 
 from .converters.latex import LatexConverter
 from .exceptions import ConversionError, UnsupportedFormatError
+from .integration.ai_services import AIServicesIntegration
 from .utils.metadata import MetadataExtractor
 
 
@@ -70,8 +71,6 @@ class NoteParser:
         self.ai_integration = None
         if enable_ai:
             try:
-                from .integration.ai_services import AIServicesIntegration
-
                 self.ai_integration = AIServicesIntegration(config)
             except ImportError as e:
                 print(f"Warning: AI services not available: {e}")

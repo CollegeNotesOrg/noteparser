@@ -21,33 +21,38 @@ class AIServicesIntegration:
         self.manager = ServiceClientManager()
         self.services_initialized = False
 
-    async def initialize(self):
+    async def initialize(self) -> bool:
         """Initialize all AI services."""
         if self.services_initialized:
-            return
+            return True
 
         logger.info("Initializing AI services...")
 
-        # Check service health
-        health = await self.manager.health_check_all()
+        try:
+            # Check service health
+            health = await self.manager.health_check_all()
 
-        if health.get("ragflow", False):
-            logger.info("RagFlow service connected")
-        else:
-            logger.warning("RagFlow service not available")
+            if health.get("ragflow", False):
+                logger.info("RagFlow service connected")
+            else:
+                logger.warning("RagFlow service not available")
 
-        if health.get("deepwiki", False):
-            logger.info("DeepWiki service connected")
-        else:
-            logger.warning("DeepWiki service not available")
+            if health.get("deepwiki", False):
+                logger.info("DeepWiki service connected")
+            else:
+                logger.warning("DeepWiki service not available")
 
-        self.services_initialized = True
-        logger.info("AI services initialization completed")
+            self.services_initialized = True
+            logger.info("AI services initialization completed")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to initialize AI services: {e}")
+            return False
 
     async def process_document(self, document: dict[str, Any]) -> dict[str, Any]:
         """Process a document through AI services."""
         if not self.services_initialized:
-            await self.initialize()
+            raise RuntimeError("AI services not initialized")
 
         results = {}
 
@@ -64,8 +69,8 @@ class AIServicesIntegration:
             results["rag_indexing"] = rag_result
 
             # Extract insights
-            insights = await ragflow.post("insights", {"content": content})
-            results["insights"] = insights
+            insights = await ragflow.extract_insights({"content": content})
+            results["ragflow_insights"] = insights
 
         except Exception as e:
             logger.exception(f"RagFlow processing failed: {e}")
@@ -75,15 +80,14 @@ class AIServicesIntegration:
         try:
             deepwiki = self.manager.get_client("deepwiki")
 
-            wiki_result = await deepwiki.post(
-                "article",
+            wiki_result = await deepwiki.create_article(
                 {
                     "title": metadata.get("title", "Untitled"),
                     "content": content,
                     "metadata": metadata,
                 },
             )
-            results["wiki_article"] = wiki_result
+            results["deepwiki_article"] = wiki_result
 
         except Exception as e:
             logger.exception(f"DeepWiki processing failed: {e}")
@@ -94,18 +98,17 @@ class AIServicesIntegration:
     async def query_knowledge(self, query: str, filters: Optional[dict] = None) -> dict[str, Any]:
         """Query the knowledge base."""
         if not self.services_initialized:
-            await self.initialize()
+            raise RuntimeError("AI services not initialized")
 
         results = {}
 
         # Query through RagFlow
         try:
             ragflow = self.manager.get_client("ragflow")
-            rag_response = await ragflow.post(
-                "query",
-                {"query": query, "k": 5, "filters": filters or {}},
-            )
-            results["rag_response"] = rag_response
+            rag_response = await ragflow.query({"query": query, "k": 5, "filters": filters or {}})
+            # Extract documents and answer from the response
+            results["documents"] = rag_response.get("documents", [])
+            results["answer"] = rag_response.get("answer", "")
         except Exception as e:
             logger.exception(f"RagFlow query failed: {e}")
             results["rag_error"] = str(e)
