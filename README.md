@@ -1,11 +1,14 @@
 # NoteParser 📚
 
-**A comprehensive document parser for converting academic materials to Markdown and LaTeX**
+**A comprehensive AI-powered document parser for converting and analyzing academic materials**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/noteparser.svg)](https://badge.fury.io/py/noteparser)
+[![CI](https://github.com/CollegeNotesOrg/noteparser/workflows/CI/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
+[![codecov](https://codecov.io/gh/CollegeNotesOrg/noteparser/branch/master/graph/badge.svg)](https://codecov.io/gh/CollegeNotesOrg/noteparser)
 
-NoteParser is a powerful academic document processing system built on top of Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) library. It's designed specifically for university students and educators who need to convert various document formats into structured, searchable, and cross-referenced academic notes.
+NoteParser is a powerful AI-enhanced academic document processing system built on Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) library. It combines traditional document parsing with cutting-edge AI services to provide intelligent document analysis, semantic search, and knowledge extraction for university students and educators.
 
 ## ✨ Key Features
 
@@ -32,11 +35,18 @@ NoteParser is a powerful academic document processing system built on top of Mic
 - **Automated GitHub Actions** for continuous processing
 - **Searchable indexing** across all notes
 
+### 🤖 **AI-Powered Intelligence**
+- **Semantic document analysis** with keyword and topic extraction
+- **Natural language Q&A** over your document library
+- **Intelligent summarization** and insight generation
+- **Knowledge graph** construction and navigation
+- **AI-enhanced search** with relevance ranking
+
 ### 🖥️ **Multiple Interfaces**
-- **Command-line interface** for batch processing
-- **Web dashboard** for browsing and managing notes
-- **Python API** for programmatic access
-- **REST API** endpoints for integration
+- **AI-enhanced CLI** with natural language commands
+- **Interactive web dashboard** with AI features
+- **Python API** with async AI integration
+- **REST API** endpoints with AI processing
 
 ## 🚀 Quick Start
 
@@ -45,19 +55,19 @@ NoteParser is a powerful academic document processing system built on top of Mic
 #### Option 1: Using pip (Recommended)
 
 ```bash
-# Install from PyPI
+# Install from PyPI with all features (recommended)
+pip install noteparser[all]
+
+# Install with AI features only
+pip install noteparser[ai]
+
+# Install basic version
 pip install noteparser
 
-# Or install from source with pip
+# Install from source with AI features
 git clone https://github.com/CollegeNotesOrg/noteparser.git
 cd noteparser
-pip install -e .
-
-# For development (includes testing and linting tools)
-pip install -e .[dev]
-
-# For all features including development tools
-pip install -e .[all]
+pip install -e .[ai,dev]
 ```
 
 #### Option 2: Using requirements.txt
@@ -110,11 +120,20 @@ noteparser init
 # Parse a single document
 noteparser parse lecture.pdf --format markdown
 
+# Parse with AI enhancement
+noteparser ai analyze lecture.pdf --output enhanced-lecture.md
+
+# Query your knowledge base
+noteparser ai query "What is machine learning?" --filters '{"course": "CS101"}'
+
 # Batch process a directory
 noteparser batch input/ --recursive --format latex
 
-# Start the web dashboard
+# Start the AI-enhanced web dashboard
 noteparser web --host 0.0.0.0 --port 5000
+
+# Check AI services health
+noteparser ai health --detailed
 
 # Sync to organization repository
 noteparser sync output/*.md --target-repo study-notes --course CS101
@@ -123,15 +142,36 @@ noteparser sync output/*.md --target-repo study-notes --course CS101
 ### Python API
 
 ```python
+import asyncio
 from noteparser import NoteParser
 from noteparser.integration import OrganizationSync
 
-# Initialize parser
-parser = NoteParser(llm_client=your_llm_client)  # Optional: for image descriptions
+# Initialize parser with AI capabilities
+parser = NoteParser(enable_ai=True, llm_client=your_llm_client)
 
 # Parse single document
 result = parser.parse_to_markdown("lecture.pdf")
 print(result['content'])
+
+# Parse with AI enhancement
+async def ai_parse():
+    result = await parser.parse_to_markdown_with_ai("lecture.pdf")
+    print(f"Content: {result['content']}")
+    print(f"AI Insights: {result['ai_processing']}")
+
+asyncio.run(ai_parse())
+
+# Query knowledge base
+async def query_knowledge():
+    result = await parser.query_knowledge(
+        "What are the key concepts in machine learning?",
+        filters={"course": "CS101"}
+    )
+    print(f"Answer: {result['answer']}")
+    for doc in result['documents']:
+        print(f"- {doc['title']} (relevance: {doc['score']:.2f})")
+
+asyncio.run(query_knowledge())
 
 # Batch processing
 results = parser.parse_batch("notes/", output_format="markdown")
@@ -149,19 +189,75 @@ sync_result = org_sync.sync_parsed_notes(
 
 ```
 your-study-organization/
-├── noteparser/              # This repository - parsing engine
-├── study-notes/            # Main notes repository
+├── noteparser/                  # This repository - AI-powered parsing engine
+├── noteparser-ai-services/     # AI microservices (RagFlow, DeepWiki)
+├── study-notes/                # Main notes repository
 │   ├── courses/
 │   │   ├── CS101/
 │   │   ├── MATH201/
 │   │   └── PHYS301/
-│   └── .noteparser.yml     # Organization configuration
-├── note-templates/         # Shared LaTeX/Markdown templates
-├── note-extensions/        # Custom plugins
-└── note-dashboard/         # Optional: separate web interface
+│   └── .noteparser.yml         # Organization configuration
+├── note-templates/             # Shared LaTeX/Markdown templates
+├── note-extensions/            # Custom plugins
+└── note-dashboard/             # Optional: separate web interface
 ```
 
+## 🤖 AI Services Setup
+
+NoteParser can operate in two modes:
+
+### Standalone Mode (Basic)
+Works without external AI services - provides core document parsing functionality.
+
+### AI-Enhanced Mode (Recommended)
+Requires the `noteparser-ai-services` repository for full AI capabilities.
+
+```bash
+# Clone and start AI services
+git clone https://github.com/CollegeNotesOrg/noteparser-ai-services.git
+cd noteparser-ai-services
+docker-compose up -d
+
+# Verify services are running
+curl http://localhost:8010/health  # RagFlow
+curl http://localhost:8011/health  # DeepWiki
+
+# Test AI integration
+noteparser ai health
+```
+
+**AI Services Documentation**: [https://collegenotesorg.github.io/noteparser-ai-services/](https://collegenotesorg.github.io/noteparser-ai-services/)
+
 ## ⚙️ Configuration
+
+### AI Services Configuration (`config/services.yml`)
+
+```yaml
+services:
+  ragflow:
+    host: localhost
+    port: 8010
+    enabled: true
+    config:
+      embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+      vector_db_type: "faiss"
+      chunk_size: 512
+      top_k: 5
+
+  deepwiki:
+    host: localhost
+    port: 8011
+    enabled: true
+    config:
+      ai_model: "gpt-3.5-turbo"
+      auto_link: true
+      similarity_threshold: 0.7
+
+features:
+  enable_rag: true
+  enable_wiki: true
+  enable_ai_suggestions: true
+```
 
 ### Organization Configuration (`.noteparser-org.yml`)
 
@@ -260,21 +356,43 @@ jobs:
         run: noteparser sync output/*.md --target-repo study-notes
 ```
 
-## 🖥️ Web Dashboard
+## 🖥️ AI-Enhanced Web Dashboard
 
-Access the web interface at `http://localhost:5000` after running:
+Access the AI-powered web interface at `http://localhost:5000`:
 
 ```bash
 noteparser web
 ```
 
-Features:
+### Core Features:
 - **Browse** all repositories and courses
-- **Search** across all notes
+- **Search** across all notes with semantic similarity
 - **View** documents with syntax highlighting
 - **Parse** new documents through the web interface
 - **Manage** plugins and configuration
 - **Monitor** sync status and cross-references
+
+### AI Features (`/ai` dashboard):
+- **🤖 AI Document Analysis**: Upload and analyze documents with AI insights
+- **🔍 Knowledge Querying**: Natural language Q&A over your document library
+- **📊 Text Analysis**: Extract keywords, topics, and summaries from content
+- **🚀 Enhanced Search**: Semantic search with relevance ranking and AI answers
+- **💡 Smart Insights**: Automatic topic detection and content relationships
+- **📈 Service Health**: Real-time monitoring of AI service status
+
+### Production Deployment:
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose -f docker-compose.prod.yml up -d
+
+# Using deployment script
+./scripts/deploy.sh production 2.1.0
+
+# Access the application
+open http://localhost:5000
+open http://localhost:5000/ai  # AI Dashboard
+```
 
 ## 📊 Use Cases
 
