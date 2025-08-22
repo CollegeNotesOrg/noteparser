@@ -91,6 +91,8 @@ jobs:
     needs: [test, build]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write  # Required for creating releases
 
     steps:
     - uses: actions/checkout@v4
@@ -132,7 +134,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
         body: |
           # NoteParser ${{ github.ref_name }}
 
