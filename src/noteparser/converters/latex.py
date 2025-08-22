@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class LatexConverter:
         self,
         markdown_content: str,
         template: str = "article",
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """Convert markdown content to LaTeX.
 

@@ -5,7 +5,7 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import speech_recognition as sr
 from moviepy.editor import VideoFileClip
@@ -129,7 +129,7 @@ class AudioTranscriber:
             logger.exception(f"Audio transcription failed: {e}")
             return {"text": "", "confidence": 0.0, "error": str(e), "source_type": "audio"}
 
-    def _get_audio_duration(self, audio_path: Path) -> Optional[float]:
+    def _get_audio_duration(self, audio_path: Path) -> float | None:
         """Get duration of audio file in seconds.
 
         Args:
@@ -165,7 +165,7 @@ class AudioTranscriber:
     def format_transcription_markdown(
         self,
         transcription: dict[str, Any],
-        title: Optional[str] = None,
+        title: str | None = None,
     ) -> str:
         """Format transcription results as markdown.
 

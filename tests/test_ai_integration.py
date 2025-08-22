@@ -217,14 +217,14 @@ class TestAIServicesIntegration:
 
         # Mock the service clients
         mock_ragflow = AsyncMock()
-        mock_ragflow.extract_insights.return_value = {
+        mock_ragflow.post.return_value = {
             "summary": "Test summary",
             "keywords": ["test", "document"],
             "confidence": 0.95,
         }
 
         mock_deepwiki = AsyncMock()
-        mock_deepwiki.create_article.return_value = {"id": "test-123", "title": "Test Document"}
+        mock_deepwiki.post.return_value = {"id": "test-123", "title": "Test Document"}
 
         mock_manager = Mock()
         mock_manager.get_client.side_effect = lambda name: {
@@ -261,7 +261,7 @@ class TestAIServicesIntegration:
         integration.services_initialized = True
 
         mock_ragflow = AsyncMock()
-        mock_ragflow.query.return_value = {
+        mock_ragflow.post.return_value = {
             "documents": [
                 {"title": "Doc 1", "score": 0.9, "content": "Content 1"},
                 {"title": "Doc 2", "score": 0.8, "content": "Content 2"},
@@ -404,7 +404,7 @@ class TestWebAppAIIntegration:
         with patch("noteparser.web.app.AIServicesIntegration") as mock_ai:
             app = create_app({"AI_ENABLED": True})
 
-        assert app.ai_integration is not None
+        assert app.config["AI_INTEGRATION"] is not None
         mock_ai.assert_called_once()
 
     def test_create_app_with_ai_disabled(self):
@@ -413,7 +413,8 @@ class TestWebAppAIIntegration:
 
         app = create_app({"AI_ENABLED": False})
 
-        assert hasattr(app, "ai_integration")
+        assert "AI_INTEGRATION" in app.config
+        assert app.config["AI_INTEGRATION"] is None
 
     def test_ai_dashboard_route_with_ai_enabled(self):
         """Test AI dashboard route when AI is enabled."""
@@ -431,8 +432,7 @@ class TestWebAppAIIntegration:
         """Test AI dashboard route when AI is disabled."""
         from noteparser.web.app import create_app
 
-        app = create_app()
-        app.ai_integration = None
+        app = create_app({"AI_ENABLED": False})
 
         with app.test_client() as client:
             response = client.get("/ai")
@@ -443,15 +443,16 @@ class TestWebAppAIIntegration:
         """Test successful AI query via web API."""
         from noteparser.web.app import create_app
 
-        mock_ai = Mock()
-        app = create_app()
-        app.ai_integration = mock_ai
+        with patch("noteparser.web.app.AIServicesIntegration") as mock_ai_class:
+            mock_ai = Mock()
+            mock_ai_class.return_value = mock_ai
+            app = create_app({"AI_ENABLED": True})
 
         # Mock parser query_knowledge method
         async def mock_query(query, filters):
             return {"documents": [], "answer": "Test answer"}
 
-        app.parser.query_knowledge = mock_query
+        app.config["PARSER"].query_knowledge = mock_query
 
         with app.test_client() as client:
             response = client.post("/api/ai/query", json={"query": "test question"})
@@ -464,8 +465,7 @@ class TestWebAppAIIntegration:
         """Test AI health check route."""
         from noteparser.web.app import create_app
 
-        app = create_app()
-        app.ai_integration = None
+        app = create_app({"AI_ENABLED": False})
 
         with app.test_client() as client:
             response = client.get("/api/ai/health")

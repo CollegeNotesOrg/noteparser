@@ -1,7 +1,5 @@
 """Plugin registry for managing available plugins."""
 
-from typing import Optional
-
 from .base import BasePlugin
 
 
@@ -29,7 +27,7 @@ class PluginRegistry:
                 self._format_plugins[format_type] = []
             self._format_plugins[format_type].append(plugin_class)
 
-    def get_plugin(self, name: str) -> Optional[type[BasePlugin]]:
+    def get_plugin(self, name: str) -> type[BasePlugin] | None:
         """Get a plugin by name."""
         return self._plugins.get(name)
 

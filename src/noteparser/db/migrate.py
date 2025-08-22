@@ -13,7 +13,7 @@ import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 
@@ -47,7 +47,7 @@ class Migration:
 class MigrationRunner:
     """Database migration runner and manager."""
 
-    def __init__(self, db_path: Optional[str] = None, migrations_dir: Optional[str] = None):
+    def __init__(self, db_path: str | None = None, migrations_dir: str | None = None):
         """Initialize migration runner.
 
         Args:
@@ -83,7 +83,7 @@ class MigrationRunner:
         self,
         name: str,
         description: str = "",
-        version: Optional[str] = None,
+        version: str | None = None,
     ) -> str:
         """Create a new migration file.
 
@@ -242,7 +242,7 @@ class MigrationRunner:
             logger.exception(f"Failed to rollback migration {migration_id}: {e}")
             return False
 
-    def migrate_up(self, target: Optional[str] = None) -> bool:
+    def migrate_up(self, target: str | None = None) -> bool:
         """Run all pending migrations up to target.
 
         Args:
@@ -281,7 +281,7 @@ class MigrationRunner:
         logger.info("All migrations completed successfully")
         return True
 
-    def migrate_down(self, target: Optional[str] = None, steps: int = 1) -> bool:
+    def migrate_down(self, target: str | None = None, steps: int = 1) -> bool:
         """Rollback migrations.
 
         Args:

@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements-prod.txt
 
 # Copy only necessary files for package installation
-COPY pyproject.toml setup.py README.md ./
+COPY pyproject.toml README.md ./
 COPY src/ ./src/
 
 # Build the package
@@ -35,6 +35,11 @@ RUN pip install --no-cache-dir -e .
 
 # Production stage
 FROM python:3.11-slim AS production
+
+# Re-declare build args for production stage
+ARG BUILD_DATE=unknown
+ARG VERSION=dev
+ARG VCS_REF=unknown
 
 # Set build metadata
 LABEL maintainer="CollegeNotesOrg" \
@@ -64,7 +69,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --chown=noteparser:noteparser src/ ./src/
 COPY --chown=noteparser:noteparser config/ ./config/
 COPY --chown=noteparser:noteparser gunicorn.conf.py ./
-COPY --chown=noteparser:noteparser pyproject.toml setup.py README.md ./
+COPY --chown=noteparser:noteparser pyproject.toml README.md ./
 
 # Create necessary directories
 RUN mkdir -p /app/data /app/uploads /app/logs /app/config && \

@@ -4,7 +4,6 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -51,7 +50,7 @@ def main(ctx, verbose):
 def parse(
     ctx,
     input_file: Path,
-    output: Optional[Path],
+    output: Path | None,
     output_format: str,
     metadata: bool,
     preserve_formatting: bool,
@@ -107,10 +106,10 @@ def parse(
 def batch(
     ctx,
     input_dir: Path,
-    output_dir: Optional[Path],
+    output_dir: Path | None,
     output_format: str,
     recursive: bool,
-    pattern: Optional[str],
+    pattern: str | None,
 ):
     """Parse multiple documents in a directory."""
     try:
@@ -160,7 +159,7 @@ def batch(
 @click.option("--target-repo", "-t", default="study-notes", help="Target repository name")
 @click.option("--course", "-c", help="Course identifier")
 @click.argument("files", nargs=-1, type=click.Path(exists=True, path_type=Path))
-def sync(target_repo: str, course: Optional[str], files: list[Path]):
+def sync(target_repo: str, course: str | None, files: list[Path]):
     """Sync parsed notes to target repository."""
     try:
         org_sync = OrganizationSync()
@@ -265,7 +264,7 @@ def web(host: str, port: int, debug: bool):
     type=click.Path(path_type=Path),
     help="Path to configuration file",
 )
-def init(config_path: Optional[Path]):
+def init(config_path: Path | None):
     """Initialize noteparser configuration for current directory."""
     try:
         # Create default configuration
@@ -308,7 +307,7 @@ def ai():
     help="Output format",
 )
 @click.pass_context
-def query(ctx, query: str, filters: Optional[str], output_format: str):
+def query(ctx, query: str, filters: str | None, output_format: str):
     """Query the AI knowledge base with natural language."""
     try:
         # Parse filters if provided
@@ -375,7 +374,7 @@ def query(ctx, query: str, filters: Optional[str], output_format: str):
 def analyze(
     ctx,
     input_file: Path,
-    output: Optional[Path],
+    output: Path | None,
     extract_metadata: bool,
     preserve_formatting: bool,
 ):

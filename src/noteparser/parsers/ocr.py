@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import cv2
 import numpy as np
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class OCRProcessor:
     """Enhanced OCR processor with preprocessing for better handwriting recognition."""
 
-    def __init__(self, tesseract_path: Optional[str] = None):
+    def __init__(self, tesseract_path: str | None = None):
         """Initialize OCR processor.
 
         Args:
@@ -218,7 +218,7 @@ class OCRProcessor:
         """
         # Group words by lines based on vertical position
         lines = {}
-        for i, (top, text) in enumerate(zip(ocr_data["top"], ocr_data["text"])):
+        for i, (top, text) in enumerate(zip(ocr_data["top"], ocr_data["text"], strict=False)):
             if text.strip() and int(ocr_data["conf"][i]) > 30:
                 line_key = top // 10  # Group by approximate line
                 if line_key not in lines:
@@ -248,7 +248,7 @@ class OCRProcessor:
             "has_structure": len(headers) > 0 or len(paragraphs) > 1,
         }
 
-    def format_ocr_markdown(self, ocr_result: dict[str, Any], title: Optional[str] = None) -> str:
+    def format_ocr_markdown(self, ocr_result: dict[str, Any], title: str | None = None) -> str:
         """Format OCR results as structured markdown.
 
         Args:

@@ -5,7 +5,7 @@ This module contains the service layer for various AI/ML integrations.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class ServiceRegistry:
         self._health_checks[name] = False
         logger.info(f"Registered service: {name}")
 
-    def get(self, name: str) -> Optional[Any]:
+    def get(self, name: str) -> Any | None:
         """Get a registered service."""
         return self._services.get(name)
 
