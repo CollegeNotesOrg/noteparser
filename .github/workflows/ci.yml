@@ -140,6 +140,7 @@ jobs:
         file: ./Dockerfile.prod
         platforms: linux/amd64
         push: false
+        load: true
         tags: noteparser:test
         cache-from: type=gha
         cache-to: type=gha,mode=max
