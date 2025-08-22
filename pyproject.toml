@@ -7,7 +7,7 @@ name = "noteparser"
 version = "2.1.0"
 description = "A comprehensive document parser with AI-powered intelligence for converting and analyzing academic materials"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = "Suryansh Sijwali", email = "suryanshss1011@gmail.com"}
 ]
@@ -175,7 +175,7 @@ select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "A", "COM", "C4", "DTZ", "I
 ignore = ["E501", "PLR0913", "PLR2004", "B904", "TRY301", "ARG001", "C901", "PLC0415", "F841", "W293", "B007", "PLR0912", "PLR0915", "PLW2901", "RUF012", "TRY002", "TRY003", "ARG002", "SIM102", "TRY401", "DTZ005", "RUF001", "TRY300", "E722", "PLW1508", "RUF013", "E402", "TRY400", "DTZ003", "RET503", "TRY200", "A003", "PT001", "PT023", "PT004"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
