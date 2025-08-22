@@ -6,7 +6,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/noteparser.svg)](https://badge.fury.io/py/noteparser)
 [![CI](https://github.com/CollegeNotesOrg/noteparser/actions/workflows/ci.yml/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
-[![Release](https://github.com/CollegeNotesOrg/noteparser/actions/workflows/publish.yml/badge.svg)](https://github.com/CollegeNotesOrg/noteparser/actions)
 
 NoteParser is a powerful AI-enhanced academic document processing system built on Microsoft's [MarkItDown](https://github.com/microsoft/markitdown) library. It combines traditional document parsing with cutting-edge AI services to provide intelligent document analysis, semantic search, and knowledge extraction for university students and educators.
 

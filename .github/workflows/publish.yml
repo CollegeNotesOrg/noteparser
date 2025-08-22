@@ -111,9 +111,6 @@ jobs:
         # Generate automated changelog
         python3 scripts/generate-changelog.py --version "$TAG"
 
-        # Extract release notes for this version
-        python3 scripts/generate-changelog.py --version "$TAG" || echo "Fallback: using simple changelog"
-
         # Create release notes from latest changelog entry
         if [ -f CHANGELOG.md ]; then
           # Extract just the latest version's content
@@ -127,6 +124,22 @@ jobs:
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
         cat release_notes.md >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Commit updated changelog
+      run: |
+        # Check if CHANGELOG.md was modified
+        if git diff --quiet CHANGELOG.md; then
+          echo "No changelog changes to commit"
+        else
+          echo "Changelog updated, committing changes..."
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add CHANGELOG.md
+          git commit -m "docs: Update CHANGELOG.md for ${{ github.ref_name }}"
+          # Push to the default branch (master)
+          git push origin HEAD:master
+          echo "✅ Changelog committed and pushed successfully"
+        fi
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
