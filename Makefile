@@ -90,10 +90,36 @@ init-services: ## Initialize AI services
 health-check: ## Check health of all services
 	@echo "Checking service health..."
 	@curl -s http://localhost:5000/health | jq '.' || echo "Noteparser: DOWN"
-	@curl -s http://localhost:8000/health | jq '.' || echo "Kong Gateway: DOWN"
-	@curl -s http://localhost:9200/_cluster/health | jq '.' || echo "Elasticsearch: DOWN"
-	@curl -s http://localhost:6379/ping || echo "Redis: DOWN"
+	@echo "Checking AI services via CLI..."
+	@python -m noteparser.cli ai health || echo "AI services health check failed"
 	@echo ""
+
+ai-dev: ## Start development with AI services
+	@echo "Starting AI services..."
+	@if [ ! -d "../noteparser-ai-services" ]; then \
+		echo "Error: noteparser-ai-services repository not found"; \
+		echo "Please clone it: git clone https://github.com/CollegeNotesOrg/noteparser-ai-services.git"; \
+		exit 1; \
+	fi
+	cd ../noteparser-ai-services && docker-compose up -d
+	@echo "Waiting for AI services to start..."
+	@sleep 15
+	@echo "Starting noteparser..."
+	make up-dev
+	@echo "Testing AI integration..."
+	make health-check
+
+ai-test: ## Test AI integration
+	@echo "Testing AI integration..."
+	@python -c "import asyncio; from src.noteparser.integration.service_client import ServiceClientManager; print('✅ ServiceClientManager import successful')"
+	@python -c "import asyncio; from src.noteparser.integration.ai_services import AIServicesIntegration; print('✅ AIServicesIntegration import successful')"
+
+ai-stop: ## Stop all AI services
+	@echo "Stopping AI services..."
+	@if [ -d "../noteparser-ai-services" ]; then \
+		cd ../noteparser-ai-services && docker-compose down; \
+	fi
+	make down
 
 monitor: ## Open monitoring dashboards
 	@echo "Opening monitoring dashboards..."

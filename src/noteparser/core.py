@@ -20,14 +20,17 @@ class NoteParser:
         '.mp3', '.wav', '.m4a', '.mp4', '.mov', '.avi'
     }
     
-    def __init__(self, config: Optional[Dict[str, Any]] = None, llm_client: Optional[Any] = None):
+    def __init__(self, config: Optional[Dict[str, Any]] = None, llm_client: Optional[Any] = None, enable_ai: bool = False):
         """Initialize NoteParser with optional configuration.
         
         Args:
             config: Optional configuration dictionary for customizing behavior
             llm_client: Optional LLM client for image descriptions and AI features
+            enable_ai: Whether to enable AI services integration
         """
         self.config = config or {}
+        self.enable_ai = enable_ai
+        
         # Updated MarkItDown integration with latest features
         self.markitdown = MarkItDown(
             enable_plugins=True,
@@ -36,6 +39,16 @@ class NoteParser:
         self.latex_converter = LatexConverter()
         self.metadata_extractor = MetadataExtractor()
         self.llm_client = llm_client
+        
+        # Initialize AI services if enabled
+        self.ai_integration = None
+        if enable_ai:
+            try:
+                from .integration.ai_services import AIServicesIntegration
+                self.ai_integration = AIServicesIntegration(config)
+            except ImportError as e:
+                print(f"Warning: AI services not available: {e}")
+                self.enable_ai = False
     
     def parse_to_markdown(
         self,
@@ -262,3 +275,63 @@ class NoteParser:
                     return lang
                     
         return ''
+    
+    async def parse_to_markdown_with_ai(
+        self,
+        file_path: Union[str, Path],
+        extract_metadata: bool = True,
+        preserve_formatting: bool = True
+    ) -> Dict[str, Any]:
+        """Parse document to Markdown with AI enhancement.
+        
+        Args:
+            file_path: Path to the input file
+            extract_metadata: Whether to extract document metadata
+            preserve_formatting: Whether to preserve academic formatting
+            
+        Returns:
+            Dictionary containing enhanced markdown content, metadata, and AI processing results
+        """
+        # Standard parsing first
+        result = self.parse_to_markdown(file_path, extract_metadata, preserve_formatting)
+        
+        # Add AI processing if enabled
+        if self.enable_ai and self.ai_integration:
+            try:
+                await self.ai_integration.initialize()
+                
+                # Process through AI services
+                ai_result = await self.ai_integration.process_document({
+                    "content": result["content"],
+                    "metadata": {
+                        "title": Path(file_path).stem,
+                        "file_path": str(file_path),
+                        **result.get("metadata", {})
+                    }
+                })
+                result["ai_processing"] = ai_result
+                
+            except Exception as e:
+                print(f"Warning: AI processing failed: {e}")
+                result["ai_processing"] = {"error": str(e)}
+        
+        return result
+    
+    async def query_knowledge(self, query: str, filters: Optional[Dict] = None) -> Dict[str, Any]:
+        """Query the AI knowledge base.
+        
+        Args:
+            query: Natural language query
+            filters: Optional filters for search
+            
+        Returns:
+            Query results from AI services
+        """
+        if not self.enable_ai or not self.ai_integration:
+            return {"error": "AI services not enabled"}
+        
+        try:
+            await self.ai_integration.initialize()
+            return await self.ai_integration.query_knowledge(query, filters)
+        except Exception as e:
+            return {"error": str(e)}

@@ -8,14 +8,8 @@ import asyncio
 from typing import Dict, Any, List, Optional
 import logging
 from pathlib import Path
-import sys
 
-# Add services to path
-sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-
-from services.base import ServiceOrchestrator
-from services.ragflow_service import RagFlowService
-from services.deepwiki_service import DeepWikiService
+from .service_client import ServiceClientManager
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +18,7 @@ class AIServicesIntegration:
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.orchestrator = ServiceOrchestrator()
+        self.manager = ServiceClientManager()
         self.services_initialized = False
     
     async def initialize(self):
@@ -34,20 +28,21 @@ class AIServicesIntegration:
         
         logger.info("Initializing AI services...")
         
-        # Initialize RagFlow for RAG capabilities
-        if self.config.get("enable_ragflow", True):
-            ragflow = RagFlowService()
-            await self.orchestrator.register_service(ragflow)
-            logger.info("RagFlow service initialized")
+        # Check service health
+        health = await self.manager.health_check_all()
         
-        # Initialize DeepWiki for wiki functionality  
-        if self.config.get("enable_deepwiki", True):
-            deepwiki = DeepWikiService()
-            await self.orchestrator.register_service(deepwiki)
-            logger.info("DeepWiki service initialized")
+        if health.get("ragflow", False):
+            logger.info("RagFlow service connected")
+        else:
+            logger.warning("RagFlow service not available")
+            
+        if health.get("deepwiki", False):
+            logger.info("DeepWiki service connected")
+        else:
+            logger.warning("DeepWiki service not available")
         
         self.services_initialized = True
-        logger.info("All AI services initialized successfully")
+        logger.info("AI services initialization completed")
     
     async def process_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """Process a document through AI services."""
@@ -61,47 +56,40 @@ class AIServicesIntegration:
         metadata = document.get("metadata", {})
         
         # Process through RagFlow for indexing and insights
-        if "ragflow" in self.orchestrator.services:
-            try:
-                # Index document
-                rag_result = await self.orchestrator.services["ragflow"].process({
-                    "action": "index",
-                    "content": content,
-                    "metadata": metadata
-                })
-                results["rag_indexing"] = rag_result
-                
-                # Extract insights
-                insights = await self.orchestrator.services["ragflow"].process({
-                    "action": "extract_insights",
-                    "content": content,
-                    "insight_type": "all"
-                })
-                results["insights"] = insights
-            except Exception as e:
-                logger.error(f"RagFlow processing failed: {e}")
-                results["rag_error"] = str(e)
+        try:
+            ragflow = self.manager.get_client("ragflow")
+            
+            # Index document
+            rag_result = await ragflow.post("index", {
+                "content": content,
+                "metadata": metadata
+            })
+            results["rag_indexing"] = rag_result
+            
+            # Extract insights
+            insights = await ragflow.post("insights", {
+                "content": content
+            })
+            results["insights"] = insights
+            
+        except Exception as e:
+            logger.error(f"RagFlow processing failed: {e}")
+            results["rag_error"] = str(e)
         
         # Create wiki article
-        if "deepwiki" in self.orchestrator.services:
-            try:
-                wiki_result = await self.orchestrator.services["deepwiki"].process({
-                    "action": "create",
-                    "title": metadata.get("title", "Untitled"),
-                    "content": content,
-                    "metadata": metadata
-                })
-                results["wiki_article"] = wiki_result
-                
-                # Auto-link with existing articles
-                link_result = await self.orchestrator.services["deepwiki"].process({
-                    "action": "link",
-                    "article_id": wiki_result.get("article_id")
-                })
-                results["wiki_links"] = link_result
-            except Exception as e:
-                logger.error(f"DeepWiki processing failed: {e}")
-                results["wiki_error"] = str(e)
+        try:
+            deepwiki = self.manager.get_client("deepwiki")
+            
+            wiki_result = await deepwiki.post("article", {
+                "title": metadata.get("title", "Untitled"),
+                "content": content,
+                "metadata": metadata
+            })
+            results["wiki_article"] = wiki_result
+            
+        except Exception as e:
+            logger.error(f"DeepWiki processing failed: {e}")
+            results["wiki_error"] = str(e)
         
         return results
     
@@ -114,38 +102,38 @@ class AIServicesIntegration:
         results = {}
         
         # Query through RagFlow
-        if "ragflow" in self.orchestrator.services:
-            try:
-                rag_response = await self.orchestrator.services["ragflow"].process({
-                    "action": "query",
-                    "query": query,
-                    "filters": filters or {}
-                })
-                results["rag_response"] = rag_response
-            except Exception as e:
-                logger.error(f"RagFlow query failed: {e}")
-                results["rag_error"] = str(e)
+        try:
+            ragflow = self.manager.get_client("ragflow")
+            rag_response = await ragflow.post("query", {
+                "query": query,
+                "k": 5,
+                "filters": filters or {}
+            })
+            results["rag_response"] = rag_response
+        except Exception as e:
+            logger.error(f"RagFlow query failed: {e}")
+            results["rag_error"] = str(e)
         
         # Query through DeepWiki
-        if "deepwiki" in self.orchestrator.services:
-            try:
-                # Search wiki
-                wiki_search = await self.orchestrator.services["deepwiki"].process({
-                    "action": "search",
-                    "query": query,
-                    "search_type": "content"
-                })
-                results["wiki_search"] = wiki_search
-                
-                # Ask AI assistant
-                ai_response = await self.orchestrator.services["deepwiki"].process({
-                    "action": "ask",
-                    "question": query
-                })
-                results["ai_assistant"] = ai_response
-            except Exception as e:
-                logger.error(f"DeepWiki query failed: {e}")
-                results["wiki_error"] = str(e)
+        try:
+            deepwiki = self.manager.get_client("deepwiki")
+            
+            # Search wiki
+            wiki_search = await deepwiki.post("search", {
+                "query": query,
+                "limit": 5
+            })
+            results["wiki_search"] = wiki_search
+            
+            # Ask AI assistant
+            ai_response = await deepwiki.post("ask", {
+                "question": query
+            })
+            results["ai_assistant"] = ai_response
+            
+        except Exception as e:
+            logger.error(f"DeepWiki query failed: {e}")
+            results["wiki_error"] = str(e)
         
         return results
     
@@ -156,25 +144,23 @@ class AIServicesIntegration:
         
         results = {}
         
-        # Organize wiki structure
-        if "deepwiki" in self.orchestrator.services:
-            try:
-                org_result = await self.orchestrator.services["deepwiki"].process({
-                    "action": "organize"
-                })
-                results["wiki_organization"] = org_result
-            except Exception as e:
-                logger.error(f"Wiki organization failed: {e}")
-                results["organization_error"] = str(e)
+        # Get knowledge graph from DeepWiki
+        try:
+            deepwiki = self.manager.get_client("deepwiki")
+            graph_result = await deepwiki.get("graph")
+            results["knowledge_graph"] = graph_result
+        except Exception as e:
+            logger.error(f"Knowledge graph retrieval failed: {e}")
+            results["organization_error"] = str(e)
         
         return results
     
     async def shutdown(self):
         """Shutdown all services."""
-        if self.orchestrator:
-            await self.orchestrator.shutdown()
+        if self.manager:
+            await self.manager.close_all()
             self.services_initialized = False
-            logger.info("All AI services shut down")
+            logger.info("All AI services connections closed")
 
 # Integration with existing noteparser
 def integrate_ai_services(parser_instance):
