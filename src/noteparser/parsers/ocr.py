@@ -44,7 +44,7 @@ class OCRProcessor:
         """
         try:
             # Load image
-            image = Image.open(image_path)
+            image: Image.Image = Image.open(image_path)
 
             # Apply preprocessing if requested
             if preprocess:
@@ -217,7 +217,7 @@ class OCRProcessor:
             Dictionary describing text structure
         """
         # Group words by lines based on vertical position
-        lines = {}
+        lines: dict[int, list[str]] = {}
         for i, (top, text) in enumerate(zip(ocr_data["top"], ocr_data["text"], strict=False)):
             if text.strip() and int(ocr_data["conf"][i]) > 30:
                 line_key = top // 10  # Group by approximate line

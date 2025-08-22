@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
+@click.version_option(version="2.1.0", prog_name="noteparser")
 @click.pass_context
 def main(ctx, verbose):
     """NoteParser - Convert documents to Markdown and LaTeX for academic use."""

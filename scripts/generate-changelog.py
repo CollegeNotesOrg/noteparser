@@ -9,7 +9,6 @@ import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 class ChangelogGenerator:
@@ -47,7 +46,7 @@ class ChangelogGenerator:
         except subprocess.CalledProcessError:
             return []
 
-    def get_commits_between_tags(self, from_tag: Optional[str], to_tag: Optional[str]) -> list[str]:
+    def get_commits_between_tags(self, from_tag: str | None, to_tag: str | None) -> list[str]:
         """Get commits between two tags."""
         if from_tag and to_tag:
             rev_range = f"{from_tag}..{to_tag}"
@@ -123,7 +122,7 @@ class ChangelogGenerator:
 
         return grouped
 
-    def generate_version_entry(self, version: str, from_tag: Optional[str]) -> str:
+    def generate_version_entry(self, version: str, from_tag: str | None) -> str:
         """Generate changelog entry for a specific version."""
         commits = self.get_commits_between_tags(from_tag, version)
         if not commits:

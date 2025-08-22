@@ -177,7 +177,7 @@ def integrate_ai_services(parser_instance):
     async def enhanced_parse(file_path: str, **kwargs) -> dict[str, Any]:
         """Enhanced parse with AI services."""
         # Original parsing
-        result = original_parse(file_path, **kwargs)
+        result: dict[str, Any] = original_parse(file_path, **kwargs)
 
         # Process through AI services
         if hasattr(parser_instance, "ai_services"):

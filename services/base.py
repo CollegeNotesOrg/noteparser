@@ -7,7 +7,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 
@@ -34,7 +34,7 @@ class BaseService(ABC):
         self.config = config
         self.is_healthy = False
         self.last_health_check = None
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._health_check_task = None
 
     async def start(self):
@@ -105,7 +105,7 @@ class BaseService(ABC):
         self,
         endpoint: str,
         method: str = "GET",
-        data: Optional[dict] = None,
+        data: dict | None = None,
     ) -> dict[str, Any]:
         """Make API call to the service."""
         if not self._session:

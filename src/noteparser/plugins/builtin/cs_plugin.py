@@ -208,7 +208,7 @@ class ComputerSciencePlugin(BasePlugin):
                 language_scores[lang] = score
 
         if language_scores:
-            return max(language_scores, key=language_scores.get)
+            return max(language_scores, key=lambda k: language_scores[k])
         return "text"
 
     def _looks_like_code_line(self, line: str) -> bool:

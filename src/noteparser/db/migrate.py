@@ -34,8 +34,8 @@ class Migration:
     version: str
     up_sql: str
     down_sql: str
-    dependencies: list[str] = None
-    created_at: str = None
+    dependencies: list[str] | None = None
+    created_at: str | None = None
 
     def __post_init__(self):
         if self.dependencies is None:
@@ -55,6 +55,8 @@ class MigrationRunner:
             migrations_dir: Directory containing migration files
         """
         self.db_path = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
+        if self.db_path is None:
+            raise ValueError("Database path cannot be None")
         self.migrations_dir = Path(migrations_dir or Path(__file__).parent / "migrations")
         self.migrations_dir.mkdir(exist_ok=True)
 
@@ -157,6 +159,8 @@ class MigrationRunner:
 
     def _dependencies_satisfied(self, migration: Migration, applied: set) -> bool:
         """Check if migration dependencies are satisfied."""
+        if migration.dependencies is None:
+            return True
         return all(dep in applied for dep in migration.dependencies)
 
     def _calculate_checksum(self, sql: str) -> str:

@@ -171,7 +171,8 @@ class AIServiceClient:
         try:
             response = await self.client.post(f"{self.base_url}/{endpoint}", json=data)
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except httpx.HTTPStatusError as e:
             logger.exception(f"HTTP error from {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
@@ -185,7 +186,8 @@ class AIServiceClient:
         try:
             response = await self.client.get(f"{self.base_url}/{endpoint}", params=params)
             response.raise_for_status()
-            return response.json()
+            result: dict[str, Any] = response.json()
+            return result
         except httpx.HTTPStatusError as e:
             logger.exception(f"HTTP error from {self.service_name}: {e}")
             return {"status": "error", "error": str(e)}
@@ -265,7 +267,7 @@ class DeepWikiClient(AIServiceClient):
         depth: int = 2,
     ) -> dict[str, Any]:
         """Get the wiki link graph."""
-        params = {"depth": depth}
+        params: dict[str, Any] = {"depth": depth}
         if article_id:
             params["article_id"] = article_id
         return await self.get("graph", params)

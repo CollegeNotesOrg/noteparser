@@ -69,7 +69,7 @@ class LatexConverter:
         template_vars = self._extract_template_variables(metadata or {})
 
         try:
-            latex_document = template_content.format(content=latex_body, **template_vars)
+            latex_document: str = template_content.format(content=latex_body, **template_vars)
         except KeyError as e:
             logger.warning(f"Missing template variable: {e}")
             # Use defaults for missing variables

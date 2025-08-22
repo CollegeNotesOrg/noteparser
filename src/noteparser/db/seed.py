@@ -30,7 +30,9 @@ class DatabaseSeeder:
         Args:
             db_path: Path to SQLite database file
         """
-        self.db_path: str = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
+        self.db_path = db_path or os.getenv("DATABASE_PATH", "noteparser.db")
+        if self.db_path is None:
+            raise ValueError("Database path cannot be None")
 
         if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Database not found: {self.db_path}")
